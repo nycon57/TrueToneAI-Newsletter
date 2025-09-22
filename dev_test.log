@@ -1,0 +1,27 @@
+
+> nextjs-email-intel-v2@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.3.5
+   - Local:        http://localhost:3000
+   - Network:      http://10.0.2.41:3000
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     · clientTraceMetadata
+
+ ✓ Starting...
+ ✓ Ready in 1106ms
+ ○ Compiling /newsletter/[uuid] ...
+ ✓ Compiled /newsletter/[uuid] in 1760ms (3366 modules)
+ GET /newsletter/e937e243-7f26-4275-a261-37b520f9ef7f?u=25713585-3ec7-45c7-90dc-fc6a8ac6a757 200 in 2588ms
+ ○ Compiling /api/analytics/events ...
+ ✓ Compiled /api/analytics/events in 528ms (1913 modules)
+Analytics event dropped - session 01370b5e-a726-4307-9877-f532099472f0 not found
+Analytics event dropped - session 01370b5e-a726-4307-9877-f532099472f0 not found
+ POST /api/analytics/events 200 in 1034ms
+ ✓ Compiled /api/analytics/sessions in 194ms (1915 modules)
+ PATCH /api/analytics/sessions 404 in 314ms
+ ✓ Compiled in 382ms (1115 modules)
+   Reload env: .env
+ ✓ Compiled in 171ms (1115 modules)
+[?25h
