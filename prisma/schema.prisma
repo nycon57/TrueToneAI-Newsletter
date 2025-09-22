@@ -1,0 +1,226 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+/// User model represents application users and their profile information
+/// Maps to "users" table in the database
+model User {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid /// Unique identifier for the user - auto-generated UUID
+  name      String @default("Not Set")     /// Full display name of the user - defaults to "Not Set" for existing records
+  firstName String @default("Not Set")     /// User's first name - defaults to "Not Set" for existing records
+  lastName  String @default("Not Set")     /// User's last name - defaults to "Not Set" for existing records
+  email     String   @unique               /// User's email address - must be unique across all users
+  company   String?                        /// Optional company name where the user works
+  createdAt DateTime @default(now())       /// Timestamp when the user account was created
+  updatedAt DateTime @updatedAt            /// Timestamp when the user record was last updated
+  
+  // Relations
+  likes            Like[]             /// User's likes on various content
+  sessions         UserSession[]      /// User's analytics sessions
+  events           AnalyticsEvent[]   /// User's tracked events
+  pageViews        PageView[]         /// User's page view history
+  chatAnalytics    ChatAnalytics[]    /// User's AI chat usage analytics
+  
+  @@map("users")
+}
+
+/// Enum defining the different publication states for posts
+/// Used to control post visibility and workflow
+enum PublishedStatus {
+  DRAFT     /// Post is in draft mode - not visible to public
+  PUBLISHED /// Post is published and visible to public
+  ARCHIVED  /// Post is archived - no longer active but preserved
+}
+
+/// Post model represents newsletter posts and articles
+/// Contains rich JSON content and publication workflow
+/// Maps to "newsletter_posts" table in the database
+model Post {
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid /// Unique identifier for the post - auto-generated UUID
+  title           String                                                                   /// Title of the post - displayed as headline
+  content         Json            @db.JsonB                                                /// Rich content stored as JSON
+  publishedStatus PublishedStatus @default(DRAFT)                                         /// Current publication status of the post - defaults to DRAFT
+  publishedAt     DateTime?                                                                /// Timestamp when the post was published (null if never published)
+  createdAt       DateTime        @default(now())                                         /// Timestamp when the post was created
+  updatedAt       DateTime        @updatedAt                                              /// Timestamp when the post was last updated
+  
+  // Relations
+  likes           Like[]                                                                   /// Likes on this post and its content
+  
+  @@map("newsletter_posts")
+}
+
+/// Enum defining different types of content that can be liked
+enum ContentType {
+  ARTICLE         /// Main article content
+  KEY_INSIGHTS    /// Key insights section
+  VIDEO_SCRIPT    /// Video script section
+  EMAIL_TEMPLATE  /// Email template section
+  SOCIAL_CONTENT  /// Social media content section
+}
+
+/// Enum defining device types for analytics
+enum Device {
+  MOBILE   /// Mobile device
+  TABLET   /// Tablet device
+  DESKTOP  /// Desktop computer
+  UNKNOWN  /// Unknown device type
+}
+
+/// Like model represents user engagement with content
+/// Tracks likes on articles and specific content sections
+/// Maps to "likes" table in the database
+model Like {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid /// Unique identifier for the like
+  userId       String      @db.Uuid                                                /// ID of the user who liked
+  postId       String      @db.Uuid                                                /// ID of the post containing the content
+  contentId    String                                                              /// Stable contentID from the JSONB content
+  contentType  ContentType                                                         /// Type of content being liked
+  contentTitle String                                                              /// Human-readable title of the liked content
+  deviceType   Device      @default(UNKNOWN)                                       /// Device type used when liking
+  timestamp    DateTime    @default(now())                                         /// When the like was created
+  
+  // Relations
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post         Post        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  // Constraints and indexes
+  @@unique([userId, postId, contentId, contentType])  /// Prevent duplicate likes
+  @@index([postId, contentType])                      /// Fast lookup by post and content type
+  @@index([userId])                                    /// Fast lookup by user
+  @@index([timestamp])                                 /// For time-based analytics
+  @@map("likes")
+}
+
+/// User session tracking for analytics and user journey insights
+/// Maps to "user_sessions" table in the database
+model UserSession {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid /// Unique session identifier
+  userId         String?   @db.Uuid                                                /// Associated user (null for anonymous sessions)
+  sessionId      String    @unique @db.Uuid                                       /// Client-generated session ID
+  ipAddress      String?                                                           /// User's IP address for geolocation
+  userAgent      String?                                                           /// Browser/device user agent string
+  deviceType     Device    @default(UNKNOWN)                                       /// Detected device type
+  countryCode    String?   @db.Char(2)                                             /// ISO country code from IP
+  region         String?                                                           /// State/region from IP geolocation
+  city           String?                                                           /// City from IP geolocation
+  startedAt      DateTime  @default(now())                                         /// Session start timestamp
+  lastActiveAt   DateTime  @default(now())                                         /// Last activity timestamp
+  endedAt        DateTime?                                                         /// Session end timestamp (null if active)
+  pageViews      Int       @default(0)                                             /// Number of page views in session
+  eventsCount    Int       @default(0)                                             /// Total events tracked in session
+  
+  // Relations
+  user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  events         AnalyticsEvent[]
+  pageViewsRel   PageView[]
+  chatSessions   ChatAnalytics[]
+  
+  // Indexes for performance
+  @@index([sessionId])                                /// Fast session lookup
+  @@index([userId])                                   /// User session history
+  @@index([startedAt])                                /// Time-based queries
+  @@index([countryCode])                              /// Geographic analytics
+  @@map("user_sessions")
+}
+
+/// Comprehensive event tracking for user interactions and system events
+/// Maps to "analytics_events" table in the database
+model AnalyticsEvent {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid /// Unique event identifier
+  sessionId     String      @db.Uuid                                                /// Session this event belongs to
+  userId        String?     @db.Uuid                                                /// User who triggered event (null for anonymous)
+  eventType     String                                                              /// Type of event (click, view, scroll, etc.)
+  eventAction   String                                                              /// Specific action taken
+  eventCategory String?                                                             /// Event category for grouping
+  eventLabel    String?                                                             /// Additional event descriptor
+  eventValue    Decimal?                                                            /// Numeric value associated with event
+  pagePath      String?                                                             /// Page where event occurred
+  elementId     String?                                                             /// DOM element ID that triggered event
+  elementType   String?                                                             /// Type of element (button, link, etc.)
+  metadata      Json?       @db.JsonB                                               /// Additional event data
+  timestamp     DateTime    @default(now())                                         /// Event timestamp
+  
+  // Relations
+  session       UserSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+  user          User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Indexes for analytics queries
+  @@index([sessionId])                                /// Session-based analytics
+  @@index([userId])                                   /// User behavior analytics
+  @@index([eventType, eventAction])                   /// Event type analytics
+  @@index([pagePath])                                 /// Page-based analytics
+  @@index([timestamp])                                /// Time-series analytics
+  @@index([eventCategory, timestamp])                 /// Category-based trending
+  @@map("analytics_events")
+}
+
+/// Page view tracking with detailed engagement metrics
+/// Maps to "page_views" table in the database
+model PageView {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid /// Unique page view identifier
+  sessionId    String      @db.Uuid                                                /// Session this page view belongs to
+  userId       String?     @db.Uuid                                                /// User who viewed page (null for anonymous)
+  pagePath     String                                                              /// Full page path/URL
+  pageTitle    String?                                                             /// Page title
+  referrer     String?                                                             /// Referring page/source
+  timeOnPage   Int?                                                                /// Time spent on page (seconds)
+  scrollDepth  Int?                                                                /// Maximum scroll depth (percentage)
+  exitPage     Boolean     @default(false)                                         /// Whether user exited from this page
+  bounce       Boolean     @default(false)                                         /// Whether this was a bounce (single page session)
+  timestamp    DateTime    @default(now())                                         /// Page view timestamp
+  
+  // Relations
+  session      UserSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+  user         User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Indexes for page analytics
+  @@index([sessionId])                                /// Session page flow
+  @@index([userId])                                   /// User page history
+  @@index([pagePath])                                 /// Page popularity analytics
+  @@index([timestamp])                                /// Time-based page analytics
+  @@index([referrer])                                 /// Traffic source analytics
+  @@map("page_views")
+}
+
+/// AI chat analytics for conversation tracking and usage insights
+/// Maps to "chat_analytics" table in the database
+model ChatAnalytics {
+  id                  String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid /// Unique chat session identifier
+  sessionId           String      @db.Uuid                                                /// User session this chat belongs to
+  userId              String?     @db.Uuid                                                /// User who participated in chat (null for anonymous)
+  conversationId      String                                                              /// Client-generated conversation ID
+  messageCount        Int         @default(0)                                             /// Number of messages in conversation
+  sessionDuration     Int?                                                                /// Chat session duration (seconds)
+  selectedArticle     String?                                                             /// Article context for chat
+  selectedContentType String?                                                             /// Content type being discussed
+  tokensUsed          Int?                                                                /// AI tokens consumed
+  errorCount          Int         @default(0)                                             /// Number of errors in session
+  startedAt           DateTime    @default(now())                                         /// Chat session start
+  endedAt             DateTime?                                                           /// Chat session end (null if active)
+  
+  // Relations
+  session             UserSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+  user                User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Indexes for chat analytics
+  @@index([sessionId])                                /// Session chat history
+  @@index([userId])                                   /// User chat behavior
+  @@index([conversationId])                           /// Conversation lookup
+  @@index([selectedArticle])                          /// Article-based chat analytics
+  @@index([startedAt])                                /// Time-based chat analytics
+  @@map("chat_analytics")
+}

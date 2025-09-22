@@ -1,0 +1,60 @@
+@font-face {
+    font-family: 'Signal Normal';
+    src: url('Signal-Normal.eot');
+    src: url('Signal-Normal.eot?#iefix') format('embedded-opentype'),
+        url('Signal-Normal.woff2') format('woff2'),
+        url('Signal-Normal.woff') format('woff'),
+        url('Signal-Normal.ttf') format('truetype'),
+        url('Signal-Normal.svg#Signal-Normal') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Signal';
+    src: url('Signal-ExtraBold.eot');
+    src: url('Signal-ExtraBold.eot?#iefix') format('embedded-opentype'),
+        url('Signal-ExtraBold.woff2') format('woff2'),
+        url('Signal-ExtraBold.woff') format('woff'),
+        url('Signal-ExtraBold.ttf') format('truetype'),
+        url('Signal-ExtraBold.svg#Signal-ExtraBold') format('svg');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Signal';
+    src: url('Signal-Bold.eot');
+    src: url('Signal-Bold.eot?#iefix') format('embedded-opentype'),
+        url('Signal-Bold.woff2') format('woff2'),
+        url('Signal-Bold.woff') format('woff'),
+        url('Signal-Bold.ttf') format('truetype'),
+        url('Signal-Bold.svg#Signal-Bold') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Signal';
+    src: url('Signal-Heavy.eot');
+    src: url('Signal-Heavy.eot?#iefix') format('embedded-opentype'),
+        url('Signal-Heavy.woff2') format('woff2'),
+        url('Signal-Heavy.woff') format('woff'),
+        url('Signal-Heavy.ttf') format('truetype'),
+        url('Signal-Heavy.svg#Signal-Heavy') format('svg');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Signal';
+    src: url('Signal-Light.eot');
+    src: url('Signal-Light.eot?#iefix') format('embedded-opentype'),
+        url('Signal-Light.woff2') format('woff2'),
+        url('Signal-Light.woff') format('woff'),
+        url('Signal-Light.ttf') format('truetype'),
+        url('Signal-Light.svg#Signal-Light') format('svg');
+    font-weight: 300;
+    font-style: normal;
+}
+
