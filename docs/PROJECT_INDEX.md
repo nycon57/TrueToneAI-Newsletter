@@ -19,7 +19,7 @@
 - **Database**: PostgreSQL with Prisma ORM
 - **UI**: Radix UI + shadcn/ui + Tailwind CSS v4
 - **Authentication**: Custom implementation
-- **AI Integration**: OpenAI GPT-4o-mini
+- **AI Integration**: OpenAI GPT-5-mini
 - **Monitoring**: Microsoft Clarity, Sentry
 
 ### Project Structure
