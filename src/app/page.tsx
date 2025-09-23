@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Copy, CheckIcon, MessageCircle, X, Bot, Video, Mail, Share2, Lightbulb, Send, ChevronDown, Facebook, Instagram, Twitter, Linkedin, Zap, TrendingUp, Shield, FileText, Sparkles, ArrowRight, Crown, Settings, LogIn, User, Tag } from 'lucide-react';
+import { Copy, CheckIcon, MessageCircle, X, Bot, Video, Mail, Share2, Lightbulb, Send, ChevronDown, Facebook, Instagram, Twitter, Linkedin, Zap, TrendingUp, Shield, FileText, Sparkles, ArrowRight, Crown, Settings, LogIn, User, Tag, LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
 
 // UI Components
 import { Button } from '@/components/ui/button';
@@ -492,7 +493,9 @@ export default function HomePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const articlesPerPage = 6;
 
-  const isAuthenticated = !!user;
+  // Kinde authentication hooks
+  const { login, logout, isAuthenticated, isLoading: kindeLoading, user: kindeUser } = useKindeBrowserClient();
+
   const isPaid = user && user.subscription_tier !== 'free';
 
   // Filter and sort articles based on current filters
@@ -573,17 +576,6 @@ export default function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Try to get user info (will fail if not authenticated)
-        try {
-          const userResponse = await fetch('/api/user');
-          if (userResponse.ok) {
-            const userData = await userResponse.json();
-            setUser(userData);
-          }
-        } catch {
-          // User not authenticated, continue as anonymous
-        }
-
         // Fetch articles
         const articlesResponse = await fetch('/api/articles');
         if (!articlesResponse.ok) {
@@ -601,7 +593,30 @@ export default function HomePage() {
     fetchData();
   }, []);
 
-  if (loading) {
+  // Fetch user data when authenticated
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (isAuthenticated && kindeUser) {
+        try {
+          const userResponse = await fetch('/api/user');
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            setUser(userData);
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      } else {
+        setUser(null);
+      }
+    };
+
+    if (!kindeLoading) {
+      fetchUserData();
+    }
+  }, [isAuthenticated, kindeUser, kindeLoading]);
+
+  if (loading || kindeLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-lavender/20 via-white to-lavender/20">
         {/* Header Skeleton */}
@@ -674,22 +689,40 @@ export default function HomePage() {
                         {isPaid ? (
                           <>
                             <Crown className="h-3 w-3 mr-1" />
-                            {user.subscription_tier?.toUpperCase()}
+                            {user?.subscription_tier?.toUpperCase()}
                           </>
                         ) : (
                           'FREE'
                         )}
                       </Badge>
                     </div>
-                    <Link href="/dashboard">
-                      <Button variant="outline" size="sm">
-                        <User className="h-4 w-4 mr-2" />
-                        Dashboard
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600">
+                        {kindeUser?.given_name || user?.firstName || 'User'}
+                      </span>
+                      <Link href="/dashboard">
+                        <Button variant="outline" size="sm">
+                          <User className="h-4 w-4 mr-2" />
+                          Dashboard
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={logout}
+                        className="text-red-600 hover:text-red-700 hover:border-red-300"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
                       </Button>
-                    </Link>
+                    </div>
                   </>
                 ) : (
-                  <Button size="sm" className="bg-gradient-to-r from-orchid to-indigo hover:from-indigo hover:to-shadow text-white border-0 shadow-md hover:shadow-lg transition-all duration-300">
+                  <Button
+                    onClick={login}
+                    size="sm"
+                    className="bg-gradient-to-r from-orchid to-indigo hover:from-indigo hover:to-shadow text-white border-0 shadow-md hover:shadow-lg transition-all duration-300"
+                  >
                     <LogIn className="h-4 w-4 mr-2" />
                     Sign In
                   </Button>
@@ -710,7 +743,7 @@ export default function HomePage() {
               {isAuthenticated && (
                 <div className="inline-flex items-center gap-2 bg-lavender/30 text-orchid px-4 py-2 rounded-full text-sm font-medium mb-6">
                   <Sparkles className="h-4 w-4" />
-                  <span>Welcome back, {user.firstName || user.name || 'there'}!</span>
+                  <span>Welcome back, {kindeUser?.given_name || user?.firstName || user?.name || 'there'}!</span>
                 </div>
               )}
               <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
