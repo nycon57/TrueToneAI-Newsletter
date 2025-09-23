@@ -257,7 +257,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/coreyshelton/Documents/_Coding/nextjs-projects/truetone/ttai-nextjs-newsletter/src/generated/prisma",
+      "value": "/Users/jarrettstanley/Desktop/websites/TrueToneAI-Newsletter/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -271,7 +271,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/coreyshelton/Documents/_Coding/nextjs-projects/truetone/ttai-nextjs-newsletter/prisma/schema.prisma",
+    "sourceFilePath": "/Users/jarrettstanley/Desktop/websites/TrueToneAI-Newsletter/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -285,6 +285,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {
