@@ -1,14 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AnalyticsProvider } from "@/lib/analytics/hooks";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { inter, signal } from "./fonts";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -28,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${signal.variable} ${geistMono.variable} font-sans antialiased`}
         suppressHydrationWarning={true}
       >
         <TooltipProvider>
