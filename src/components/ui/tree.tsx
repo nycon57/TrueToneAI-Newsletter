@@ -3,9 +3,9 @@
 import * as React from "react"
 import { ItemInstance } from "@headless-tree/core"
 import { ChevronDownIcon } from "lucide-react"
-import { Slot } from "radix-ui"
+import { Slot } from "@radix-ui/react-slot"
 
-import { cn } from "@/registry/default/lib/utils"
+import { cn } from "@/lib/utils"
 
 interface TreeContextValue<T = any> {
   indent: number
