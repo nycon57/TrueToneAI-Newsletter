@@ -188,7 +188,7 @@ data: [DONE]
 - Rate limiting and error handling
 
 **AI Model Configuration:**
-- Model: `gpt-4o-mini`
+- Model: `gpt-5-mini`
 - Max tokens: 1000
 - Temperature: 0.7
 - Top-p: 0.9
