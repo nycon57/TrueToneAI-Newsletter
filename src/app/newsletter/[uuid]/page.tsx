@@ -106,7 +106,7 @@ const CopyButton = ({ content, type, className }: CopyButtonProps) => {
       variant="outline"
       size="sm"
       className={cn(
-        "group relative overflow-hidden border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 hover:shadow-sm",
+        "group relative overflow-hidden border-lavender/50 text-orchid hover:bg-lavender/20 hover:border-lavender transition-all duration-300 hover:shadow-sm",
         copied && "bg-green-50 border-green-500 text-green-700 hover:bg-green-100",
         className
       )}
@@ -177,8 +177,8 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
       id: 'insights',
       title: 'Key Insights',
       icon: Lightbulb,
-      buttonClass: 'bg-purple-50 hover:bg-purple-100 text-purple-700 hover:text-purple-800 border-purple-200 hover:border-purple-300',
-      activeButtonClass: 'bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:text-white border-0 shadow-md'
+      buttonClass: 'bg-lavender/20 hover:bg-lavender/30 text-orchid hover:text-indigo border-lavender/50 hover:border-lavender',
+      activeButtonClass: 'bg-gradient-to-r from-orchid to-indigo text-white hover:text-white border-0 shadow-md'
     });
   }
   
@@ -208,7 +208,7 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
       title: 'Social',
       icon: Share2,
       buttonClass: 'bg-pink-50 hover:bg-pink-100 text-pink-700 hover:text-pink-800 border-pink-200 hover:border-pink-300',
-      activeButtonClass: 'bg-gradient-to-r from-pink-600 to-purple-600 text-white hover:text-white border-0 shadow-md'
+      activeButtonClass: 'bg-gradient-to-r from-pink-700 to-pink-800 text-white hover:text-white border-0 shadow-md'
     });
   }
 
@@ -228,12 +228,12 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
             transition={{ duration: 0.3 }}
             className="mt-6 relative overflow-hidden"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-100/50 to-purple-50/50 rounded-xl" />
-            <div className="relative p-8 bg-white/60 backdrop-blur-sm rounded-xl border border-purple-200/50">
+            <div className="absolute inset-0 bg-gradient-to-br from-lavender/30 to-lavender/20 rounded-xl" />
+            <div className="relative p-8 bg-white/60 backdrop-blur-sm rounded-xl border border-lavender/50">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <Lightbulb className="h-5 w-5 text-purple-700" />
+                  <div className="p-2 bg-lavender/30 rounded-lg">
+                    <Lightbulb className="h-5 w-5 text-orchid" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900">Key Insights</h3>
                 </div>
@@ -260,19 +260,19 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
                     transition={{ duration: 0.3, delay: idx * 0.1 }}
                     className="flex items-start gap-3 group"
                   >
-                    <div className="p-1.5 bg-purple-100 rounded-full mt-0.5">
-                      <CheckIcon className="h-3.5 w-3.5 text-purple-700" />
+                    <div className="p-1.5 bg-lavender/30 rounded-full mt-0.5">
+                      <CheckIcon className="h-3.5 w-3.5 text-orchid" />
                     </div>
                     <span className="text-gray-700 leading-relaxed group-hover:text-gray-900 transition-colors">{insight}</span>
                   </motion.div>
                 ))}
               </div>
               
-              <div className="pt-6 border-t border-purple-100">
-                <p className="text-purple-700 font-medium italic text-center">
+              <div className="pt-6 border-t border-lavender/30">
+                <p className="text-orchid font-medium italic text-center">
                   &ldquo;Success in real estate comes from building relationships, not just closing deals.&rdquo;
                 </p>
-                <p className="text-sm text-purple-600 text-center mt-2">— Personal Insight</p>
+                <p className="text-sm text-orchid text-center mt-2">— Personal Insight</p>
               </div>
             </div>
           </motion.div>
@@ -388,10 +388,10 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
 
       case 'social':
         const socialPlatforms = [
-          { name: 'Facebook', icon: Facebook, color: 'from-blue-500 to-blue-600', bgColor: 'bg-blue-50', textColor: 'text-blue-700', content: article.socialContent?.facebook },
-          { name: 'Instagram', icon: Instagram, color: 'from-pink-500 to-purple-600', bgColor: 'bg-pink-50', textColor: 'text-pink-700', content: article.socialContent?.instagram },
-          { name: 'Twitter', icon: Twitter, color: 'from-blue-400 to-blue-500', bgColor: 'bg-blue-50', textColor: 'text-blue-700', content: article.socialContent?.twitter },
-          { name: 'LinkedIn', icon: Linkedin, color: 'from-blue-600 to-blue-700', bgColor: 'bg-blue-50', textColor: 'text-blue-700', content: article.socialContent?.linkedin }
+          { name: 'Facebook', icon: Facebook, color: 'from-blue-600 to-blue-700', bgColor: 'bg-white', textColor: 'text-blue-800', content: article.socialContent?.facebook },
+          { name: 'Instagram', icon: Instagram, color: 'from-pink-600 to-orchid', bgColor: 'bg-white', textColor: 'text-pink-800', content: article.socialContent?.instagram },
+          { name: 'Twitter', icon: Twitter, color: 'from-blue-500 to-blue-600', bgColor: 'bg-white', textColor: 'text-blue-800', content: article.socialContent?.twitter },
+          { name: 'LinkedIn', icon: Linkedin, color: 'from-indigo to-orchid', bgColor: 'bg-white', textColor: 'text-indigo', content: article.socialContent?.linkedin }
         ];
 
         return (
@@ -399,27 +399,13 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="mt-6 bg-gradient-to-br from-purple-50 to-pink-50/50 p-8 rounded-xl border border-purple-200"
+            className="mt-6 bg-gradient-to-br from-lavender/20 to-pink-50/50 p-8 rounded-xl border border-lavender/50"
           >
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <Share2 className="h-5 w-5 text-purple-700" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">Social Media Content</h3>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-lavender/30 rounded-lg">
+                <Share2 className="h-5 w-5 text-orchid" />
               </div>
-              <LikeButton
-                postId={postId}
-                contentId={`${article.contentID}-social`}
-                contentType="SOCIAL_CONTENT"
-                contentTitle={`Social Media - ${article.title}`}
-                userId={userId}
-                initialLiked={userLikes.some(
-                  like => like.contentId === `${article.contentID}-social` && like.contentType === "SOCIAL_CONTENT"
-                )}
-                initialCount={likeCounts[`${article.contentID}-social`] || 0}
-                size="sm"
-              />
+              <h3 className="text-xl font-bold text-gray-900">Social Media Content</h3>
             </div>
             <div className="grid gap-4">
               {socialPlatforms.map((platform, idx) => {
@@ -430,18 +416,18 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: idx * 0.1 }}
-                    className="bg-white p-5 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+                    className="bg-white p-6 rounded-xl shadow-md border border-gray-200 hover:shadow-lg hover:border-gray-300 transition-all duration-200"
                   >
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className={`p-2 rounded-lg bg-gradient-to-r ${platform.color}`}>
-                        <PlatformIcon className="h-5 w-5 text-white" />
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className={`p-3 rounded-xl bg-gradient-to-r ${platform.color} shadow-sm`}>
+                        <PlatformIcon className="h-6 w-6 text-white" />
                       </div>
-                      <h4 className="font-semibold text-gray-900">{platform.name}</h4>
+                      <h4 className="font-bold text-lg text-gray-900">{platform.name}</h4>
                     </div>
-                    <p className="text-gray-700 text-sm mb-4 leading-relaxed bg-gray-50 p-3 rounded-lg">
+                    <p className="text-gray-800 text-sm mb-5 leading-relaxed bg-gray-50 p-4 rounded-lg border border-gray-100 font-medium">
                       {platform.content}
                     </p>
-                    <CopyButton content={platform.content} type={platform.name} className="text-sm" />
+                    <CopyButton content={platform.content} type={platform.name} className="text-sm font-medium" />
                   </motion.div>
                 );
               })}
@@ -457,10 +443,9 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
   return (
     <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
       <CardContent className="p-7">
-        <div className="flex justify-between items-start gap-4">
-          <div className="flex-1">
+        <div className="flex-1">
             <div className="flex items-center justify-between mb-4">
-              <Badge className="bg-purple-100 text-purple-700 border-0 px-3 py-1">
+              <Badge className="bg-lavender/30 text-orchid border-0 px-3 py-1">
                 • Market Update
               </Badge>
               <LikeButton
@@ -504,16 +489,6 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
                 );
               })}
             </div>
-          </div>
-          
-          <div className="flex-shrink-0">
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              className="w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-700 rounded-full flex items-center justify-center text-white shadow-lg"
-            >
-              <ArticleIcon className="h-7 w-7" />
-            </motion.div>
-          </div>
         </div>
 
         {renderSectionContent()}
@@ -552,7 +527,7 @@ const AdCard = ({ article, index }: AdCardProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.15 }}
-      className="mt-16 bg-gradient-to-b from-purple-50 to-white rounded-2xl p-8"
+      className="mt-16 bg-gradient-to-b from-lavender/20 to-white rounded-2xl p-8"
     >
       <h2 className="text-3xl font-bold text-center text-gray-900 mb-4">
         {article.title}
@@ -569,8 +544,8 @@ const AdCard = ({ article, index }: AdCardProps) => {
               const IconComponent = getIconComponent(prop.icon);
               return (
                 <div key={idx} className="text-center">
-                  <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <IconComponent className="h-8 w-8 text-purple-600" />
+                  <div className="w-16 h-16 bg-lavender/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <IconComponent className="h-8 w-8 text-orchid" />
                   </div>
                   <h3 className="font-semibold text-gray-900 mb-2">{prop.heading}</h3>
                   <p className="text-sm text-gray-600">{prop.description}</p>
@@ -584,7 +559,7 @@ const AdCard = ({ article, index }: AdCardProps) => {
         <div className="text-center">
           <Button
             onClick={() => window.open(article.cta?.url, '_blank')}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+            className="bg-orchid hover:bg-indigo text-white px-8 py-3 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
           >
             {article.cta.text}
           </Button>
@@ -697,8 +672,8 @@ const AIChat = ({ newsletter, onClose }: { newsletter: NewsletterData['newslette
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 flex-shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
-              <Bot className="h-6 w-6 text-purple-600" />
+            <div className="w-12 h-12 bg-lavender/30 rounded-2xl flex items-center justify-center">
+              <Bot className="h-6 w-6 text-orchid" />
             </div>
             <div>
               <h3 className="text-2xl font-bold text-gray-900">AI Assistant</h3>
@@ -755,7 +730,7 @@ const AIChat = ({ newsletter, onClose }: { newsletter: NewsletterData['newslette
                           }}
                           className={cn(
                             "w-full text-left px-4 py-3 text-sm hover:bg-gray-100 transition-colors first:rounded-t-xl last:rounded-b-xl",
-                            selectedArticle === article.title ? "bg-purple-100 text-purple-700 font-medium" : "text-gray-700"
+                            selectedArticle === article.title ? "bg-lavender/30 text-orchid font-medium" : "text-gray-700"
                           )}
                         >
                           <div className="truncate">{article.title}</div>
@@ -802,7 +777,7 @@ const AIChat = ({ newsletter, onClose }: { newsletter: NewsletterData['newslette
                   className={cn(
                     "inline-flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
                     selectedContentType === 'social'
-                      ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg"
+                      ? "bg-gradient-to-r from-lavender/200 to-orchid text-white shadow-lg"
                       : "bg-white text-gray-700 hover:text-gray-900 border border-gray-300 hover:border-gray-400 shadow-sm hover:shadow-md"
                   )}
                 >
@@ -815,7 +790,7 @@ const AIChat = ({ newsletter, onClose }: { newsletter: NewsletterData['newslette
                   className={cn(
                     "inline-flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
                     selectedContentType === 'general'
-                      ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg"
+                      ? "bg-gradient-to-r from-indigo to-orchid text-white shadow-lg"
                       : "bg-white text-gray-700 hover:text-gray-900 border border-gray-300 hover:border-gray-400 shadow-sm hover:shadow-md"
                   )}
                 >
@@ -880,7 +855,7 @@ const AIChat = ({ newsletter, onClose }: { newsletter: NewsletterData['newslette
                       className={cn(
                         "max-w-[80%] rounded-2xl px-4 py-3 shadow-sm",
                         message.role === 'user'
-                          ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white'
+                          ? 'bg-gradient-to-r from-orchid to-indigo text-white'
                           : 'bg-gray-100 text-gray-900 border border-gray-200'
                       )}
                     >
@@ -901,7 +876,7 @@ const AIChat = ({ newsletter, onClose }: { newsletter: NewsletterData['newslette
                     <div className="max-w-[80%] rounded-2xl px-4 py-3 shadow-sm bg-gray-100 text-gray-900 border border-gray-200">
                       <p className="text-sm leading-relaxed whitespace-pre-wrap">
                         {streamingContent}
-                        <span className="inline-block w-2 h-4 bg-purple-600 ml-1 animate-pulse" />
+                        <span className="inline-block w-2 h-4 bg-orchid ml-1 animate-pulse" />
                       </p>
                     </div>
                   </motion.div>
@@ -917,9 +892,9 @@ const AIChat = ({ newsletter, onClose }: { newsletter: NewsletterData['newslette
                     <div className="bg-gray-100 rounded-2xl px-4 py-3 shadow-sm border border-gray-200">
                       <div className="flex items-center space-x-2">
                         <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                          <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                          <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                          <div className="w-2 h-2 bg-orchid rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                          <div className="w-2 h-2 bg-orchid rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                          <div className="w-2 h-2 bg-orchid rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                         </div>
                         <span className="text-sm text-gray-500">AI is thinking...</span>
                       </div>
@@ -941,12 +916,12 @@ const AIChat = ({ newsletter, onClose }: { newsletter: NewsletterData['newslette
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask me anything about this content..."
-                className="flex-1 rounded-xl border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-300 transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="flex-1 rounded-xl border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orchid focus:border-lavender transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed"
                 disabled={loading}
               />
               <Button
                 type="submit"
-                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0 shadow-lg px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-gradient-to-r from-lavender/200 to-orchid hover:from-orchid hover:to-indigo text-white border-0 shadow-lg px-6 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={!input.trim() || loading}
               >
                 {loading ? (
@@ -1054,9 +1029,9 @@ export default function NewsletterPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-50">
+      <div className="min-h-screen bg-gradient-to-br from-lavender/20 via-white to-lavender/20">
         {/* Header */}
-        <div className="bg-white/80 backdrop-blur-sm border-b border-purple-100">
+        <div className="bg-white/80 backdrop-blur-sm border-b border-lavender/30">
           <div className="max-w-4xl mx-auto px-4 py-4">
             <div className="flex justify-between items-center">
               <div className="relative h-10">
@@ -1073,7 +1048,7 @@ export default function NewsletterPage() {
                 onClick={() => setShowChat(true)}
                 variant="default"
                 size="sm"
-                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white border-0 shadow-md hover:shadow-lg transition-all duration-300"
+                className="bg-gradient-to-r from-orchid to-indigo hover:from-indigo hover:to-shadow text-white border-0 shadow-md hover:shadow-lg transition-all duration-300"
               >
                 <MessageCircle className="h-4 w-4 mr-2" />
                 Ask a question
@@ -1091,7 +1066,7 @@ export default function NewsletterPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 bg-lavender/30 text-orchid px-4 py-2 rounded-full text-sm font-medium mb-6">
                 <Sparkles className="h-4 w-4" />
                 <span>Welcome back, {data.user.firstName}!</span>
               </div>
