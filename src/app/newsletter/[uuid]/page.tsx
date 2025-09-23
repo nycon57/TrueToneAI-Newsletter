@@ -155,11 +155,14 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
 
   // Determine article icon based on type or content
   const getArticleIcon = () => {
-    if (article.title.toLowerCase().includes('rate') || article.title.toLowerCase().includes('fed')) {
+    if (!article.title) return TrendingUp;
+
+    const title = article.title.toLowerCase();
+    if (title.includes('rate') || title.includes('fed')) {
       return TrendingUp;
-    } else if (article.title.toLowerCase().includes('fha') || article.title.toLowerCase().includes('loan')) {
+    } else if (title.includes('fha') || title.includes('loan')) {
       return Shield;
-    } else if (article.title.toLowerCase().includes('credit') || article.title.toLowerCase().includes('score')) {
+    } else if (title.includes('credit') || title.includes('score')) {
       return FileText;
     }
     return TrendingUp;
@@ -475,10 +478,10 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
               />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-3 leading-tight">
-              {article.title}
+              {article.title || 'Untitled Article'}
             </h3>
             <p className="text-gray-600 leading-relaxed mb-6 text-lg">
-              {article.summary}
+              {article.summary || 'No summary available.'}
             </p>
             
             <div className="flex flex-wrap gap-3">
@@ -1106,27 +1109,32 @@ export default function NewsletterPage() {
 
           <div className="space-y-6">
             {data.newsletter.articles
+              .filter(article => article && article.title) // Filter out invalid articles
               .sort((a, b) => a.position - b.position)
               .map((article, index) => {
+                if (!article || !article.title) {
+                  return null; // Skip invalid articles
+                }
+
                 if (article.contentType === 'ad') {
                   return (
-                    <AdCard 
-                      key={article.id}
-                      article={article} 
+                    <AdCard
+                      key={article.id || index}
+                      article={article}
                       index={index}
                     />
                   );
                 }
-                
+
                 return (
                   <motion.div
-                    key={article.id}
+                    key={article.id || index}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.15 }}
                   >
-                    <ArticleCard 
-                      article={article} 
+                    <ArticleCard
+                      article={article}
                       postId={data.newsletter.id}
                       userId={userUuid || undefined}
                       userLikes={data.newsletter.userLikes || []}
