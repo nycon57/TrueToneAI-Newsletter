@@ -67,12 +67,14 @@ export async function GET(
       articles?: Array<{
         id?: string;
         contentID?: string;
-        title: string;
-        summary: string;
-        position: number;
-        content_type: string;
+        title?: string;
+        article_title?: string;
+        summary?: string;
+        article_summary?: string;
+        position?: number;
+        content_type?: string;
         article_topic?: string;
-        key_insights?: string[];
+        key_insights?: string[] | null;
         video_script?: string;
         email_template?: string;
         social_content?: {
@@ -134,10 +136,10 @@ export async function GET(
         articles: articles.map((article) => ({
           id: article.id || randomUUID(),
           contentID: article.contentID || article.id || randomUUID(),
-          title: article.title,
-          summary: article.summary,
-          position: article.position,
-          contentType: article.content_type,
+          title: article.title || article.article_title || 'Untitled Article',
+          summary: article.summary || article.article_summary || 'No summary available',
+          position: article.position || 1,
+          contentType: article.content_type || 'article',
           articleTopic: article.article_topic,
           keyInsights: article.key_insights || [],
           videoScript: article.video_script,
