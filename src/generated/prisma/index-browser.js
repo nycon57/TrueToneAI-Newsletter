@@ -128,7 +128,12 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   company: 'company',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  subscriptionTier: 'subscriptionTier',
+  subscriptionExpiresAt: 'subscriptionExpiresAt',
+  monthlyGenerationLimit: 'monthlyGenerationLimit',
+  monthlyGenerationsUsed: 'monthlyGenerationsUsed',
+  generationResetDate: 'generationResetDate'
 };
 
 exports.Prisma.PostScalarFieldEnum = {
@@ -214,6 +219,46 @@ exports.Prisma.ChatAnalyticsScalarFieldEnum = {
   endedAt: 'endedAt'
 };
 
+exports.Prisma.ArticleScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  summary: 'summary',
+  content: 'content',
+  contentType: 'contentType',
+  articleTopic: 'articleTopic',
+  category: 'category',
+  tags: 'tags',
+  defaultKeyInsights: 'defaultKeyInsights',
+  defaultVideoScript: 'defaultVideoScript',
+  defaultEmailTemplate: 'defaultEmailTemplate',
+  defaultSocialContent: 'defaultSocialContent',
+  position: 'position',
+  imageUrl: 'imageUrl',
+  sourceUrl: 'sourceUrl',
+  metadata: 'metadata',
+  status: 'status',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdByAdminId: 'createdByAdminId',
+  lastEditedByAdminId: 'lastEditedByAdminId'
+};
+
+exports.Prisma.PersonalizedOutputScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  articleId: 'articleId',
+  personalizedKeyInsights: 'personalizedKeyInsights',
+  personalizedVideoScript: 'personalizedVideoScript',
+  personalizedEmailTemplate: 'personalizedEmailTemplate',
+  personalizedSocialContent: 'personalizedSocialContent',
+  truetoneSettings: 'truetoneSettings',
+  tokensUsed: 'tokensUsed',
+  generationCount: 'generationCount',
+  lastGeneratedAt: 'lastGeneratedAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -243,6 +288,12 @@ exports.Prisma.JsonNullValueFilter = {
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
+exports.SubscriptionTier = exports.$Enums.SubscriptionTier = {
+  FREE: 'FREE',
+  PAID: 'PAID',
+  PREMIUM: 'PREMIUM'
+};
+
 exports.PublishedStatus = exports.$Enums.PublishedStatus = {
   DRAFT: 'DRAFT',
   PUBLISHED: 'PUBLISHED',
@@ -264,6 +315,12 @@ exports.Device = exports.$Enums.Device = {
   UNKNOWN: 'UNKNOWN'
 };
 
+exports.ArticleStatus = exports.$Enums.ArticleStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED',
+  ARCHIVED: 'ARCHIVED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Post: 'Post',
@@ -271,7 +328,9 @@ exports.Prisma.ModelName = {
   UserSession: 'UserSession',
   AnalyticsEvent: 'AnalyticsEvent',
   PageView: 'PageView',
-  ChatAnalytics: 'ChatAnalytics'
+  ChatAnalytics: 'ChatAnalytics',
+  Article: 'Article',
+  PersonalizedOutput: 'PersonalizedOutput'
 };
 
 /**

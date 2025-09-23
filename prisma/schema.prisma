@@ -26,14 +26,24 @@ model User {
   company   String?                        /// Optional company name where the user works
   createdAt DateTime @default(now())       /// Timestamp when the user account was created
   updatedAt DateTime @updatedAt            /// Timestamp when the user record was last updated
-  
+
+  // Subscription fields
+  subscriptionTier        SubscriptionTier @default(FREE)  /// User's subscription level
+  subscriptionExpiresAt   DateTime?                        /// When subscription expires
+  monthlyGenerationLimit  Int @default(0)                  /// Max AI generations per month
+  monthlyGenerationsUsed  Int @default(0)                  /// AI generations used this month
+  generationResetDate     DateTime? @default(now()) @db.Date /// Date when monthly count resets
+
   // Relations
-  likes            Like[]             /// User's likes on various content
-  sessions         UserSession[]      /// User's analytics sessions
-  events           AnalyticsEvent[]   /// User's tracked events
-  pageViews        PageView[]         /// User's page view history
-  chatAnalytics    ChatAnalytics[]    /// User's AI chat usage analytics
-  
+  likes                   Like[]             /// User's likes on various content
+  sessions                UserSession[]      /// User's analytics sessions
+  events                  AnalyticsEvent[]   /// User's tracked events
+  pageViews               PageView[]         /// User's page view history
+  chatAnalytics           ChatAnalytics[]    /// User's AI chat usage analytics
+  createdArticles         Article[]          @relation("ArticleCreator")     /// Articles created by this admin user
+  editedArticles          Article[]          @relation("ArticleEditor")      /// Articles last edited by this admin user
+  personalizations        PersonalizedOutput[] /// User's personalized content outputs
+
   @@map("users")
 }
 
@@ -78,6 +88,20 @@ enum Device {
   TABLET   /// Tablet device
   DESKTOP  /// Desktop computer
   UNKNOWN  /// Unknown device type
+}
+
+/// Enum defining subscription tiers
+enum SubscriptionTier {
+  FREE     /// Free tier with limited features
+  PAID     /// Paid tier with personalization
+  PREMIUM  /// Premium tier with advanced features
+}
+
+/// Enum defining article status
+enum ArticleStatus {
+  DRAFT     /// Article is in draft mode
+  PUBLISHED /// Article is published and visible
+  ARCHIVED  /// Article is archived
 }
 
 /// Like model represents user engagement with content
@@ -223,4 +247,85 @@ model ChatAnalytics {
   @@index([selectedArticle])                          /// Article-based chat analytics
   @@index([startedAt])                                /// Time-based chat analytics
   @@map("chat_analytics")
+}
+
+/// Article model represents team-curated content with default outputs
+/// Maps to "articles" table in the database
+model Article {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid /// Unique identifier for the article
+  title       String                                                                 /// Article title
+  summary     String?                                                                /// Article summary
+  content     String?                                                                /// Main article body content
+  contentType String        @default("article")                                      /// Type of content (article, ad, etc.)
+  articleTopic String?                                                               /// Topic category
+  category    String?                                                                /// Article category
+  tags        String[]      @default([])                                             /// Article tags
+
+  // Default outputs for free tier users
+  defaultKeyInsights   String[]    @default([])                                      /// Default key insights
+  defaultVideoScript   String?                                                       /// Default video script
+  defaultEmailTemplate String?                                                       /// Default email template
+  defaultSocialContent Json?       @db.JsonB                                         /// Default social media content
+
+  // Metadata
+  position     Int           @default(1)                                             /// Display position
+  imageUrl     String?                                                               /// Article image URL
+  sourceUrl    String?                                                               /// Source URL for reference
+  metadata     Json?         @db.JsonB                                               /// Additional metadata
+
+  // Status and publishing
+  status       ArticleStatus @default(DRAFT)                                         /// Article status
+  publishedAt  DateTime?                                                             /// When article was published
+  createdAt    DateTime      @default(now())                                         /// When article was created
+  updatedAt    DateTime      @updatedAt                                              /// When article was last updated
+
+  // Admin relations
+  createdByAdminId    String?  @db.Uuid                                              /// Admin who created the article
+  lastEditedByAdminId String?  @db.Uuid                                              /// Admin who last edited the article
+  createdBy           User?    @relation("ArticleCreator", fields: [createdByAdminId], references: [id])
+  lastEditedBy        User?    @relation("ArticleEditor", fields: [lastEditedByAdminId], references: [id])
+
+  // Relations
+  personalizations    PersonalizedOutput[]                                          /// User personalizations of this article
+
+  // Indexes for performance
+  @@index([status, publishedAt])                                                    /// Published articles lookup
+  @@index([category])                                                               /// Category filtering
+  @@index([contentType])                                                            /// Content type filtering
+  @@index([createdAt])                                                              /// Time-based queries
+  @@map("articles")
+}
+
+/// PersonalizedOutput model represents AI-generated personalized versions of article content for paid users
+/// Maps to "personalized_outputs" table in the database
+model PersonalizedOutput {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid /// Unique identifier for the personalization
+  userId     String   @db.Uuid                                                /// User who owns this personalization
+  articleId  String   @db.Uuid                                                /// Article being personalized
+
+  // Personalized content (generated with user's TrueTone profile)
+  personalizedKeyInsights   String[]   @default([])                           /// Personalized key insights
+  personalizedVideoScript   String?                                           /// Personalized video script
+  personalizedEmailTemplate String?                                           /// Personalized email template
+  personalizedSocialContent Json?      @db.JsonB                              /// Personalized social media content
+
+  // TrueTone snapshot at generation time
+  truetoneSettings          Json?      @db.JsonB                              /// TrueTone settings used for generation
+
+  // Usage tracking
+  tokensUsed                Int?                                               /// AI tokens consumed for generation
+  generationCount           Int        @default(1)                           /// Number of times regenerated
+  lastGeneratedAt           DateTime   @default(now())                        /// Last generation timestamp
+  createdAt                 DateTime   @default(now())                        /// First creation timestamp
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  // Constraints and indexes
+  @@unique([userId, articleId])                                               /// One personalization per user per article
+  @@index([userId])                                                           /// User personalizations lookup
+  @@index([articleId])                                                        /// Article personalizations lookup
+  @@index([lastGeneratedAt])                                                  /// Recent generations lookup
+  @@map("personalized_outputs")
 }

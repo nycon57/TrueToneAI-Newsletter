@@ -9,7 +9,7 @@ export async function getApiUser() {
     throw new Error('Unauthorized');
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: user } = await supabase
     .from('users')
     .select(`
@@ -79,4 +79,6 @@ export interface ApiUser {
   content_generation_preferences?: any;
   unique_voice_markers?: any;
   analysis_metadata?: any;
+  // Category preferences
+  category_preferences?: string[];
 }

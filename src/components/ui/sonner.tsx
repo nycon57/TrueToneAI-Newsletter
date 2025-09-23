@@ -12,14 +12,23 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       style={
         {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
+          "--normal-bg": "hsl(var(--background))",
+          "--normal-border": "hsl(var(--border))",
+          "--normal-text": "hsl(var(--foreground))",
+          "--success-bg": "hsl(var(--background))",
+          "--success-border": "hsl(142 76% 36%)",
+          "--success-text": "hsl(var(--foreground))",
+          "--error-bg": "hsl(var(--background))",
+          "--error-border": "hsl(var(--destructive))",
+          "--error-text": "hsl(var(--foreground))",
         } as React.CSSProperties
       }
       toastOptions={{
         classNames: {
-          description: "text-muted-foreground!",
+          toast: "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
+          description: "group-[.toast]:text-muted-foreground",
+          actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
+          cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
         },
       }}
       {...props}
