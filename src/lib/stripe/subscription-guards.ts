@@ -129,36 +129,49 @@ export async function requireGenerationQuota(userId: string): Promise<boolean> {
 }
 
 /**
- * Increment user's monthly generation count
- * Returns new count or null if failed
+ * Increment user's monthly generation count atomically
+ * Returns new count or null if failed or limit exceeded
  */
 export async function incrementGenerationCount(userId: string): Promise<number | null> {
   const supabase = await createClient();
 
-  // First check current status
-  const status = await getUserSubscriptionStatus(userId);
-
-  if (status.generationsRemaining <= 0) {
-    console.warn('[SubscriptionGuard] User has no generations remaining:', userId);
-    return null;
-  }
-
-  // Increment the counter
-  const { data, error } = await supabase
-    .from('users')
-    .update({
-      monthly_generations_used: status.monthlyGenerationsUsed + 1,
-    })
-    .eq('id', userId)
-    .select('monthly_generations_used')
-    .single();
+  // Use atomic conditional update via RPC function
+  // First, try to use a raw SQL query for atomic increment
+  const { data, error } = await supabase.rpc('increment_generation_if_available', {
+    user_id: userId
+  });
 
   if (error) {
     console.error('[SubscriptionGuard] Error incrementing generation count:', error);
-    return null;
+
+    // Fallback to fetch-then-update if RPC not available
+    // This is less safe but better than nothing
+    const status = await getUserSubscriptionStatus(userId);
+
+    if (status.generationsRemaining <= 0) {
+      console.warn('[SubscriptionGuard] User has no generations remaining:', userId);
+      return null;
+    }
+
+    const { data: updateData, error: updateError } = await supabase
+      .from('users')
+      .update({
+        monthly_generations_used: status.monthlyGenerationsUsed + 1,
+      })
+      .eq('id', userId)
+      .eq('monthly_generations_used', status.monthlyGenerationsUsed) // Optimistic concurrency check
+      .select('monthly_generations_used')
+      .single();
+
+    if (updateError || !updateData) {
+      console.error('[SubscriptionGuard] Failed to increment (concurrent update):', updateError);
+      return null;
+    }
+
+    return updateData.monthly_generations_used;
   }
 
-  return data.monthly_generations_used;
+  return data?.new_count || null;
 }
 
 /**

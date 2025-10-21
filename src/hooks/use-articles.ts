@@ -64,12 +64,16 @@ export function useArticles(params: UseArticlesParams = {}) {
   if (params.industry) queryParams.append('industry', params.industry);
   if (params.category) queryParams.append('category', params.category);
   if (params.tags) queryParams.append('tags', params.tags);
-  if (params.saved === 'true' && isAuthenticated) {
+
+  // Only include saved param if authenticated
+  const effectiveSaved = params.saved === 'true' && isAuthenticated ? 'true' : undefined;
+  if (effectiveSaved) {
     queryParams.append('saved', 'true');
   }
 
   return useQuery<ArticlesResponse>({
-    queryKey: ['articles', params.industry, params.category, params.tags, params.saved],
+    // Include authentication state in queryKey to prevent cache collisions
+    queryKey: ['articles', params.industry, params.category, params.tags, effectiveSaved, isAuthenticated],
     queryFn: async () => {
       const response = await fetch(`/api/articles?${queryParams.toString()}`);
       if (!response.ok) {

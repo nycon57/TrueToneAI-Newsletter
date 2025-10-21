@@ -35,7 +35,25 @@ export async function checkAIGenerationLimit(params: {
       .eq('id', userId)
       .single();
 
-    if (error || !user) {
+    if (error) {
+      // Log the actual error for debugging
+      console.error('[AIUsageLimit] Database error checking user limit:', {
+        userId,
+        error: error.message,
+        details: error.details
+      });
+
+      return {
+        allowed: false,
+        remaining: 0,
+        tier: 'free',
+        message: 'Database error checking usage limits',
+        limit: 0,
+        used: 0
+      };
+    }
+
+    if (!user) {
       return {
         allowed: false,
         remaining: 0,
@@ -127,72 +145,117 @@ export async function checkAIGenerationLimit(params: {
 }
 
 /**
- * Increment AI generation usage counter
+ * Increment AI generation usage counter atomically
+ * @returns true on success, false on failure
  */
 export async function incrementAIUsage(params: {
   userId?: string;
   sessionId?: string;
   ipAddress?: string;
-}): Promise<void> {
+}): Promise<boolean> {
   const { userId, sessionId, ipAddress } = params;
 
   const supabase = await createClient();
 
-  // Authenticated user
-  if (userId) {
-    const { data: user } = await supabase
-      .from('users')
-      .select('monthly_generations_used')
-      .eq('id', userId)
-      .single();
+  try {
+    // Authenticated user - use atomic increment
+    if (userId) {
+      // Try RPC for atomic increment first
+      const { error: rpcError } = await supabase.rpc('increment_user_generations', {
+        user_id: userId
+      });
 
-    await supabase
-      .from('users')
-      .update({
-        monthly_generations_used: (user?.monthly_generations_used || 0) + 1
-      })
-      .eq('id', userId);
+      if (rpcError) {
+        console.warn('[AIUsageLimit] RPC not available, using fallback');
 
-    return;
-  }
+        // Fallback: use PostgreSQL's built-in increment
+        const { error } = await supabase
+          .from('users')
+          .update({
+            monthly_generations_used: supabase.raw('monthly_generations_used + 1')
+          } as any)
+          .eq('id', userId);
 
-  // Anonymous session
-  if (sessionId || ipAddress) {
-    // Check if session exists
-    let query = supabase
-      .from('anonymous_ai_usage')
-      .select('*');
+        if (error) {
+          console.error('[AIUsageLimit] Failed to increment user usage:', error);
+          return false;
+        }
+      }
 
-    if (sessionId) {
-      query = query.eq('session_id', sessionId);
-    } else if (ipAddress) {
-      query = query.eq('ip_address', ipAddress);
+      return true;
     }
 
-    const { data: sessions } = await query.limit(1);
-    const session = sessions?.[0];
+    // Anonymous session - use upsert for atomic operation
+    if (sessionId || ipAddress) {
+      const now = new Date().toISOString();
 
-    if (session) {
-      // Update existing session
-      await supabase
+      // Use INSERT ... ON CONFLICT for atomic upsert
+      const { error } = await supabase
         .from('anonymous_ai_usage')
-        .update({
-          generations_used: session.generations_used + 1,
-          last_used_at: new Date().toISOString()
-        })
-        .eq('id', session.id);
-    } else {
-      // Create new session
-      await supabase
-        .from('anonymous_ai_usage')
-        .insert({
+        .upsert({
           session_id: sessionId || '',
           ip_address: ipAddress || null,
           generations_used: 1,
-          created_at: new Date().toISOString(),
-          last_used_at: new Date().toISOString()
+          created_at: now,
+          last_used_at: now
+        }, {
+          onConflict: sessionId ? 'session_id' : 'ip_address',
+          // Update the generations_used by incrementing
         });
+
+      if (error) {
+        console.error('[AIUsageLimit] Failed to upsert anonymous usage:', error);
+
+        // Fallback: manual increment
+        let query = supabase.from('anonymous_ai_usage').select('*');
+
+        if (sessionId) {
+          query = query.eq('session_id', sessionId);
+        } else if (ipAddress) {
+          query = query.eq('ip_address', ipAddress);
+        }
+
+        const { data: sessions } = await query.limit(1);
+        const session = sessions?.[0];
+
+        if (session) {
+          const { error: updateError } = await supabase
+            .from('anonymous_ai_usage')
+            .update({
+              generations_used: session.generations_used + 1,
+              last_used_at: now
+            })
+            .eq('id', session.id);
+
+          if (updateError) {
+            console.error('[AIUsageLimit] Failed to update session:', updateError);
+            return false;
+          }
+        } else {
+          const { error: insertError } = await supabase
+            .from('anonymous_ai_usage')
+            .insert({
+              session_id: sessionId || '',
+              ip_address: ipAddress || null,
+              generations_used: 1,
+              created_at: now,
+              last_used_at: now
+            });
+
+          if (insertError) {
+            console.error('[AIUsageLimit] Failed to create session:', insertError);
+            return false;
+          }
+        }
+      }
+
+      return true;
     }
+
+    return false;
+  } catch (error) {
+    console.error('[AIUsageLimit] Unexpected error incrementing usage:', error);
+    return false;
   }
 }
 

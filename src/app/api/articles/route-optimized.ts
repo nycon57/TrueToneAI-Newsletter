@@ -11,7 +11,24 @@ export async function GET(req: NextRequest) {
     const industry = searchParams.get('industry');
     const category = searchParams.get('category');
     const tags = searchParams.get('tags')?.split(',').filter(Boolean);
-    const limit = parseInt(searchParams.get('limit') || '50');
+
+    // Validate and cap the limit parameter
+    const rawLimit = searchParams.get('limit');
+    const MAX_LIMIT = 100;
+    const DEFAULT_LIMIT = 50;
+    let limit = DEFAULT_LIMIT;
+
+    if (rawLimit) {
+      const parsedLimit = parseInt(rawLimit, 10);
+      if (isNaN(parsedLimit) || parsedLimit < 1) {
+        return NextResponse.json(
+          { error: 'Invalid limit parameter' },
+          { status: 400 }
+        );
+      }
+      limit = Math.min(parsedLimit, MAX_LIMIT);
+    }
+
     const showSavedOnly = searchParams.get('saved') === 'true';
 
     // Check if user is authenticated
@@ -30,7 +47,16 @@ export async function GET(req: NextRequest) {
     // Check subscription status for authenticated users
     let subscriptionStatus = null;
     if (isAuthenticated && user) {
-      subscriptionStatus = await getUserSubscriptionStatus(user.id);
+      try {
+        subscriptionStatus = await getUserSubscriptionStatus(user.id);
+      } catch (error) {
+        // Log subscription check failure but don't abort the request
+        console.error('[ArticlesAPI] Failed to check subscription status:', {
+          userId: user.id,
+          error: error instanceof Error ? error.message : String(error)
+        });
+        // Continue with subscriptionStatus = null (free tier)
+      }
     }
 
     // Determine access level

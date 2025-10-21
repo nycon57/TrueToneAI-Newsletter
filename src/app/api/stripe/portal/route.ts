@@ -6,9 +6,16 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getApiUser();
 
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     if (!user.stripe_customer_id) {
       return NextResponse.json(
-        { error: 'No subscription found' },
+        { error: 'No Stripe customer ID' },
         { status: 400 }
       );
     }

@@ -26,64 +26,82 @@ export function useAIChat(conversationId: string) {
       selectedContentType: string,
       articleData?: unknown
     ) => {
+      // Generate unique IDs using crypto.randomUUID or fallback
+      const generateId = () => {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+          return crypto.randomUUID();
+        }
+        // Fallback for environments without crypto.randomUUID
+        return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      };
+
+      const userMessageId = `user-${generateId()}`;
       const userMessage: Message = {
-        id: `user-${Date.now()}`,
+        id: userMessageId,
         role: 'user',
         content,
       };
 
-      setMessages((prev) => [...prev, userMessage]);
-      setLoading(true);
-      setStreamingContent('');
-
-      try {
-        const response = await fetch('/api/ai/personalize-stream', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: content,
-            articleTitle: selectedArticle,
-            contentType: selectedContentType,
-            articleData,
-            conversationHistory: messages,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to send message');
-        }
-
-        const reader = response.body?.getReader();
-        const decoder = new TextDecoder();
-        let fullResponse = '';
-
-        if (reader) {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            const chunk = decoder.decode(value);
-            fullResponse += chunk;
-            setStreamingContent(fullResponse);
-          }
-        }
-
-        const assistantMessage: Message = {
-          id: `assistant-${Date.now()}`,
-          role: 'assistant',
-          content: fullResponse,
-        };
-
-        setMessages((prev) => [...prev, assistantMessage]);
+      // Use functional state update to avoid race conditions
+      setMessages((prevMessages) => {
+        const newMessages = [...prevMessages, userMessage];
+        setLoading(true);
         setStreamingContent('');
-      } catch (error) {
-        console.error('Error sending message:', error);
-        throw error;
-      } finally {
-        setLoading(false);
-      }
+
+        // Kick off the async request with the correct conversation history
+        (async () => {
+          try {
+            const response = await fetch('/api/ai/personalize-stream', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: content,
+                articleTitle: selectedArticle,
+                contentType: selectedContentType,
+                articleData,
+                conversationHistory: newMessages, // Use the updated messages
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error('Failed to send message');
+            }
+
+            const reader = response.body?.getReader();
+            const decoder = new TextDecoder();
+            let fullResponse = '';
+
+            if (reader) {
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value);
+                fullResponse += chunk;
+                setStreamingContent(fullResponse);
+              }
+            }
+
+            const assistantMessage: Message = {
+              id: `assistant-${generateId()}`,
+              role: 'assistant',
+              content: fullResponse,
+            };
+
+            setMessages((prev) => [...prev, assistantMessage]);
+            setStreamingContent('');
+          } catch (error) {
+            console.error('Error sending message:', error);
+            throw error;
+          } finally {
+            setLoading(false);
+          }
+        })();
+
+        return newMessages;
+      });
     },
-    [messages]
+    [] // Remove messages dependency to avoid stale closure
   );
 
   const clearConversation = useCallback(() => {
