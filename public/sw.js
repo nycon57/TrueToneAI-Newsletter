@@ -33,24 +33,25 @@ self.addEventListener('activate', (event) => {
   console.log('[SW] Activating service worker...');
 
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((cacheName) => {
-            return cacheName !== STATIC_CACHE &&
-                   cacheName !== DYNAMIC_CACHE &&
-                   cacheName !== API_CACHE;
-          })
-          .map((cacheName) => {
-            console.log('[SW] Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          })
-      );
-    })
+    Promise.all([
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames
+            .filter((cacheName) => {
+              return cacheName !== STATIC_CACHE &&
+                     cacheName !== DYNAMIC_CACHE &&
+                     cacheName !== API_CACHE;
+            })
+            .map((cacheName) => {
+              console.log('[SW] Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            })
+        );
+      }),
+      // Take control immediately
+      self.clients.claim()
+    ])
   );
-
-  // Take control immediately
-  return self.clients.claim();
 });
 
 // Fetch event - implement caching strategies
@@ -68,16 +69,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // API requests - Network First, fallback to cache
+  // API requests - Network First, NO CACHING for security
+  // Only cache whitelisted public API endpoints
   if (url.pathname.startsWith('/api/')) {
+    // Whitelist of safe public endpoints to cache
+    const CACHEABLE_API_PATHS = [
+      '/api/articles', // Public article listings
+      // Add other public endpoints here as needed
+    ];
+
+    const isCacheable = CACHEABLE_API_PATHS.some(path => url.pathname.startsWith(path));
+
     event.respondWith(
       fetch(request)
         .then((response) => {
-          // Clone response for caching
-          const responseClone = response.clone();
-
-          // Cache successful responses
-          if (response.ok) {
+          // Only cache whitelisted public endpoints
+          if (response.ok && isCacheable) {
+            const responseClone = response.clone();
             caches.open(API_CACHE).then((cache) => {
               cache.put(request, responseClone);
             });
@@ -86,25 +94,39 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => {
-          // Network failed, try cache
-          return caches.match(request).then((cached) => {
-            if (cached) {
-              console.log('[SW] Serving cached API response:', url.pathname);
-              return cached;
-            }
-
-            // No cache, return offline response
-            return new Response(
-              JSON.stringify({
-                error: 'Offline',
-                message: 'You are currently offline. Please check your internet connection.'
-              }),
-              {
-                status: 503,
-                headers: { 'Content-Type': 'application/json' }
+          // Network failed, try cache only for cacheable endpoints
+          if (isCacheable) {
+            return caches.match(request).then((cached) => {
+              if (cached) {
+                console.log('[SW] Serving cached API response:', url.pathname);
+                return cached;
               }
-            );
-          });
+
+              // No cache, return offline response
+              return new Response(
+                JSON.stringify({
+                  error: 'Offline',
+                  message: 'You are currently offline. Please check your internet connection.'
+                }),
+                {
+                  status: 503,
+                  headers: { 'Content-Type': 'application/json' }
+                }
+              );
+            });
+          }
+
+          // Non-cacheable endpoint - return network-only error
+          return new Response(
+            JSON.stringify({
+              error: 'Offline',
+              message: 'This request requires an active internet connection.'
+            }),
+            {
+              status: 503,
+              headers: { 'Content-Type': 'application/json' }
+            }
+          );
         })
     );
     return;
