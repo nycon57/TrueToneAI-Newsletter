@@ -70,23 +70,32 @@ export async function getOrCreateAnonymousSession(): Promise<{
   const supabase = await createClient();
 
   // Try to find by session ID first
-  let { data: session } = await supabase
+  let { data: session, error: sessionError } = await supabase
     .from('anonymous_ai_usage')
     .select('*')
     .eq('session_id', sessionId)
-    .single();
+    .maybeSingle();
+
+  // Check for unexpected errors (not "not found")
+  if (sessionError) {
+    console.error('[AnonymousSession] Error fetching session:', sessionError);
+  }
 
   // If not found and we have IP, try to find by IP
   if (!session && ipAddress) {
-    const { data: ipSession } = await supabase
+    const { data: ipSession, error: ipError } = await supabase
       .from('anonymous_ai_usage')
       .select('*')
       .eq('ip_address', ipAddress)
       .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    session = ipSession;
+    if (ipError) {
+      console.error('[AnonymousSession] Error fetching by IP:', ipError);
+    } else {
+      session = ipSession;
+    }
   }
 
   return {
@@ -117,41 +126,75 @@ export async function createAnonymousSession(
 }
 
 /**
- * Update anonymous session usage
+ * Update anonymous session usage atomically using upsert
  */
 export async function updateAnonymousSessionUsage(
   sessionId: string,
   ipAddress: string | null
 ): Promise<void> {
   const supabase = await createClient();
+  const now = new Date().toISOString();
 
-  // Try to find session by session_id first
-  const { data: session } = await supabase
-    .from('anonymous_ai_usage')
-    .select('*')
-    .eq('session_id', sessionId)
-    .single();
+  try {
+    // Use atomic INSERT ... ON CONFLICT ... DO UPDATE
+    // This requires a unique constraint on session_id
+    const { error } = await supabase.rpc('increment_anonymous_session', {
+      p_session_id: sessionId,
+      p_ip_address: ipAddress,
+      p_timestamp: now
+    });
 
-  if (session) {
-    // Update existing session
-    await supabase
-      .from('anonymous_ai_usage')
-      .update({
-        generations_used: session.generations_used + 1,
-        last_used_at: new Date().toISOString()
-      })
-      .eq('id', session.id);
-  } else {
-    // Create new session
-    await supabase
-      .from('anonymous_ai_usage')
-      .insert({
-        session_id: sessionId,
-        ip_address: ipAddress,
-        generations_used: 1,
-        created_at: new Date().toISOString(),
-        last_used_at: new Date().toISOString()
-      });
+    if (error) {
+      console.warn('[AnonymousSession] RPC not available, using fallback');
+
+      // Fallback: Try to find and update, or insert
+      const { data: session, error: fetchError } = await supabase
+        .from('anonymous_ai_usage')
+        .select('*')
+        .eq('session_id', sessionId)
+        .maybeSingle();
+
+      if (fetchError) {
+        console.error('[AnonymousSession] Error fetching session:', fetchError);
+        throw fetchError;
+      }
+
+      if (session) {
+        // Update existing session
+        const { error: updateError } = await supabase
+          .from('anonymous_ai_usage')
+          .update({
+            generations_used: session.generations_used + 1,
+            last_used_at: now
+          })
+          .eq('id', session.id)
+          .eq('generations_used', session.generations_used); // Optimistic lock
+
+        if (updateError) {
+          console.error('[AnonymousSession] Error updating session:', updateError);
+          throw updateError;
+        }
+      } else {
+        // Create new session
+        const { error: insertError } = await supabase
+          .from('anonymous_ai_usage')
+          .insert({
+            session_id: sessionId,
+            ip_address: ipAddress,
+            generations_used: 1,
+            created_at: now,
+            last_used_at: now
+          });
+
+        if (insertError) {
+          console.error('[AnonymousSession] Error creating session:', insertError);
+          throw insertError;
+        }
+      }
+    }
+  } catch (error) {
+    console.error('[AnonymousSession] Failed to update session usage:', error);
+    throw error;
   }
 }
 
@@ -170,23 +213,31 @@ export async function checkAnonymousSessionLimit(
   const supabase = await createClient();
 
   // Try to find by session ID
-  let { data: session } = await supabase
+  let { data: session, error: sessionError } = await supabase
     .from('anonymous_ai_usage')
     .select('*')
     .eq('session_id', sessionId)
-    .single();
+    .maybeSingle();
+
+  if (sessionError) {
+    console.error('[AnonymousSession] Error checking session limit:', sessionError);
+  }
 
   // If not found and we have IP, try IP
   if (!session && ipAddress) {
-    const { data: ipSession } = await supabase
+    const { data: ipSession, error: ipError } = await supabase
       .from('anonymous_ai_usage')
       .select('*')
       .eq('ip_address', ipAddress)
       .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    session = ipSession;
+    if (ipError) {
+      console.error('[AnonymousSession] Error checking by IP:', ipError);
+    } else {
+      session = ipSession;
+    }
   }
 
   const used = session?.generations_used || 0;

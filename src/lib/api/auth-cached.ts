@@ -60,7 +60,12 @@ export const getCachedApiUser = cache(async () => {
 export const getCachedApiUserSafe = cache(async () => {
   try {
     return await getCachedApiUser();
-  } catch {
+  } catch (error) {
+    // Log the error with context for debugging
+    console.error('[AuthCache] Error fetching cached user:', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
+    });
     return null;
   }
 });

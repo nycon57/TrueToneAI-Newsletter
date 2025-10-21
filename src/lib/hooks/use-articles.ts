@@ -117,9 +117,9 @@ export function useSaveArticle() {
       return response.json();
     },
     onSuccess: (data, variables) => {
-      // Optimistically update the cache
-      queryClient.setQueryData<ArticlesResponse>(
-        ['articles'],
+      // Optimistically update ALL cached article queries (with any filters)
+      queryClient.setQueriesData<ArticlesResponse>(
+        { queryKey: ['articles'] }, // Matches all queries starting with ['articles']
         (oldData) => {
           if (!oldData) return oldData;
 
@@ -137,7 +137,7 @@ export function useSaveArticle() {
         }
       );
 
-      // Invalidate related queries
+      // Invalidate related queries to trigger refetch
       queryClient.invalidateQueries({ queryKey: ['articles'] });
     },
   });

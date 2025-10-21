@@ -1,6 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { createClient } from '@/lib/supabase/server';
+import { z } from 'zod';
+
+// Validation schema for onboarding data
+const OnboardingSchema = z.object({
+  profileData: z.object({
+    firstName: z.string().min(1).max(100).trim(),
+    lastName: z.string().min(1).max(100).trim(),
+    company: z.string().max(200).trim().optional(),
+    title: z.string().max(200).trim().optional(),
+    phone: z.string().max(20).trim().optional(),
+  }),
+  transcript: z.string().max(50000).optional(),
+  analysisResults: z.any().optional(), // Complex nested object, validated separately if needed
+  categoryPreferences: z.array(z.string()).optional(),
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,7 +26,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { profileData, transcript, analysisResults, categoryPreferences } = await request.json();
+    // Parse and validate request body
+    const body = await request.json();
+    const validationResult = OnboardingSchema.safeParse(body);
+
+    if (!validationResult.success) {
+      return NextResponse.json(
+        {
+          error: 'Invalid request data',
+          details: validationResult.error.errors
+        },
+        { status: 400 }
+      );
+    }
+
+    const { profileData, transcript, analysisResults, categoryPreferences } = validationResult.data;
 
     const supabase = await createClient();
 
