@@ -129,11 +129,22 @@ exports.Prisma.UserScalarFieldEnum = {
   company: 'company',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  kindeId: 'kindeId',
+  categoryPreferences: 'categoryPreferences',
+  savedArticleIds: 'savedArticleIds',
   subscriptionTier: 'subscriptionTier',
+  subscriptionStatus: 'subscriptionStatus',
   subscriptionExpiresAt: 'subscriptionExpiresAt',
+  subscriptionCreatedAt: 'subscriptionCreatedAt',
   monthlyGenerationLimit: 'monthlyGenerationLimit',
   monthlyGenerationsUsed: 'monthlyGenerationsUsed',
-  generationResetDate: 'generationResetDate'
+  generationResetDate: 'generationResetDate',
+  stripeCustomerId: 'stripeCustomerId',
+  stripeSubscriptionId: 'stripeSubscriptionId',
+  stripePriceId: 'stripePriceId',
+  hasCompletedOnboarding: 'hasCompletedOnboarding',
+  onboardingStep: 'onboardingStep',
+  onboardingCompletedAt: 'onboardingCompletedAt'
 };
 
 exports.Prisma.PostScalarFieldEnum = {
@@ -259,6 +270,15 @@ exports.Prisma.PersonalizedOutputScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.AnonymousAiUsageScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  ipAddress: 'ipAddress',
+  generationsUsed: 'generationsUsed',
+  createdAt: 'createdAt',
+  lastUsedAt: 'lastUsedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -330,7 +350,8 @@ exports.Prisma.ModelName = {
   PageView: 'PageView',
   ChatAnalytics: 'ChatAnalytics',
   Article: 'Article',
-  PersonalizedOutput: 'PersonalizedOutput'
+  PersonalizedOutput: 'PersonalizedOutput',
+  AnonymousAiUsage: 'AnonymousAiUsage'
 };
 
 /**

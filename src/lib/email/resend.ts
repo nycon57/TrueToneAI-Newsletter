@@ -1,10 +1,14 @@
 import { Resend } from 'resend';
 
-if (!process.env.RESEND_API_KEY) {
-  throw new Error('RESEND_API_KEY is not set in environment variables');
+// Validate RESEND_API_KEY in production
+const resendKey = process.env.RESEND_API_KEY || 're_placeholder_key_for_build';
+
+if (process.env.NODE_ENV === 'production' && (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 're_placeholder_key_for_build')) {
+  console.error('FATAL: RESEND_API_KEY is not configured in production');
+  throw new Error('Cannot start service: RESEND_API_KEY environment variable is required in production');
 }
 
-export const resend = new Resend(process.env.RESEND_API_KEY);
+export const resend = new Resend(resendKey);
 
 export const EMAIL_CONFIG = {
   from: 'TrueTone Insights <noreply@yourdomain.com>',

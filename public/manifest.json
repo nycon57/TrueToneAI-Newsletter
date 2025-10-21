@@ -1,0 +1,39 @@
+{
+  "name": "TrueTone AI Newsletter",
+  "short_name": "TrueTone AI",
+  "description": "Mobile-first newsletter platform for loan officers with AI-powered content customization",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#9333EA",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo/portrait/TrueToneAI-Portrait-Logo-Full-Color.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo/portrait/TrueToneAI-Portrait-Logo-Full-Color.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "finance"],
+  "shortcuts": [
+    {
+      "name": "Latest Articles",
+      "short_name": "Articles",
+      "description": "View latest mortgage market articles",
+      "url": "/?utm_source=pwa_shortcut",
+      "icons": [
+        {
+          "src": "/logo/portrait/TrueToneAI-Portrait-Logo-Full-Color.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

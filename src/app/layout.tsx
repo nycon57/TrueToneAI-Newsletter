@@ -1,19 +1,27 @@
 import type { Metadata } from "next";
-import { Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AnalyticsProvider } from "@/lib/analytics/hooks";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { inter, signal } from "./fonts";
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { Providers } from "./providers";
+import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 
 export const metadata: Metadata = {
   title: "TrueTone AI Newsletter",
   description: "Mobile-first newsletter platform for loan officers with AI-powered content customization",
+  manifest: "/manifest.json",
+  themeColor: "#9333EA",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "TrueTone AI",
+  },
 };
 
 export default function RootLayout({
@@ -24,22 +32,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${signal.variable} ${geistMono.variable} font-sans antialiased`}
+        className={`${inter.variable} ${signal.variable} font-sans antialiased`}
         suppressHydrationWarning={true}
       >
-        <TooltipProvider>
-          <AnalyticsProvider
-            enableAutoTracking={true}
-            config={{
-              enablePageViews: true,
-              enableClickTracking: true,
-              enablePerformanceTracking: true
-            }}
-          >
-            {children}
-            <Toaster />
-          </AnalyticsProvider>
-        </TooltipProvider>
+        <Providers>
+          <NuqsAdapter>
+            <TooltipProvider>
+              {children}
+              <Toaster />
+            </TooltipProvider>
+          </NuqsAdapter>
+          <ServiceWorkerRegistration />
+        </Providers>
       </body>
     </html>
   );
