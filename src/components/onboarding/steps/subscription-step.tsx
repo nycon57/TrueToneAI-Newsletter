@@ -12,10 +12,10 @@ export function SubscriptionStep() {
 
   const handleSelectPlan = async (planId?: string) => {
     try {
-      // Set billing data for paid plans
+      // Set billing data for paid plans (await if updateData is async)
       if (planId) {
-        updateData('selectedPlan', planId);
-        updateData('billingType', planId === 'newsletter_enterprise' ? 'enterprise' : 'paid_plan');
+        await updateData('selectedPlan', planId);
+        await updateData('billingType', planId === 'newsletter_enterprise' ? 'enterprise' : 'paid_plan');
       }
 
       // Call Stripe Checkout API to create a checkout session
@@ -62,9 +62,9 @@ export function SubscriptionStep() {
   };
 
   const handleCompleteFreeTrial = async () => {
-    // Set billing data for free trial
-    updateData('selectedPlan', 'free_trial');
-    updateData('billingType', 'free_trial');
+    // Set billing data for free trial (await before navigation)
+    await updateData('selectedPlan', 'free_trial');
+    await updateData('billingType', 'free_trial');
 
     // Complete onboarding with free trial
     await completeOnboarding();

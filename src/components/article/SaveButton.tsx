@@ -23,23 +23,46 @@ export function SaveButton({ articleId, initialSaved, isPaid, className }: SaveB
       return;
     }
 
+    // Store previous state for rollback on error
+    const previousSaved = saved;
+
+    // Optimistic update - toggle immediately for better UX
+    setSaved(!previousSaved);
     setLoading(true);
 
     try {
       const response = await fetch(`/api/articles/${articleId}/save`, {
-        method: 'POST'
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ saved: !previousSaved })
       });
 
-      const data = await response.json();
+      // Handle empty or non-JSON responses
+      let data = null;
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          data = await response.json();
+        } catch (parseError) {
+          console.error('Failed to parse response JSON:', parseError);
+        }
+      }
 
       if (response.ok) {
-        setSaved(data.saved);
-        toast.success(data.saved ? 'Article saved!' : 'Article removed');
+        // Confirm the optimistic update
+        const newSavedState = data?.saved ?? !previousSaved;
+        setSaved(newSavedState);
+        toast.success(newSavedState ? 'Article saved!' : 'Article removed');
       } else {
-        toast.error(data.error || 'Failed to save article');
+        // Rollback on error
+        setSaved(previousSaved);
+        toast.error(data?.error || 'Failed to save article');
       }
     } catch (error) {
-      toast.error('Failed to save article');
+      // Rollback on network/other errors
+      setSaved(previousSaved);
+      console.error('Error saving article:', error);
+      toast.error('Failed to save article. Please try again.');
     } finally {
       setLoading(false);
     }
