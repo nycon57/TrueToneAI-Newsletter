@@ -2,13 +2,14 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeftIcon, CheckIcon, CreditCardIcon } from '@heroicons/react/24/outline';
+import { ArrowLeft, Check, CreditCard } from 'lucide-react';
 import { useOnboarding } from '../providers/onboarding-provider';
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
 
 export function SubscriptionStep() {
   const { previousStep, completeOnboarding, isSubmitting, updateData } = useOnboarding();
   const { organization } = useKindeBrowserClient();
+  const [isProcessing, setIsProcessing] = React.useState(false);
 
   const handleSelectPlan = async (planId?: string) => {
     try {
@@ -62,12 +63,19 @@ export function SubscriptionStep() {
   };
 
   const handleCompleteFreeTrial = async () => {
-    // Set billing data for free trial (await before navigation)
-    await updateData('selectedPlan', 'free_trial');
-    await updateData('billingType', 'free_trial');
+    try {
+      setIsProcessing(true);
+      // Set billing data for free trial (await before navigation)
+      await updateData('selectedPlan', 'free_trial');
+      await updateData('billingType', 'free_trial');
 
-    // Complete onboarding with free trial
-    await completeOnboarding();
+      // Complete onboarding with free trial
+      await completeOnboarding();
+    } catch (error) {
+      console.error('Error completing free trial:', error);
+      setIsProcessing(false);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   return (
@@ -88,32 +96,39 @@ export function SubscriptionStep() {
                 <h3 className="text-xl font-heading font-semibold">Free Trial</h3>
                 <div className="text-right">
                   <div className="text-2xl font-heading font-bold">$0</div>
-                  <div className="text-sm text-muted-foreground">14 days free</div>
+                  <div className="text-sm text-muted-foreground">14 days, then $29/mo</div>
                 </div>
               </div>
 
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-skyward" />
+                  <Check className="h-4 w-4 text-skyward" />
                   <span className="text-sm">Basic newsletter content</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-skyward" />
+                  <Check className="h-4 w-4 text-skyward" />
                   <span className="text-sm">Limited content personalization</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-skyward" />
+                  <Check className="h-4 w-4 text-skyward" />
                   <span className="text-sm">Standard support</span>
                 </li>
               </ul>
 
               <Button
                 onClick={handleCompleteFreeTrial}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isProcessing}
                 variant="outline"
-                className="w-full border-skyward text-skyward hover:bg-skyward hover:text-white"
+                className="w-full border-skyward text-skyward hover:bg-skyward hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Start Free Trial
+                {isProcessing ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                    Starting Trial...
+                  </>
+                ) : (
+                  'Start Free Trial'
+                )}
               </Button>
             </div>
 
@@ -136,33 +151,33 @@ export function SubscriptionStep() {
 
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-orchid" />
+                  <Check className="h-4 w-4 text-orchid" />
                   <span className="text-sm">Personalized newsletter content</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-orchid" />
+                  <Check className="h-4 w-4 text-orchid" />
                   <span className="text-sm">AI-powered content recommendations</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-orchid" />
+                  <Check className="h-4 w-4 text-orchid" />
                   <span className="text-sm">Voice-based personalization</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-orchid" />
+                  <Check className="h-4 w-4 text-orchid" />
                   <span className="text-sm">Easy-to-copy marketing content</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-orchid" />
+                  <Check className="h-4 w-4 text-orchid" />
                   <span className="text-sm">Priority customer support</span>
                 </li>
               </ul>
 
               <Button
                 onClick={() => handleSelectPlan('newsletter_pro')}
-                disabled={isSubmitting}
-                className="w-full bg-orchid hover:bg-orchid/90"
+                disabled={isSubmitting || isProcessing}
+                className="w-full bg-orchid hover:bg-orchid/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <CreditCardIcon className="h-4 w-4 mr-2" />
+                <CreditCard className="h-4 w-4 mr-2" />
                 Choose Pro Plan
               </Button>
             </div>
@@ -179,34 +194,34 @@ export function SubscriptionStep() {
 
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-shadow" />
+                  <Check className="h-4 w-4 text-shadow" />
                   <span className="text-sm">Everything in Pro</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-shadow" />
+                  <Check className="h-4 w-4 text-shadow" />
                   <span className="text-sm">Custom branding options</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-shadow" />
+                  <Check className="h-4 w-4 text-shadow" />
                   <span className="text-sm">Advanced analytics</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-shadow" />
+                  <Check className="h-4 w-4 text-shadow" />
                   <span className="text-sm">White-label solutions</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-shadow" />
+                  <Check className="h-4 w-4 text-shadow" />
                   <span className="text-sm">Dedicated account manager</span>
                 </li>
               </ul>
 
               <Button
                 onClick={() => handleSelectPlan('newsletter_enterprise')}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isProcessing}
                 variant="outline"
-                className="w-full border-shadow text-shadow hover:bg-shadow hover:text-white"
+                className="w-full border-shadow text-shadow hover:bg-shadow hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <CreditCardIcon className="h-4 w-4 mr-2" />
+                <CreditCard className="h-4 w-4 mr-2" />
                 Choose Enterprise
               </Button>
             </div>
@@ -225,9 +240,9 @@ export function SubscriptionStep() {
               variant="outline"
               onClick={previousStep}
               className="flex items-center gap-2"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isProcessing}
             >
-              <ArrowLeftIcon className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
 

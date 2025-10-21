@@ -5,7 +5,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Loader2, Sparkles, Mail, Bot, Settings, CheckCircle2 } from 'lucide-react';
+import confetti from 'canvas-confetti';
+import { motion } from 'motion/react';
 
 type VerificationStatus = 'loading' | 'success' | 'error' | 'pending';
 
@@ -14,6 +18,12 @@ export default function OnboardingSuccessPage() {
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<VerificationStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [checklist, setChecklist] = useState({
+    dashboard: false,
+    content: false,
+    settings: false,
+    explore: false,
+  });
 
   useEffect(() => {
     const verifyPayment = async () => {
@@ -53,6 +63,40 @@ export default function OnboardingSuccessPage() {
 
     verifyPayment();
   }, [searchParams]);
+
+  // Trigger confetti animation on success
+  useEffect(() => {
+    if (status === 'success') {
+      const duration = 3000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+      const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+      const interval = window.setInterval(() => {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+        });
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+        });
+      }, 250);
+
+      return () => clearInterval(interval);
+    }
+  }, [status]);
 
   // Loading state while verifying payment
   if (status === 'loading') {
@@ -159,54 +203,150 @@ export default function OnboardingSuccessPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="max-w-2xl mx-auto text-center px-4">
-        <Card className="p-8">
-          <CardHeader>
-            <div className="mx-auto mb-4">
-              <CheckCircleIcon className="h-16 w-16 text-green-500" />
-            </div>
-            <CardTitle className="text-2xl font-heading text-foreground">
-              Welcome to TrueTone Newsletter! 🎉
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-2xl w-full mx-auto"
+      >
+        <Card className="shadow-2xl border-2 border-primary/20">
+          <CardHeader className="text-center pb-6 space-y-4">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="mx-auto"
+            >
+              <div className="relative">
+                <CheckCircleIcon className="h-20 w-20 text-green-500 mx-auto" />
+                <Sparkles className="h-8 w-8 text-yellow-500 absolute -top-2 -right-2 animate-pulse" />
+              </div>
+            </motion.div>
+            <CardTitle className="text-3xl font-heading font-bold text-foreground">
+              Welcome to TrueTone Newsletter!
             </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
             <p className="text-lg text-muted-foreground">
               Your personalized newsletter experience is now ready! We&apos;ve set up everything based on your preferences.
             </p>
+          </CardHeader>
 
-            <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 text-left">
-              <h3 className="font-heading font-semibold text-foreground mb-4">What&apos;s Next:</h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-muted-foreground">Access your personalized newsletter content</span>
+          <CardContent className="space-y-6 pb-8">
+            {/* Quick Start Checklist */}
+            <div className="bg-gradient-to-br from-primary/5 via-orchid/5 to-skyward/5 border border-primary/20 rounded-lg p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <CheckCircle2 className="h-5 w-5 text-primary" />
+                <h3 className="font-heading font-semibold text-foreground text-lg">
+                  Quick Start Checklist
+                </h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 group">
+                  <Checkbox
+                    id="dashboard"
+                    checked={checklist.dashboard}
+                    onCheckedChange={(checked) =>
+                      setChecklist(prev => ({ ...prev, dashboard: checked as boolean }))
+                    }
+                    className="mt-1"
+                  />
+                  <Label
+                    htmlFor="dashboard"
+                    className="flex-1 cursor-pointer group-hover:text-foreground transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-skyward" />
+                      <span className="font-medium">Visit your dashboard</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      See your first personalized newsletter content
+                    </p>
+                  </Label>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-muted-foreground">Get AI-powered content recommendations</span>
+
+                <div className="flex items-start gap-3 group">
+                  <Checkbox
+                    id="content"
+                    checked={checklist.content}
+                    onCheckedChange={(checked) =>
+                      setChecklist(prev => ({ ...prev, content: checked as boolean }))
+                    }
+                    className="mt-1"
+                  />
+                  <Label
+                    htmlFor="content"
+                    className="flex-1 cursor-pointer group-hover:text-foreground transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-orchid" />
+                      <span className="font-medium">Explore AI-powered recommendations</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Discover content tailored to your interests
+                    </p>
+                  </Label>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-muted-foreground">Copy content easily for your own communications</span>
+
+                <div className="flex items-start gap-3 group">
+                  <Checkbox
+                    id="settings"
+                    checked={checklist.settings}
+                    onCheckedChange={(checked) =>
+                      setChecklist(prev => ({ ...prev, settings: checked as boolean }))
+                    }
+                    className="mt-1"
+                  />
+                  <Label
+                    htmlFor="settings"
+                    className="flex-1 cursor-pointer group-hover:text-foreground transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Settings className="h-4 w-4 text-shadow" />
+                      <span className="font-medium">Review your preferences</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Adjust categories and tags anytime in settings
+                    </p>
+                  </Label>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-muted-foreground">Modify your preferences anytime in settings</span>
+
+                <div className="flex items-start gap-3 group">
+                  <Checkbox
+                    id="explore"
+                    checked={checklist.explore}
+                    onCheckedChange={(checked) =>
+                      setChecklist(prev => ({ ...prev, explore: checked as boolean }))
+                    }
+                    className="mt-1"
+                  />
+                  <Label
+                    htmlFor="explore"
+                    className="flex-1 cursor-pointer group-hover:text-foreground transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Bot className="h-4 w-4 text-primary" />
+                      <span className="font-medium">Try copying content</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      One-click copy for emails, social media, and more
+                    </p>
+                  </Label>
                 </div>
               </div>
             </div>
 
-            <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <p className="text-blue-800 dark:text-blue-200 text-sm">
-                <strong>Tip:</strong> Your first personalized newsletter will be available shortly. Check your dashboard to see the latest content tailored just for you!
+            {/* Pro Tip */}
+            <div className="bg-orchid/10 border border-orchid/30 rounded-lg p-4">
+              <p className="text-orchid text-sm leading-relaxed">
+                <strong className="font-semibold">Pro Tip:</strong> Your first newsletter is being personalized right now based on your selected categories and tags. Check your dashboard in a few moments to see content tailored just for you!
               </p>
             </div>
 
-            <div className="flex flex-col space-y-2">
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <Button
                 onClick={() => router.push('/dashboard')}
-                className="w-full"
+                className="flex-1 bg-primary hover:bg-primary/90"
                 size="lg"
               >
                 Go to Dashboard
@@ -214,14 +354,15 @@ export default function OnboardingSuccessPage() {
               <Button
                 variant="outline"
                 onClick={() => router.push('/')}
-                className="w-full"
+                className="flex-1"
+                size="lg"
               >
                 Return to Home
               </Button>
             </div>
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
     </div>
   );
 }

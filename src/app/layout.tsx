@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,17 +11,18 @@ export const metadata: Metadata = {
   title: "TrueTone AI Newsletter",
   description: "Mobile-first newsletter platform for loan officers with AI-powered content customization",
   manifest: "/manifest.json",
-  themeColor: "#9333EA",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "TrueTone AI",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#9333EA",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
