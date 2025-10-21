@@ -21,22 +21,23 @@ const DATABASE_URL = Deno.env.get('DATABASE_URL');
 const STRIPE_WEBHOOK_SECRET = Deno.env.get('STRIPE_WEBHOOK_SECRET');
 const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY');
 
-// Validate required environment variables
-if (!DATABASE_URL) {
-  console.error('❌ DATABASE_URL is not set');
-}
-if (!STRIPE_WEBHOOK_SECRET) {
-  console.error('❌ STRIPE_WEBHOOK_SECRET is not set');
-}
-if (!STRIPE_SECRET_KEY) {
-  console.error('❌ STRIPE_SECRET_KEY is not set');
+// Validate required environment variables and fail fast
+const missingVars: string[] = [];
+if (!DATABASE_URL) missingVars.push('DATABASE_URL');
+if (!STRIPE_WEBHOOK_SECRET) missingVars.push('STRIPE_WEBHOOK_SECRET');
+if (!STRIPE_SECRET_KEY) missingVars.push('STRIPE_SECRET_KEY');
+
+if (missingVars.length > 0) {
+  const errorMsg = `❌ Missing required environment variables: ${missingVars.join(', ')}`;
+  console.error(errorMsg);
+  throw new Error(errorMsg);
 }
 
 // Initialize StripeSync
 const stripeSync = new StripeSync({
-  databaseUrl: DATABASE_URL!,
-  stripeWebhookSecret: STRIPE_WEBHOOK_SECRET!,
-  stripeSecretKey: STRIPE_SECRET_KEY!,
+  databaseUrl: DATABASE_URL,
+  stripeWebhookSecret: STRIPE_WEBHOOK_SECRET,
+  stripeSecretKey: STRIPE_SECRET_KEY,
 
   // Automatically fetch related Stripe objects when syncing
   // For example, when syncing a subscription, also fetch the customer

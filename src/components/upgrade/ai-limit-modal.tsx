@@ -75,12 +75,24 @@ export function AiLimitModal({
   isBlocked = false,
 }: AiLimitModalProps) {
   const [isUpgrading, setIsUpgrading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const usagePercentage = (generationsUsed / generationLimit) * 100;
   const remainingGenerations = Math.max(0, generationLimit - generationsUsed);
 
   const handleUpgrade = async () => {
+    // Validate Stripe price ID before making request
+    const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_ID;
+    if (!priceId) {
+      const errorMsg = 'Stripe price ID is not configured. Please contact support.';
+      setError(errorMsg);
+      console.error('Missing NEXT_PUBLIC_STRIPE_PRICE_ID');
+      return;
+    }
+
     setIsUpgrading(true);
+    setError(null);
+
     try {
       // Redirect to Stripe checkout
       const response = await fetch('/api/stripe/checkout', {
@@ -89,19 +101,28 @@ export function AiLimitModal({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID,
+          priceId,
         }),
       });
 
       const data = await response.json();
 
+      if (!response.ok) {
+        throw new Error(data.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
       if (data.url) {
         window.location.href = data.url;
       } else {
-        throw new Error('Failed to create checkout session');
+        throw new Error('No checkout URL returned from server');
       }
     } catch (error) {
-      console.error('Error upgrading:', error);
+      const errorMsg = error instanceof Error ? error.message : 'Failed to start upgrade process';
+      console.error('Error upgrading:', {
+        error,
+        message: errorMsg,
+      });
+      setError(errorMsg);
       setIsUpgrading(false);
     }
   };
