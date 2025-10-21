@@ -20,17 +20,15 @@ export const getCachedApiUser = cache(async () => {
   const supabase = await createClient();
 
   // Check if user exists
-  const { data: user } = await supabase
+  const { data: user, error: fetchError } = await supabase
     .from('users')
-    .select(`
-      *,
-      organization:organizations(*)
-    `)
+    .select('*')
     .eq('kinde_id', kindeUser.id)
     .single();
 
-  if (!user) {
-    // Create user on first login (this should rarely happen in production)
+  if (fetchError && fetchError.code === 'PGRST116') {
+    // User doesn't exist, create them on first login
+    const now = new Date().toISOString();
     const { data: newUser } = await supabase
       .from('users')
       .insert({
@@ -39,12 +37,11 @@ export const getCachedApiUser = cache(async () => {
         firstName: kindeUser.given_name || 'Not Set',
         lastName: kindeUser.family_name || 'Not Set',
         name: `${kindeUser.given_name || ''} ${kindeUser.family_name || ''}`.trim() || 'Not Set',
-        status: 'pending'
+        subscription_tier: 'free',
+        createdAt: now,
+        updatedAt: now,
       })
-      .select(`
-        *,
-        organization:organizations(*)
-      `)
+      .select('*')
       .single();
 
     return newUser;
@@ -70,7 +67,7 @@ export const getCachedApiUserSafe = cache(async () => {
   }
 });
 
-// Re-export the interface for convenience
+// Re-export the interface for convenience (matched to actual Supabase schema)
 export interface ApiUser {
   id: string;
   kinde_id: string;
@@ -78,37 +75,11 @@ export interface ApiUser {
   name: string;
   firstName: string;
   lastName: string;
-  organization_id?: string;
-  organization?: {
-    id: string;
-    name: string;
-    bundle_social_team_id?: string;
-  };
+  company?: string;
   role: string;
-  status: string;
-  has_completed_onboarding: boolean;
-  onboarding_step: number;
-  // TrueTone fields
-  tone_of_voice?: string;
-  formality?: string;
-  humor?: string;
-  emotional_expression?: string;
-  detail_orientation?: string;
-  vocabulary?: string;
-  content_length?: string;
-  engagement_style?: string;
-  // Voice analysis
-  voice_transcript?: string;
-  user_persona?: string;
-  personality_traits?: any;
-  communication_style?: any;
-  speech_patterns?: any;
-  professional_indicators?: any;
-  content_generation_preferences?: any;
-  unique_voice_markers?: any;
-  analysis_metadata?: any;
   // User preferences
   category_preferences?: string[];
+  tag_preferences?: string[];
   saved_article_ids?: string[];
   // Subscription fields
   subscription_tier?: string;
@@ -120,4 +91,7 @@ export interface ApiUser {
   stripe_customer_id?: string;
   stripe_subscription_id?: string;
   stripe_price_id?: string;
+  // Timestamps
+  createdAt?: string;
+  updatedAt?: string;
 }

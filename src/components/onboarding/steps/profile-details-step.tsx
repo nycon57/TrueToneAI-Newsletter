@@ -78,34 +78,40 @@ export function ProfileDetailsStep() {
             </div>
 
             <div>
-              <Label htmlFor="phone">Phone Number *</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={data.phone}
-                onChange={(e) => updateData('phone', e.target.value)}
-                placeholder="(555) 123-4567"
-                className={errors.phone ? 'border-destructive' : ''}
-              />
-              {errors.phone && (
-                <p className="text-sm text-destructive mt-1">{errors.phone}</p>
-              )}
-            </div>
-
-            <div>
               <Label htmlFor="jobTitle">Job Title / Role *</Label>
               <Input
                 id="jobTitle"
                 value={data.jobTitle}
                 onChange={(e) => updateData('jobTitle', e.target.value)}
-                placeholder="e.g., Marketing Manager, Business Owner, Content Creator"
+                placeholder="e.g., Loan Officer, Real Estate Agent, Business Owner"
                 className={errors.jobTitle ? 'border-destructive' : ''}
+                maxLength={100}
               />
-              {errors.jobTitle && (
-                <p className="text-sm text-destructive mt-1">{errors.jobTitle}</p>
-              )}
+              <div className="flex justify-between items-center mt-1">
+                {errors.jobTitle ? (
+                  <p className="text-sm text-destructive">{errors.jobTitle}</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    This helps us tailor content to your professional context
+                  </p>
+                )}
+                <span className="text-xs text-muted-foreground">
+                  {data.jobTitle.length}/100
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="company">Company (Optional)</Label>
+              <Input
+                id="company"
+                value={data.company || ''}
+                onChange={(e) => updateData('company', e.target.value)}
+                placeholder="e.g., ABC Lending, XYZ Realty"
+                maxLength={100}
+              />
               <p className="text-xs text-muted-foreground mt-1">
-                This helps us tailor content to your professional context
+                Optional - helps personalize your content
               </p>
             </div>
 

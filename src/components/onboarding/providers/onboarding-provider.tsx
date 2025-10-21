@@ -7,8 +7,8 @@ export interface OnboardingData {
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
   jobTitle: string;
+  company?: string;
   transcript?: string;
   voiceAnalysis?: {
     persona: string;
@@ -17,6 +17,7 @@ export interface OnboardingData {
     confidence_score: number;
   };
   categoryPreferences: string[];
+  tagPreferences: string[];
   selectedPlan?: string;
   billingType?: 'free_trial' | 'paid_plan' | 'enterprise';
 }
@@ -55,9 +56,9 @@ const DEFAULT_DATA: OnboardingData = {
   firstName: '',
   lastName: '',
   email: '',
-  phone: '',
   jobTitle: '',
   categoryPreferences: [],
+  tagPreferences: [],
   selectedPlan: undefined,
   billingType: undefined,
 };
@@ -164,10 +165,6 @@ export function OnboardingProvider({
       case 1: // Welcome
         break;
       case 2: // Profile Details
-        if (!data.phone?.trim()) {
-          setError('phone', 'Phone number is required');
-          isValid = false;
-        }
         if (!data.jobTitle?.trim()) {
           setError('jobTitle', 'Job title is required');
           isValid = false;
@@ -198,13 +195,13 @@ export function OnboardingProvider({
           profileData: {
             firstName: data.firstName,
             lastName: data.lastName,
-            phone: data.phone,
             title: data.jobTitle,
-            company: '', // Not collected in simplified flow
+            company: data.company || '',
           },
           transcript: data.transcript,
           analysisResults: data.voiceAnalysis,
           categoryPreferences: data.categoryPreferences,
+          tagPreferences: data.tagPreferences,
           billingData: {
             selectedPlan: data.selectedPlan,
             billingType: data.billingType,
