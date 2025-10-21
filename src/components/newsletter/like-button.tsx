@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "motion/react"
 import type { ContentType } from "@/generated/prisma"
-import { useAnalytics } from "@/lib/analytics/hooks"
 
 interface LikeButtonProps {
   postId: string
@@ -42,9 +41,6 @@ export function LikeButton({
   const [liked, setLiked] = useState(initialLiked)
   const [count, setCount] = useState(initialCount)
   const [showHearts, setShowHearts] = useState(false)
-  
-  // Analytics tracking
-  const { trackLike, trackClick, isTrackingEnabled } = useAnalytics()
 
   const handleToggle = async () => {
     // Don't allow toggling while loading
@@ -90,23 +86,11 @@ export function LikeButton({
       }
       
       const data = await response.json()
-      
+
       // Update with actual server data
       setLiked(data.liked)
       setCount(data.count)
-      
-      // Track analytics for like interaction
-      if (isTrackingEnabled) {
-        trackLike(contentId, contentType, data.liked, data.count)
-        trackClick('button', `like-button-${contentId}`, {
-          contentType,
-          contentTitle,
-          liked: data.liked,
-          likeCount: data.count,
-          action: data.liked ? 'like' : 'unlike'
-        })
-      }
-      
+
       onLikeChange?.(data.liked)
       
       // Show subtle success feedback

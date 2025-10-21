@@ -17,10 +17,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { LikeButton } from '@/components/newsletter/like-button';
 import type { ContentType } from '@/generated/prisma';
 
-// Analytics components
-import { AIChatAnalyticsWrapper, useAIChatWithAnalytics } from '@/components/analytics/ai-chat-wrapper';
-import { useAnalytics } from '@/lib/analytics/hooks';
-import { analytics } from '@/lib/analytics/service';
+// Hooks
+import { useAIChat } from '@/hooks/use-ai-chat';
 
 // Utility function
 import { cn } from '@/lib/utils';
@@ -581,16 +579,16 @@ const AIChat = ({ newsletter, onClose }: { newsletter: NewsletterData['newslette
 
   // Generate conversation ID based on newsletter and timestamp
   const conversationId = `newsletter-${newsletter.id}-${Date.now()}`;
-  
-  // Use analytics-enhanced chat functionality
+
+  // Use AI chat functionality
   const {
     messages,
     loading,
     streamingContent,
     sendMessage,
-    clearConversation: analyticsAwareClearConversation,
+    clearConversation: clearConvo,
     initializeConversation
-  } = useAIChatWithAnalytics(conversationId);
+  } = useAIChat(conversationId);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -606,7 +604,7 @@ const AIChat = ({ newsletter, onClose }: { newsletter: NewsletterData['newslette
   }, [initializeConversation, selectedArticle, selectedContentType]);
 
   const clearConversation = () => {
-    analyticsAwareClearConversation();
+    clearConvo();
     toast.success('Conversation cleared');
   };
 
@@ -941,7 +939,6 @@ const AIChat = ({ newsletter, onClose }: { newsletter: NewsletterData['newslette
 export default function NewsletterPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const analyticsContext = useAnalytics();
   const [data, setData] = useState<NewsletterData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -974,21 +971,6 @@ export default function NewsletterPage() {
 
     fetchData();
   }, [articleUuid, userUuid]);
-
-  // Set user ID in analytics system when userUuid is available
-  useEffect(() => {
-    const setUserInAnalytics = async () => {
-      if (userUuid && analyticsContext.isTrackingEnabled) {
-        try {
-          await analytics.setUser(userUuid);
-        } catch (error) {
-          console.error('Failed to set user in analytics:', error);
-        }
-      }
-    };
-    
-    setUserInAnalytics();
-  }, [userUuid, analyticsContext.isTrackingEnabled]);
 
   if (loading) {
     return (
@@ -1129,17 +1111,10 @@ export default function NewsletterPage() {
 
       {/* AI Chat Panel */}
       {showChat && (
-        <AIChatAnalyticsWrapper
-          conversationId={`newsletter-${data.newsletter.id}-chat`}
-          selectedArticle={data.newsletter.articles[0]?.title}
-          selectedContentType="general"
-          isVisible={showChat}
-        >
-          <AIChat
-            newsletter={data.newsletter}
-            onClose={() => setShowChat(false)}
-          />
-        </AIChatAnalyticsWrapper>
+        <AIChat
+          newsletter={data.newsletter}
+          onClose={() => setShowChat(false)}
+        />
       )}
     </>
   );

@@ -48,9 +48,46 @@ export async function GET(req: NextRequest) {
 
     console.log(`Processing newsletter delivery for ${subscribers.length} subscribers`);
 
+    // Filter articles by user category preferences
+    const articlesInNewsletter = todaysPost.content?.articles || [];
+    const articleCategories = articlesInNewsletter
+      .map((article: any) => article.category)
+      .filter(Boolean);
+
+    console.log(`Newsletter contains articles from categories: ${articleCategories.join(', ')}`);
+
     const results = await Promise.allSettled(
       subscribers.map(async (subscriber) => {
         try {
+          // Filter newsletter content by user's category preferences
+          let filteredContent = todaysPost.content;
+          const userPreferences = subscriber.category_preferences;
+
+          if (userPreferences && userPreferences.length > 0) {
+            // User has preferences - only send articles matching their categories
+            const filteredArticles = articlesInNewsletter.filter((article: any) => {
+              // If article has no category, include it for all users
+              if (!article.category) return true;
+
+              // Check if article category matches user preferences
+              return userPreferences.includes(article.category);
+            });
+
+            // Skip sending if no articles match user's preferences
+            if (filteredArticles.length === 0) {
+              console.log(`Skipping ${subscriber.email} - no articles match category preferences`);
+              return { success: true, email: subscriber.email, skipped: true };
+            }
+
+            // Update content with filtered articles
+            filteredContent = {
+              ...todaysPost.content,
+              articles: filteredArticles
+            };
+
+            console.log(`Sending ${filteredArticles.length} filtered articles to ${subscriber.email}`);
+          }
+
           // Generate personalized content if user has TrueTone profile
           let personalizedContent = null;
           if (subscriber.tone_of_voice) {
@@ -58,7 +95,7 @@ export async function GET(req: NextRequest) {
             personalizedContent = {
               subject: generateNewsletterSubject(todaysPost.title, subscriber.name),
               preheader: `Personalized insights just for ${subscriber.firstName || 'you'}`,
-              content: todaysPost.content // For now, use original content
+              content: filteredContent
             };
           }
 
@@ -79,7 +116,7 @@ export async function GET(req: NextRequest) {
               newsletter: {
                 id: todaysPost.id,
                 title: todaysPost.title,
-                content: todaysPost.content,
+                content: filteredContent,
                 personalizedContent
               },
               unsubscribeUrl

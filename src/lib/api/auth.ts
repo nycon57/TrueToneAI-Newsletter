@@ -79,6 +79,17 @@ export interface ApiUser {
   content_generation_preferences?: any;
   unique_voice_markers?: any;
   analysis_metadata?: any;
-  // Category preferences
+  // User preferences
   category_preferences?: string[];
+  saved_article_ids?: string[];
+  // Subscription fields
+  subscription_tier?: string;
+  subscription_expires_at?: string;
+  subscription_status?: string;
+  monthly_generation_limit?: number;
+  monthly_generations_used?: number;
+  generation_reset_date?: string;
+  stripe_customer_id?: string;
+  stripe_subscription_id?: string;
+  stripe_price_id?: string;
 }

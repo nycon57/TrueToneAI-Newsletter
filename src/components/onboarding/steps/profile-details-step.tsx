@@ -1,0 +1,139 @@
+'use client';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { useOnboarding } from '../providers/onboarding-provider';
+
+export function ProfileDetailsStep() {
+  const {
+    data,
+    errors,
+    updateData,
+    nextStep,
+    previousStep,
+    validateCurrentStep,
+  } = useOnboarding();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateCurrentStep()) {
+      nextStep();
+    }
+  };
+
+  return (
+    <div className="w-full max-w-2xl mx-auto px-4 py-8">
+      <Card className="shadow-lg">
+        <CardContent className="p-8">
+          <CardHeader className="text-center pb-6">
+            <CardTitle className="text-2xl font-heading font-bold mb-2">Profile Details</CardTitle>
+            <CardDescription className="text-lg">
+              Tell us a bit about yourself to personalize your experience
+            </CardDescription>
+          </CardHeader>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  value={data.firstName}
+                  disabled
+                  className="bg-muted"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  From your account
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  value={data.lastName}
+                  disabled
+                  className="bg-muted"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  From your account
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={data.email}
+                disabled
+                className="bg-muted"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                From your account
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="phone">Phone Number *</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={data.phone}
+                onChange={(e) => updateData('phone', e.target.value)}
+                placeholder="(555) 123-4567"
+                className={errors.phone ? 'border-destructive' : ''}
+              />
+              {errors.phone && (
+                <p className="text-sm text-destructive mt-1">{errors.phone}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="jobTitle">Job Title / Role *</Label>
+              <Input
+                id="jobTitle"
+                value={data.jobTitle}
+                onChange={(e) => updateData('jobTitle', e.target.value)}
+                placeholder="e.g., Marketing Manager, Business Owner, Content Creator"
+                className={errors.jobTitle ? 'border-destructive' : ''}
+              />
+              {errors.jobTitle && (
+                <p className="text-sm text-destructive mt-1">{errors.jobTitle}</p>
+              )}
+              <p className="text-xs text-muted-foreground mt-1">
+                This helps us tailor content to your professional context
+              </p>
+            </div>
+
+            <div className="bg-orchid/5 border border-orchid/20 rounded-lg p-4 mt-6">
+              <p className="text-orchid text-sm">
+                <strong>Tip:</strong> Your name and email are already set from your account.
+                We just need a few more details to personalize your newsletter experience.
+              </p>
+            </div>
+
+            <div className="flex justify-between pt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={previousStep}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeftIcon className="h-4 w-4" />
+                Back
+              </Button>
+              <Button type="submit" className="flex items-center gap-2">
+                Continue
+                <ArrowRightIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
