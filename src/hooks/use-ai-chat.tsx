@@ -42,66 +42,60 @@ export function useAIChat(conversationId: string) {
         content,
       };
 
-      // Use functional state update to avoid race conditions
-      setMessages((prevMessages) => {
-        const newMessages = [...prevMessages, userMessage];
-        setLoading(true);
-        setStreamingContent('');
+      // Add user message to state
+      setMessages((prevMessages) => [...prevMessages, userMessage]);
+      setLoading(true);
+      setStreamingContent('');
 
-        // Kick off the async request with the correct conversation history
-        (async () => {
-          try {
-            const response = await fetch('/api/ai/personalize-stream', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                message: content,
-                articleTitle: selectedArticle,
-                contentType: selectedContentType,
-                articleData,
-                conversationHistory: newMessages, // Use the updated messages
-              }),
-            });
+      // Run async logic outside state updater
+      try {
+        const response = await fetch('/api/ai/personalize-stream', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: content,
+            articleTitle: selectedArticle,
+            contentType: selectedContentType,
+            articleData,
+            conversationHistory: (prevMessages) => [...prevMessages, userMessage],
+          }),
+        });
 
-            if (!response.ok) {
-              throw new Error('Failed to send message');
-            }
+        if (!response.ok) {
+          throw new Error('Failed to send message');
+        }
 
-            const reader = response.body?.getReader();
-            const decoder = new TextDecoder();
-            let fullResponse = '';
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let fullResponse = '';
 
-            if (reader) {
-              while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-                const chunk = decoder.decode(value);
-                fullResponse += chunk;
-                setStreamingContent(fullResponse);
-              }
-            }
-
-            const assistantMessage: Message = {
-              id: `assistant-${generateId()}`,
-              role: 'assistant',
-              content: fullResponse,
-            };
-
-            setMessages((prev) => [...prev, assistantMessage]);
-            setStreamingContent('');
-          } catch (error) {
-            console.error('Error sending message:', error);
-            throw error;
-          } finally {
-            setLoading(false);
+            const chunk = decoder.decode(value);
+            fullResponse += chunk;
+            setStreamingContent(fullResponse);
           }
-        })();
+        }
 
-        return newMessages;
-      });
+        const assistantMessage: Message = {
+          id: `assistant-${generateId()}`,
+          role: 'assistant',
+          content: fullResponse,
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
+        setStreamingContent('');
+      } catch (error) {
+        console.error('Error sending message:', error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
     },
-    [] // Remove messages dependency to avoid stale closure
+    [] // Dependencies removed - using functional updates
   );
 
   const clearConversation = useCallback(() => {

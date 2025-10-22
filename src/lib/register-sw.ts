@@ -1,5 +1,8 @@
 'use client';
 
+// Store interval ID globally to allow cleanup
+let updateCheckIntervalId: number | undefined;
+
 /**
  * Service Worker registration utility
  * Registers the service worker for offline support
@@ -21,8 +24,8 @@ export function registerServiceWorker() {
       .then((registration) => {
         console.log('[SW] Service worker registered:', registration.scope);
 
-        // Check for updates periodically
-        setInterval(() => {
+        // Check for updates periodically and store interval ID
+        updateCheckIntervalId = window.setInterval(() => {
           registration.update();
         }, 60 * 60 * 1000); // Check every hour
 
@@ -63,6 +66,13 @@ export function registerServiceWorker() {
  */
 export async function unregisterServiceWorker() {
   if ('serviceWorker' in navigator) {
+    // Clear the update check interval to prevent timer leaks
+    if (updateCheckIntervalId !== undefined) {
+      window.clearInterval(updateCheckIntervalId);
+      updateCheckIntervalId = undefined;
+      console.log('[SW] Update check interval cleared');
+    }
+
     const registrations = await navigator.serviceWorker.getRegistrations();
     for (const registration of registrations) {
       await registration.unregister();

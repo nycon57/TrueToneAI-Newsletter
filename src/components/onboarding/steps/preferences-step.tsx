@@ -59,7 +59,12 @@ export function PreferencesStep() {
                 <div
                   key={category.id}
                   className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
-                  onClick={() => handleCategoryToggle(category.id)}
+                  onClick={(e) => {
+                    // Only toggle if clicking the container (not the checkbox itself)
+                    if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'LABEL' || (e.target as HTMLElement).tagName === 'P') {
+                      handleCategoryToggle(category.id);
+                    }
+                  }}
                 >
                   <Checkbox
                     id={category.id}

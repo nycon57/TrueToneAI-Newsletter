@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ArrowLeft, Check, CreditCard } from 'lucide-react';
 import { useOnboarding } from '../providers/onboarding-provider';
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
+import { toast } from 'sonner';
+import React from 'react';
 
 export function SubscriptionStep() {
   const { previousStep, completeOnboarding, isSubmitting, updateData } = useOnboarding();
@@ -13,6 +15,14 @@ export function SubscriptionStep() {
 
   const handleSelectPlan = async (planId?: string) => {
     try {
+      // Validate environment variable
+      const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PAID_TIER;
+      if (!priceId) {
+        console.error('❌ Missing NEXT_PUBLIC_STRIPE_PRICE_ID_PAID_TIER environment variable');
+        toast.error('Payment configuration error. Please contact support.');
+        return;
+      }
+
       // Set billing data for paid plans (await if updateData is async)
       if (planId) {
         await updateData('selectedPlan', planId);
@@ -28,7 +38,7 @@ export function SubscriptionStep() {
         },
         body: JSON.stringify({
           returnUrl: `${baseUrl}/onboarding/success`,
-          priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PAID_TIER,
+          priceId,
           metadata: {
             planId: planId || 'newsletter_pro',
             onboarding_session: 'true',
@@ -39,8 +49,7 @@ export function SubscriptionStep() {
       if (!response.ok) {
         const error = await response.json();
         console.error('❌ Stripe Checkout error:', error);
-        // TODO: Show error toast to user
-        alert('Failed to create checkout session. Please try again.');
+        toast.error('Failed to create checkout session. Please try again.');
         return;
       }
 
@@ -48,7 +57,7 @@ export function SubscriptionStep() {
 
       if (error) {
         console.error('❌ Stripe Checkout error:', error);
-        alert('Failed to create checkout session. Please try again.');
+        toast.error('Failed to create checkout session. Please try again.');
         return;
       }
 
@@ -58,7 +67,7 @@ export function SubscriptionStep() {
       }
     } catch (error) {
       console.error('❌ Error creating checkout session:', error);
-      alert('An error occurred. Please try again.');
+      toast.error('An error occurred. Please try again.');
     }
   };
 
@@ -74,7 +83,7 @@ export function SubscriptionStep() {
     } catch (error) {
       console.error('Error completing free trial:', error);
       setIsProcessing(false);
-      alert('An error occurred. Please try again.');
+      toast.error('An error occurred. Please try again.');
     }
   };
 
@@ -85,7 +94,7 @@ export function SubscriptionStep() {
           <CardHeader className="text-center pb-6">
             <CardTitle className="text-2xl font-heading font-bold mb-2">Choose Your Plan</CardTitle>
             <CardDescription className="text-base">
-              Select a subscription plan to access your personalized newsletter experience
+              Select a plan to unlock Spark&apos;s curated content and AI-powered personalization
             </CardDescription>
           </CardHeader>
 

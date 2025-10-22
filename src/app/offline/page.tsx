@@ -1,5 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { WifiOff } from 'lucide-react';
+import { OfflineRetryButton } from '@/components/offline-retry-button';
 
 export const metadata = {
   title: 'Offline | TrueTone AI Newsletter',
@@ -34,12 +35,7 @@ export default function OfflinePage() {
             </p>
           </div>
 
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-6 w-full px-4 py-2 bg-gradient-to-r from-orchid to-indigo text-white rounded-lg font-medium hover:shadow-lg transition-shadow"
-          >
-            Try Again
-          </button>
+          <OfflineRetryButton />
         </CardContent>
       </Card>
     </div>

@@ -28,6 +28,8 @@ yarn-error.log*
 .env*.local
 .env
 supabase/.env
+.env.*
+.env.local
 
 # vercel
 .vercel
@@ -38,3 +40,10 @@ next-env.d.ts
 
 # mcp
 .mcp.json
+
+# docs
+docs/*
+*.md
+
+# migrations
+*.sql

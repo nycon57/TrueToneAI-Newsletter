@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { SaveButton } from './SaveButton';
 import { PersonalizeButton } from './PersonalizeButton';
+import { CopyButton } from './CopyButton';
 import { cn } from '@/lib/utils';
 
 interface Article {
@@ -55,40 +56,55 @@ export function ArticleCard({ article, isAuthenticated, isPaid }: ArticleCardPro
     }
   };
 
-  const renderKeyInsights = () => (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mt-6 p-6 bg-gradient-to-br from-lavender/20 to-lavender/10 rounded-xl border border-lavender/50"
-    >
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Lightbulb className="h-5 w-5 text-orchid" />
-          <h4 className="font-bold text-gray-900">Key Insights</h4>
-          {article.is_personalized && (
-            <Badge className="bg-blue-100 text-blue-700 border-0 text-xs">
-              <Sparkles className="h-3 w-3 mr-1" />
-              Personalized
-            </Badge>
-          )}
-        </div>
-        <PersonalizeButton
-          articleId={article.id}
-          contentType="key_insights"
-          label="Insights"
-          isPaid={isPaid}
-        />
-      </div>
-      <div className="space-y-2">
-        {article.keyInsights?.map((insight, idx) => (
-          <div key={idx} className="flex items-start gap-2">
-            <CheckIcon className="h-4 w-4 text-orchid mt-1 flex-shrink-0" />
-            <span className="text-sm text-gray-700">{insight}</span>
+  const renderKeyInsights = () => {
+    const insightsText = article.keyInsights?.join('\n• ') || '';
+    const fullInsightsText = `Key Insights:\n\n• ${insightsText}`;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-6 p-6 bg-gradient-to-br from-lavender/20 to-lavender/10 rounded-xl border border-lavender/50"
+      >
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <Lightbulb className="h-5 w-5 text-orchid" />
+            <h4 className="font-bold text-gray-900">Key Insights</h4>
+            {article.is_personalized && (
+              <Badge className="bg-blue-100 text-blue-700 border-0 text-xs">
+                <Sparkles className="h-3 w-3 mr-1" />
+                Personalized
+              </Badge>
+            )}
           </div>
-        ))}
-      </div>
-    </motion.div>
-  );
+          <div className="flex items-center gap-2">
+            <CopyButton
+              content={fullInsightsText}
+              label="Insights"
+              variant="default"
+              className="bg-orchid hover:bg-orchid/90 text-white"
+            />
+            {!isPaid && (
+              <PersonalizeButton
+                articleId={article.id}
+                contentType="key_insights"
+                label="Insights"
+                isPaid={isPaid}
+              />
+            )}
+          </div>
+        </div>
+        <div className="space-y-2">
+          {article.keyInsights?.map((insight, idx) => (
+            <div key={idx} className="flex items-start gap-2">
+              <CheckIcon className="h-4 w-4 text-orchid mt-1 flex-shrink-0" />
+              <span className="text-sm text-gray-700">{insight}</span>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    );
+  };
 
   const renderVideoScript = () => (
     <motion.div
@@ -96,8 +112,8 @@ export function ArticleCard({ article, isAuthenticated, isPaid }: ArticleCardPro
       animate={{ opacity: 1, y: 0 }}
       className="mt-6 p-6 bg-gradient-to-br from-red-50 to-red-50/50 rounded-xl border border-red-200"
     >
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Video className="h-5 w-5 text-red-600" />
           <h4 className="font-bold text-gray-900">Video Script</h4>
           <Badge className="bg-red-100 text-red-700 border-0 text-xs">30-60 sec</Badge>
@@ -108,12 +124,22 @@ export function ArticleCard({ article, isAuthenticated, isPaid }: ArticleCardPro
             </Badge>
           )}
         </div>
-        <PersonalizeButton
-          articleId={article.id}
-          contentType="video_script"
-          label="Script"
-          isPaid={isPaid}
-        />
+        <div className="flex items-center gap-2">
+          <CopyButton
+            content={article.videoScript || ''}
+            label="Script"
+            variant="default"
+            className="bg-red-600 hover:bg-red-700 text-white"
+          />
+          {!isPaid && (
+            <PersonalizeButton
+              articleId={article.id}
+              contentType="video_script"
+              label="Script"
+              isPaid={isPaid}
+            />
+          )}
+        </div>
       </div>
       <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
         {article.videoScript}
@@ -127,7 +153,7 @@ export function ArticleCard({ article, isAuthenticated, isPaid }: ArticleCardPro
       animate={{ opacity: 1, y: 0 }}
       className="mt-6 p-6 bg-gradient-to-br from-green-50 to-emerald-50/50 rounded-xl border border-green-200"
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <Mail className="h-5 w-5 text-green-700" />
           <h4 className="font-bold text-gray-900">Email Template</h4>
@@ -138,12 +164,22 @@ export function ArticleCard({ article, isAuthenticated, isPaid }: ArticleCardPro
             </Badge>
           )}
         </div>
-        <PersonalizeButton
-          articleId={article.id}
-          contentType="email_template"
-          label="Email"
-          isPaid={isPaid}
-        />
+        <div className="flex items-center gap-2">
+          <CopyButton
+            content={article.emailTemplate || ''}
+            label="Email"
+            variant="default"
+            className="bg-green-600 hover:bg-green-700 text-white"
+          />
+          {!isPaid && (
+            <PersonalizeButton
+              articleId={article.id}
+              contentType="email_template"
+              label="Email"
+              isPaid={isPaid}
+            />
+          )}
+        </div>
       </div>
       <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
         {article.emailTemplate}
@@ -165,7 +201,7 @@ export function ArticleCard({ article, isAuthenticated, isPaid }: ArticleCardPro
         animate={{ opacity: 1, y: 0 }}
         className="mt-6 p-6 bg-gradient-to-br from-lavender/20 to-pink-50/50 rounded-xl border border-lavender/50"
       >
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <div className="flex items-center gap-2">
             <Share2 className="h-5 w-5 text-orchid" />
             <h4 className="font-bold text-gray-900">Social Media</h4>
@@ -176,23 +212,33 @@ export function ArticleCard({ article, isAuthenticated, isPaid }: ArticleCardPro
               </Badge>
             )}
           </div>
-          <PersonalizeButton
-            articleId={article.id}
-            contentType="social_content"
-            label="Social"
-            isPaid={isPaid}
-          />
+          {!isPaid && (
+            <PersonalizeButton
+              articleId={article.id}
+              contentType="social_content"
+              label="Social"
+              isPaid={isPaid}
+            />
+          )}
         </div>
         <div className="grid gap-3">
           {platforms.map((platform) => {
             const Icon = platform.icon;
             return platform.content && (
               <div key={platform.name} className="p-3 bg-white rounded-lg border border-gray-200">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={`p-2 rounded-lg bg-gradient-to-r ${platform.color}`}>
-                    <Icon className="h-4 w-4 text-white" />
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className={`p-2 rounded-lg bg-gradient-to-r ${platform.color}`}>
+                      <Icon className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="font-semibold text-sm">{platform.name}</span>
                   </div>
-                  <span className="font-semibold text-sm">{platform.name}</span>
+                  <CopyButton
+                    content={platform.content}
+                    label={platform.name}
+                    variant="outline"
+                    size="sm"
+                  />
                 </div>
                 <p className="text-sm text-gray-700">{platform.content}</p>
               </div>

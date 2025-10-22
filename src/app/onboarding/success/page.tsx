@@ -19,8 +19,8 @@ export default function OnboardingSuccessPage() {
   const [status, setStatus] = useState<VerificationStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [checklist, setChecklist] = useState({
-    dashboard: false,
     content: false,
+    personalize: false,
     settings: false,
     explore: false,
   });
@@ -143,10 +143,10 @@ export default function OnboardingSuccessPage() {
                 </p>
               </div>
               <Button
-                onClick={() => router.push('/dashboard')}
+                onClick={() => router.push('/')}
                 className="w-full"
               >
-                Continue to Dashboard
+                Go to Home
               </Button>
             </CardContent>
           </Card>
@@ -224,10 +224,10 @@ export default function OnboardingSuccessPage() {
               </div>
             </motion.div>
             <CardTitle className="text-3xl font-heading font-bold text-foreground">
-              Welcome to TrueTone Newsletter!
+              Welcome to Spark!
             </CardTitle>
             <p className="text-lg text-muted-foreground">
-              Your personalized newsletter experience is now ready! We&apos;ve set up everything based on your preferences.
+              You&apos;re all set! Start exploring curated content tailored to your interests and turn insights into action.
             </p>
           </CardHeader>
 
@@ -243,29 +243,6 @@ export default function OnboardingSuccessPage() {
               <div className="space-y-3">
                 <div className="flex items-start gap-3 group">
                   <Checkbox
-                    id="dashboard"
-                    checked={checklist.dashboard}
-                    onCheckedChange={(checked) =>
-                      setChecklist(prev => ({ ...prev, dashboard: checked as boolean }))
-                    }
-                    className="mt-1"
-                  />
-                  <Label
-                    htmlFor="dashboard"
-                    className="flex-1 cursor-pointer group-hover:text-foreground transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-skyward" />
-                      <span className="font-medium">Visit your dashboard</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      See your first personalized newsletter content
-                    </p>
-                  </Label>
-                </div>
-
-                <div className="flex items-start gap-3 group">
-                  <Checkbox
                     id="content"
                     checked={checklist.content}
                     onCheckedChange={(checked) =>
@@ -278,11 +255,34 @@ export default function OnboardingSuccessPage() {
                     className="flex-1 cursor-pointer group-hover:text-foreground transition-colors"
                   >
                     <div className="flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-orchid" />
-                      <span className="font-medium">Explore AI-powered recommendations</span>
+                      <Mail className="h-4 w-4 text-skyward" />
+                      <span className="font-medium">Browse Spark content</span>
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Discover content tailored to your interests
+                      Explore curated articles tailored to your preferences
+                    </p>
+                  </Label>
+                </div>
+
+                <div className="flex items-start gap-3 group">
+                  <Checkbox
+                    id="personalize"
+                    checked={checklist.personalize}
+                    onCheckedChange={(checked) =>
+                      setChecklist(prev => ({ ...prev, personalize: checked as boolean }))
+                    }
+                    className="mt-1"
+                  />
+                  <Label
+                    htmlFor="personalize"
+                    className="flex-1 cursor-pointer group-hover:text-foreground transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-orchid" />
+                      <span className="font-medium">Personalize with AI</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Transform articles for your unique voice and audience
                     </p>
                   </Label>
                 </div>
@@ -338,26 +338,18 @@ export default function OnboardingSuccessPage() {
             {/* Pro Tip */}
             <div className="bg-orchid/10 border border-orchid/30 rounded-lg p-4">
               <p className="text-orchid text-sm leading-relaxed">
-                <strong className="font-semibold">Pro Tip:</strong> Your first newsletter is being personalized right now based on your selected categories and tags. Check your dashboard in a few moments to see content tailored just for you!
+                <strong className="font-semibold">Pro Tip:</strong> Spark delivers fresh content based on your selected categories. Use AI to personalize any article for your unique voice, then copy and share with your audience in seconds!
               </p>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            {/* Action Button */}
+            <div className="flex justify-center pt-4">
               <Button
-                onClick={() => router.push('/dashboard')}
-                className="flex-1 bg-primary hover:bg-primary/90"
-                size="lg"
-              >
-                Go to Dashboard
-              </Button>
-              <Button
-                variant="outline"
                 onClick={() => router.push('/')}
-                className="flex-1"
+                className="w-full sm:w-auto px-12 bg-primary hover:bg-primary/90"
                 size="lg"
               >
-                Return to Home
+                Start Exploring Spark
               </Button>
             </div>
           </CardContent>

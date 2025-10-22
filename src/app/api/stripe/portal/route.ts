@@ -20,9 +20,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const baseUrl = process.env.NEXT_PUBLIC_URL;
+    if (!baseUrl) {
+      throw new Error('NEXT_PUBLIC_URL environment variable is required');
+    }
+
+    // Normalize URL to avoid duplicate slashes
+    const normalizedBaseUrl = baseUrl.replace(/\/$/, '');
+    const returnUrl = `${normalizedBaseUrl}/account?tab=billing`;
+
     const session = await stripe.billingPortal.sessions.create({
       customer: user.stripe_customer_id,
-      return_url: `${process.env.NEXT_PUBLIC_URL}/settings`,
+      return_url: returnUrl,
     });
 
     return NextResponse.json({ url: session.url });

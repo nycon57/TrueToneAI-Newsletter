@@ -78,7 +78,10 @@ self.addEventListener('fetch', (event) => {
       // Add other public endpoints here as needed
     ];
 
-    const isCacheable = CACHEABLE_API_PATHS.some(path => url.pathname.startsWith(path));
+    // Only match exact path or path as a segment prefix to avoid accidental matches
+    const isCacheable = CACHEABLE_API_PATHS.some(path =>
+      url.pathname === path || url.pathname.startsWith(path + '/')
+    );
 
     event.respondWith(
       fetch(request)

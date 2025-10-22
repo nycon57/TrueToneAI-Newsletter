@@ -107,7 +107,7 @@ function printResults() {
   console.log(`  Failed: ${stats.failed} (${((stats.failed / stats.requests) * 100).toFixed(1)}%)`);
   console.log(`  Requests/sec: ${(stats.requests / DURATION_SECONDS).toFixed(1)}\n`);
 
-  if (stats.responseTimes.length > 0) {
+  if (stats.responseTimes.length > 0 && stats.successful > 0) {
     console.log('Response Times:');
     console.log(`  Mean: ${Math.round(stats.totalResponseTime / stats.successful)}ms`);
     console.log(`  Min: ${Math.min(...stats.responseTimes)}ms`);
@@ -115,6 +115,8 @@ function printResults() {
     console.log(`  P50: ${percentile(stats.responseTimes, 50)}ms`);
     console.log(`  P95: ${percentile(stats.responseTimes, 95)}ms`);
     console.log(`  P99: ${percentile(stats.responseTimes, 99)}ms\n`);
+  } else {
+    console.log('Response Times: N/A (no successful requests)\n');
   }
 
   console.log('Status Codes:');
@@ -134,8 +136,8 @@ function printResults() {
   console.log('\n=================================\n');
 
   // Performance assessment
-  const avgResponseTime = Math.round(stats.totalResponseTime / stats.successful);
-  const successRate = (stats.successful / stats.requests) * 100;
+  const avgResponseTime = stats.successful > 0 ? Math.round(stats.totalResponseTime / stats.successful) : Infinity;
+  const successRate = stats.requests > 0 ? (stats.successful / stats.requests) * 100 : 0;
 
   if (successRate >= 99 && avgResponseTime < 500) {
     console.log('✅ EXCELLENT: System performing very well under load');

@@ -48,11 +48,11 @@ export function NavUser({ user, onLogout }: NavUserProps) {
   // Check if avatar URL is valid and not blank
   const hasValidAvatar = user.avatar && user.avatar.trim() !== '' && !user.avatar.includes('d=blank')
 
-  console.log('NavUser Debug:', {
+  // Debug logging
+  console.log('[NavUser] Avatar data:', {
     avatar: user.avatar,
     hasValidAvatar,
-    name: user.name,
-    initials: getInitials(user.name)
+    userName: user.name,
   })
 
   return (
@@ -139,13 +139,17 @@ export function NavUser({ user, onLogout }: NavUserProps) {
               Dashboard
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Settings className="mr-2 h-4 w-4" />
-            Account
+          <DropdownMenuItem asChild>
+            <Link href="/account" className="flex items-center">
+              <Settings className="mr-2 h-4 w-4" />
+              Account
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard className="mr-2 h-4 w-4" />
-            Billing
+          <DropdownMenuItem asChild>
+            <Link href="/account?tab=billing" className="flex items-center">
+              <CreditCard className="mr-2 h-4 w-4" />
+              Billing
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

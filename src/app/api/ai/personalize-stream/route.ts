@@ -3,7 +3,7 @@ import { openai } from '@ai-sdk/openai';
 import { streamText } from 'ai';
 import { getApiUser } from '@/lib/api/auth';
 import { createClient } from '@/lib/supabase/server';
-import { checkAIGenerationLimit, incrementAIUsage, getAnonymousSessionId, setAnonymousSessionCookie } from '@/lib/ai/usage-limits';
+import { checkAndIncrementAIUsage, setAnonymousSessionCookie } from '@/lib/ai/usage-limits';
 import { getOrCreateAnonymousSession } from '@/lib/ai/anonymous-session';
 import { getUserSubscriptionStatus, checkAndResetGenerationQuota } from '@/lib/stripe/subscription-guards';
 
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       console.log('Anonymous AI generation request');
     }
 
-    // Check generation limits
+    // Atomically check and increment generation limits
     let usageCheck;
     let sessionId: string | undefined;
     let ipAddress: string | null = null;
@@ -30,11 +30,11 @@ export async function POST(req: NextRequest) {
       // Check and reset quota if needed (monthly reset)
       await checkAndResetGenerationQuota(user.id);
 
-      // Get subscription status for better limits
-      const subscriptionStatus = await getUserSubscriptionStatus(user.id);
+      // Atomic check and increment for authenticated user
+      usageCheck = await checkAndIncrementAIUsage({ userId: user.id });
 
-      // Authenticated user check
-      usageCheck = await checkAIGenerationLimit({ userId: user.id });
+      // Get subscription status for additional context
+      const subscriptionStatus = await getUserSubscriptionStatus(user.id);
 
       // Add subscription info to response (convert tier to lowercase for compatibility)
       usageCheck.tier = subscriptionStatus.tier.toLowerCase() as 'free' | 'paid' | 'anonymous';
@@ -42,12 +42,13 @@ export async function POST(req: NextRequest) {
       usageCheck.used = subscriptionStatus.monthlyGenerationsUsed;
       usageCheck.remaining = subscriptionStatus.generationsRemaining;
     } else {
-      // Anonymous user check
+      // Get or create anonymous session
       const session = await getOrCreateAnonymousSession();
       sessionId = session.sessionId;
       ipAddress = session.ipAddress;
 
-      usageCheck = await checkAIGenerationLimit({
+      // Atomic check and increment for anonymous user
+      usageCheck = await checkAndIncrementAIUsage({
         sessionId,
         ipAddress: ipAddress || undefined
       });
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
       await setAnonymousSessionCookie(sessionId);
     }
 
-    // Check if generation is allowed
+    // Check if generation was allowed (counter already incremented if allowed)
     if (!usageCheck.allowed) {
       return Response.json({
         error: usageCheck.message || 'Generation limit reached',
@@ -67,7 +68,17 @@ export async function POST(req: NextRequest) {
       }, { status: 429 });
     }
 
-    const { articleId, contentType } = await req.json();
+    // Parse and validate request body
+    let articleId: string;
+    let contentType: string;
+
+    try {
+      const body = await req.json();
+      articleId = body.articleId;
+      contentType = body.contentType;
+    } catch (error) {
+      return Response.json({ error: 'Invalid JSON in request body' }, { status: 400 });
+    }
 
     if (!articleId || !contentType) {
       return Response.json({ error: 'articleId and contentType required' }, { status: 400 });
@@ -100,14 +111,6 @@ export async function POST(req: NextRequest) {
         try {
           // Only save personalization for authenticated users
           if (isAuthenticated && user) {
-            // Check if personalization exists
-            const { data: existing } = await supabase
-              .from('personalized_outputs')
-              .select('*')
-              .eq('user_id', user.id)
-              .eq('article_id', articleId)
-              .single();
-
             const fieldMap: Record<string, string> = {
               'key_insights': 'personalized_key_insights',
               'video_script': 'personalized_video_script',
@@ -145,45 +148,40 @@ export async function POST(req: NextRequest) {
               }
             }
 
+            const tokensToAdd = completion.usage?.totalTokens || 0;
+            const now = new Date().toISOString();
+
+            // Use atomic upsert with database-side increment to prevent race conditions
             const personalizedData: any = {
+              user_id: user.id,
+              article_id: articleId,
               [fieldName]: parsedContent,
-              tokens_used: (existing?.tokens_used || 0) + (completion.usage?.totalTokens || 0),
-              last_generated_at: new Date().toISOString()
+              last_generated_at: now,
+              truetone_settings: {
+                tone_of_voice: user.tone_of_voice,
+                formality: user.formality,
+                humor: user.humor
+              }
             };
 
-            if (existing) {
-              // Update existing
-              await supabase
-                .from('personalized_outputs')
-                .update({
-                  ...personalizedData,
-                  generation_count: existing.generation_count + 1
-                })
-                .eq('id', existing.id);
-            } else {
-              // Create new
-              await supabase
-                .from('personalized_outputs')
-                .insert({
-                  user_id: user.id,
-                  article_id: articleId,
-                  ...personalizedData,
-                  generation_count: 1,
-                  truetone_settings: {
-                    tone_of_voice: user.tone_of_voice,
-                    formality: user.formality,
-                    humor: user.humor
-                  }
-                });
-            }
+            // Perform atomic upsert using Postgres ON CONFLICT
+            await supabase.rpc('upsert_personalized_output', {
+              p_user_id: user.id,
+              p_article_id: articleId,
+              p_field_name: fieldName,
+              p_field_value: parsedContent,
+              p_tokens_used: tokensToAdd,
+              p_last_generated_at: now,
+              p_truetone_settings: {
+                tone_of_voice: user.tone_of_voice,
+                formality: user.formality,
+                humor: user.humor
+              }
+            });
           }
 
-          // Increment usage counter for all users (authenticated and anonymous)
-          if (isAuthenticated && user) {
-            await incrementAIUsage({ userId: user.id });
-          } else if (sessionId) {
-            await incrementAIUsage({ sessionId, ipAddress: ipAddress || undefined });
-          }
+          // Note: Usage counter was already atomically incremented at the start
+          // No need to increment again here - this prevents race conditions
 
         } catch (error) {
           console.error('Error saving personalization:', error);

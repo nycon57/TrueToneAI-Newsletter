@@ -72,13 +72,11 @@ interface OnboardingProviderProps {
     currentStep: number;
     userId?: string;
   };
-  kindeUserId: string;
 }
 
 export function OnboardingProvider({
   children,
-  initialData,
-  kindeUserId
+  initialData
 }: OnboardingProviderProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -158,22 +156,29 @@ export function OnboardingProvider({
   }, [currentStep, goToStep]);
 
   const validateCurrentStep = useCallback(() => {
-    clearErrors();
+    // Clear only field-specific errors for the current step
     let isValid = true;
+    const fieldsToValidate: string[] = [];
 
     switch (currentStep) {
       case 1: // Welcome
         break;
       case 2: // Profile Details
+        fieldsToValidate.push('jobTitle');
         if (!data.jobTitle?.trim()) {
           setError('jobTitle', 'Job title is required');
           isValid = false;
+        } else {
+          clearError('jobTitle');
         }
         break;
       case 3: // Category Preferences
+        fieldsToValidate.push('categoryPreferences');
         if (data.categoryPreferences.length === 0) {
           setError('categoryPreferences', 'Please select at least one category');
           isValid = false;
+        } else {
+          clearError('categoryPreferences');
         }
         break;
       case 4: // Subscription
@@ -181,9 +186,14 @@ export function OnboardingProvider({
     }
 
     return isValid;
-  }, [currentStep, data, clearErrors, setError]);
+  }, [currentStep, data, setError, clearError]);
 
   const completeOnboarding = useCallback(async () => {
+    // Validate current step before submitting
+    if (!validateCurrentStep()) {
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const response = await fetch('/api/user/onboarding', {
@@ -220,7 +230,7 @@ export function OnboardingProvider({
     } finally {
       setIsSubmitting(false);
     }
-  }, [data, router, setError]);
+  }, [data, router, setError, validateCurrentStep]);
 
   // Initialize step from URL on mount
   useEffect(() => {

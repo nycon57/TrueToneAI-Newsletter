@@ -29,7 +29,7 @@ export const getCachedApiUser = cache(async () => {
   if (fetchError && fetchError.code === 'PGRST116') {
     // User doesn't exist, create them on first login
     const now = new Date().toISOString();
-    const { data: newUser } = await supabase
+    const { data: newUser, error: insertError } = await supabase
       .from('users')
       .insert({
         kinde_id: kindeUser.id,
@@ -43,6 +43,28 @@ export const getCachedApiUser = cache(async () => {
       })
       .select('*')
       .single();
+
+    if (insertError) {
+      console.error('[AuthCache] Failed to create new user:', {
+        kindeId: kindeUser.id,
+        email: kindeUser.email,
+        error: insertError.message,
+        code: insertError.code,
+        details: insertError.details,
+        hint: insertError.hint
+      });
+
+      throw new Error(`Failed to create user: ${insertError.message}`);
+    }
+
+    if (!newUser) {
+      console.error('[AuthCache] User creation returned null despite no error:', {
+        kindeId: kindeUser.id,
+        email: kindeUser.email
+      });
+
+      throw new Error('User creation failed: returned null');
+    }
 
     return newUser;
   }
@@ -77,6 +99,7 @@ export interface ApiUser {
   lastName: string;
   company?: string;
   role: string;
+  avatar?: string;
   // User preferences
   category_preferences?: string[];
   tag_preferences?: string[];

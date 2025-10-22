@@ -83,6 +83,13 @@ export async function POST(req: NextRequest) {
 
       if (updateError) {
         console.error('[Checkout] Error saving customer ID:', updateError);
+        // Delete the Stripe customer to avoid orphaned records
+        try {
+          await stripe.customers.del(customer.id);
+        } catch (delError) {
+          console.error('[Checkout] Failed to delete orphaned Stripe customer:', delError);
+        }
+        throw new Error(`Failed to save Stripe customer ID to database: ${updateError.message} (customer: ${customer.id}, user: ${user.id})`);
       } else {
         console.log('[Checkout] Created and saved Stripe customer:', customer.id, 'for user:', user.id);
       }

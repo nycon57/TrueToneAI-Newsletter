@@ -61,13 +61,20 @@ export function PersonalizeButton({
   if (!isPaid) {
     return (
       <Button
+        onClick={() => {
+          // Redirect to billing page for upgrade
+          window.location.href = '/account?tab=billing';
+        }}
         variant="outline"
         size="sm"
-        disabled
-        className={cn("opacity-50", className)}
+        className={cn(
+          "border-2 border-orchid/50 hover:border-orchid hover:bg-orchid/10 text-orchid font-semibold transition-all",
+          "hover:scale-105 active:scale-95",
+          className
+        )}
       >
         <Sparkles className="h-4 w-4 mr-2" />
-        Upgrade to Personalize
+        Upgrade for AI
       </Button>
     );
   }
