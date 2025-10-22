@@ -43,11 +43,22 @@ interface Article {
   published_at: string;
 }
 
+interface User {
+  id: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  subscription_tier?: string;
+  monthly_generation_limit?: number;
+  monthly_generations_used?: number;
+}
+
 export default function HomePage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   // URL parameter filters using nuqs
   const [industry] = useQueryState('industry');
@@ -58,8 +69,10 @@ export default function HomePage() {
   // Kinde authentication hooks
   const { logout, isAuthenticated, isLoading: kindeLoading, user: kindeUser } = useKindeBrowserClient();
 
-  const isPaid = user?.subscription_tier === 'paid';
-  const isFreeUser = !isAuthenticated || user?.subscription_tier === 'free';
+  // Compute tier flags outside effect for use in JSX
+  const normalizedTier = user?.subscription_tier?.toLowerCase() || 'free';
+  const isPaid = normalizedTier === 'paid';
+  const isFreeUser = !isAuthenticated || normalizedTier === 'free';
 
   // OPTIMIZED: Parallel API calls for articles and user data
   useEffect(() => {
@@ -113,7 +126,7 @@ export default function HomePage() {
     };
 
     fetchData();
-  }, [industry, category, tags, saved, isPaid, isAuthenticated, kindeUser, kindeLoading]);
+  }, [industry, category, tags, saved, isAuthenticated, kindeUser, kindeLoading, user?.subscription_tier]);
 
   if (loading || kindeLoading) {
     return (
@@ -183,7 +196,7 @@ export default function HomePage() {
                     user={{
                       name: `${kindeUser?.given_name || user?.firstName || 'User'} ${kindeUser?.family_name || user?.lastName || ''}`.trim(),
                       email: kindeUser?.email || user?.email || '',
-                      avatar: kindeUser?.picture || '',
+                      avatar: user?.avatar || kindeUser?.picture || '',
                       subscription_tier: user?.subscription_tier || 'free'
                     }}
                     onLogout={logout}
@@ -226,15 +239,18 @@ export default function HomePage() {
                 </div>
               )}
               <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                {isAuthenticated ? 'Your Market Intelligence' : 'Market Intelligence'}
+                {isAuthenticated
+                  ? (isPaid ? 'Your Spark Content' : 'Spark Newsletter')
+                  : 'Spark Newsletter for Sales Pros'
+                }
               </h1>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                {isAuthenticated
-                  ? (isPaid
-                      ? 'AI-personalized mortgage market insights, crafted for your unique voice and style.'
-                      : 'Professional mortgage market insights. Upgrade for AI personalization and exclusive content.'
+                {!isAuthenticated
+                  ? 'Curated market insights for sales professionals. Subscribe to Spark and turn industry news into content you can share with your audience.'
+                  : (isPaid
+                      ? 'Your weekly Spark content, ready to personalize with AI. Copy scripts, transform articles for your voice, and share with your audience in seconds.'
+                      : 'Your weekly Spark newsletter with curated market insights. Upgrade to unlock AI personalization and create content in your unique voice.'
                     )
-                  : 'Stay ahead with real-time mortgage market insights and professionally crafted content. Sign up for personalized AI content.'
                 }
               </p>
 
@@ -295,7 +311,7 @@ export default function HomePage() {
 
           {/* Footer */}
           <div className="mt-12 text-center text-sm text-gray-500">
-            © 2024 TrueTone AI. Built for ambitious, top-producing, hyper-growth Loan Officers.
+            © 2024 Spark by TrueTone AI. Curated insights for sales professionals who lead.
           </div>
         </div>
       </div>

@@ -75,6 +75,8 @@ export function SaveButton({ articleId, initialSaved, isPaid, className }: SaveB
       variant="ghost"
       size="sm"
       className={cn("flex-shrink-0", className)}
+      aria-label={saved ? "Remove from saved articles" : "Save article"}
+      aria-pressed={saved}
     >
       <Heart
         className={cn(

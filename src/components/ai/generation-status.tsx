@@ -35,7 +35,7 @@ export function GenerationStatus({
   );
 
   const usagePercentage = useMemo(
-    () => Math.min(100, (generationsUsed / generationLimit) * 100),
+    () => generationLimit === 0 ? 0 : Math.min(100, (generationsUsed / generationLimit) * 100),
     [generationsUsed, generationLimit]
   );
 
@@ -228,7 +228,7 @@ export function GenerationStatusBadge({
   onClick?: () => void;
 }) {
   const remainingGenerations = Math.max(0, generationLimit - generationsUsed);
-  const usagePercentage = (generationsUsed / generationLimit) * 100;
+  const usagePercentage = generationLimit === 0 ? 0 : (generationsUsed / generationLimit) * 100;
 
   if (subscriptionTier !== 'FREE') {
     return (

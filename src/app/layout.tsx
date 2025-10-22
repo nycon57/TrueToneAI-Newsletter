@@ -6,6 +6,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { inter, signal } from "./fonts";
 import { Providers } from "./providers";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
+import { WebVitals } from "@/components/performance/web-vitals";
 
 export const metadata: Metadata = {
   title: "TrueTone AI Newsletter",
@@ -22,7 +23,6 @@ export const viewport: Viewport = {
   themeColor: "#9333EA",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export default function RootLayout({
@@ -32,6 +32,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* DNS Prefetch & Preconnect for external resources */}
+        <link rel="dns-prefetch" href="https://o4509674593124353.ingest.us.sentry.io" />
+        <link rel="preconnect" href="https://o4509674593124353.ingest.us.sentry.io" crossOrigin="anonymous" />
+
+        {/* Preload critical assets */}
+        <link
+          rel="preload"
+          href="/logo/landscape/TrueToneAI-Landscape-Logo-Full-Color.png"
+          as="image"
+          type="image/png"
+        />
+      </head>
       <body
         className={`${inter.variable} ${signal.variable} font-sans antialiased`}
         suppressHydrationWarning={true}
@@ -44,6 +57,7 @@ export default function RootLayout({
             </TooltipProvider>
           </NuqsAdapter>
           <ServiceWorkerRegistration />
+          <WebVitals />
         </Providers>
       </body>
     </html>

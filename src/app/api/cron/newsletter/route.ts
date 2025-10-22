@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
             // Skip sending if no articles match user's preferences
             if (filteredArticles.length === 0) {
               console.log(`Skipping ${subscriber.email} - no articles match category preferences`);
-              return { success: true, email: subscriber.email, skipped: true };
+              return { success: false, email: subscriber.email, skipped: true };
             }
 
             // Update content with filtered articles
@@ -138,10 +138,11 @@ export async function GET(req: NextRequest) {
       })
     );
 
-    const successful = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
-    const failed = results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && !r.value.success)).length;
+    const successful = results.filter(r => r.status === 'fulfilled' && r.value.success && !r.value.skipped).length;
+    const skipped = results.filter(r => r.status === 'fulfilled' && r.value.skipped).length;
+    const failed = results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && !r.value.success && !r.value.skipped)).length;
 
-    console.log(`Newsletter delivery complete: ${successful} sent, ${failed} failed`);
+    console.log(`Newsletter delivery complete: ${successful} sent, ${skipped} skipped, ${failed} failed`);
 
     return NextResponse.json({
       success: true,
@@ -149,6 +150,7 @@ export async function GET(req: NextRequest) {
       postTitle: todaysPost.title,
       totalSubscribers: subscribers.length,
       sent: successful,
+      skipped,
       failed,
       date: today
     });

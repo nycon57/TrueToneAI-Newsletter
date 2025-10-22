@@ -133,14 +133,12 @@ interface OnboardingClientProps {
     currentStep: number;
     userId?: string;
   };
-  kindeUserId: string;
 }
 
-export default function OnboardingClient({ initialData, kindeUserId }: OnboardingClientProps) {
+export default function OnboardingClient({ initialData }: OnboardingClientProps) {
   return (
     <OnboardingProvider
       initialData={initialData}
-      kindeUserId={kindeUserId}
     >
       <OnboardingContent />
     </OnboardingProvider>

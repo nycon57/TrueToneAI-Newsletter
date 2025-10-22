@@ -15,7 +15,7 @@ export function LoginModal({ children }: LoginModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild suppressHydrationWarning>
         {children}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md border-border/60 shadow-2xl animate-scale-in">
@@ -70,7 +70,24 @@ export function LoginModal({ children }: LoginModalProps) {
 
         <div className="text-center pt-2">
           <p className="text-xs text-muted-foreground">
-            By continuing, you agree to our Terms of Service and Privacy Policy
+            By continuing, you agree to our{' '}
+            <a
+              href="/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground transition-colors"
+            >
+              Terms of Service
+            </a>
+            {' '}and{' '}
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground transition-colors"
+            >
+              Privacy Policy
+            </a>
           </p>
         </div>
       </DialogContent>

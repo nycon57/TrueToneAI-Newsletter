@@ -9,15 +9,13 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 });
 
 const nextConfig: NextConfig = {
+  // TODO(TICKET-XXX): Re-enable build checks after addressing existing lint/type errors
+  // These are temporarily disabled during migration - remove before production deployment
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: process.env.LOCAL_DEV === 'true' || process.env.MIGRATION_MODE === 'true',
   },
   typescript: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has type errors.
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: process.env.LOCAL_DEV === 'true' || process.env.MIGRATION_MODE === 'true',
   },
   // Skip build-time prerendering - generate pages on-demand at runtime
   // This is necessary because the app uses dynamic features (useSearchParams) extensively
@@ -27,10 +25,76 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
 
+  // Optimize production builds
+  productionBrowserSourceMaps: false,
+
+  // Server external packages (moved from experimental in Next.js 15)
+  serverExternalPackages: ['@prisma/client', '@prisma/adapter-pg'],
+
+  // Experimental performance features
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons', 'date-fns', 'motion'],
+    // Optimize server actions
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+  },
+
   // Image optimization
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
+    deviceSizes: [640, 750, 828, 1080, 1200],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+  },
+
+  // Headers for caching and security
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin'
+          },
+        ],
+      },
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
   },
 };
 

@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
-import { createClient } from '@/lib/supabase/server';
 import { ArticlesList } from './articles-list';
 import { ArticlesSkeleton } from './articles-skeleton';
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
+import { sendWelcome } from '@/emails';
 
 // Validation schema for onboarding data
 const OnboardingSchema = z.object({
@@ -28,6 +29,13 @@ export async function POST(request: NextRequest) {
 
     if (!kindeUser?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Validate that email exists - never use synthetic email addresses
+    if (!kindeUser.email) {
+      return NextResponse.json({
+        error: 'Email address is required. Please ensure your authentication provider has your email address.'
+      }, { status: 400 });
     }
 
     // Parse and validate request body
@@ -63,7 +71,7 @@ export async function POST(request: NextRequest) {
           .from('users')
           .insert({
             kinde_id: kindeUser.id,
-            email: kindeUser.email || profileData.firstName + '@example.com',
+            email: kindeUser.email, // Email is guaranteed to exist by validation above
             firstName: profileData.firstName,
             lastName: profileData.lastName,
             name: `${profileData.firstName} ${profileData.lastName}`.trim(),
@@ -84,6 +92,22 @@ export async function POST(request: NextRequest) {
             error: 'Failed to create user',
             details: createError
           }, { status: 500 });
+        }
+
+        // Send welcome email to new user
+        if (newUser && kindeUser.email) {
+          try {
+            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.KINDE_SITE_URL || 'http://localhost:3000';
+            await sendWelcome({
+              to: kindeUser.email,
+              name: newUser.firstName || newUser.name || 'there',
+              onboardingUrl: `${baseUrl}/onboarding`,
+            });
+            console.log('[Onboarding] Welcome email sent successfully to:', kindeUser.email);
+          } catch (emailError) {
+            console.error('[Onboarding] Failed to send welcome email:', emailError);
+            // Don't fail the onboarding process if email fails
+          }
         }
 
         return NextResponse.json({
@@ -109,8 +133,10 @@ export async function POST(request: NextRequest) {
       subscriptionStatus = 'trialing';
     } else if (billingData?.billingType === 'paid_plan') {
       subscriptionTier = 'paid';
+      subscriptionStatus = 'active';
     } else if (billingData?.billingType === 'enterprise') {
       subscriptionTier = 'premium';
+      subscriptionStatus = 'active';
     }
 
     // Update user with onboarding data (only fields that exist in the table)
@@ -137,6 +163,22 @@ export async function POST(request: NextRequest) {
         error: 'Failed to save onboarding data',
         details: error
       }, { status: 500 });
+    }
+
+    // Send welcome email to existing user who completed onboarding
+    if (user && kindeUser.email) {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.KINDE_SITE_URL || 'http://localhost:3000';
+        await sendWelcome({
+          to: kindeUser.email,
+          name: user.firstName || user.name || 'there',
+          onboardingUrl: `${baseUrl}/onboarding`,
+        });
+        console.log('[Onboarding] Welcome email sent successfully to:', kindeUser.email);
+      } catch (emailError) {
+        console.error('[Onboarding] Failed to send welcome email:', emailError);
+        // Don't fail the onboarding process if email fails
+      }
     }
 
     return NextResponse.json({

@@ -29,11 +29,11 @@ export function WelcomeStep() {
                   <Sparkles className="h-16 w-16 text-orchid mx-auto animate-pulse" />
                 </motion.div>
                 <CardTitle className="text-4xl font-heading font-bold mb-4 bg-gradient-to-r from-orchid via-primary to-skyward bg-clip-text text-transparent">
-                  Welcome to TrueTone Newsletter!
+                  Welcome to Spark!
                 </CardTitle>
                 <CardDescription className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Let's personalize your newsletter experience in just 3 simple steps.
-                  Get AI-powered content tailored to your interests and industry.
+                  Let&apos;s personalize your Spark experience in just 3 simple steps.
+                  Get curated content for sales professionals, tailored to what you want to know and share.
                 </CardDescription>
               </CardHeader>
 
@@ -107,19 +107,19 @@ export function WelcomeStep() {
                 <div className="grid sm:grid-cols-2 gap-3 text-sm text-muted-foreground text-left max-w-2xl mx-auto">
                   <div className="flex items-start gap-2">
                     <div className="w-1.5 h-1.5 bg-orchid rounded-full mt-2 flex-shrink-0"></div>
-                    <span>AI-powered content tailored to your selected categories</span>
+                    <span>Curated content for sales pros based on your interests</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                    <span>Personalized recommendations based on your industry</span>
+                    <span>AI personalization for your unique voice and audience</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <div className="w-1.5 h-1.5 bg-skyward rounded-full mt-2 flex-shrink-0"></div>
-                    <span>One-click copy for emails, social media, and more</span>
+                    <span>One-click copy for emails, social posts, and videos</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <div className="w-1.5 h-1.5 bg-shadow rounded-full mt-2 flex-shrink-0"></div>
-                    <span>Easy-to-manage preferences you can update anytime</span>
+                    <span>Fresh insights delivered weekly via Spark newsletter</span>
                   </div>
                 </div>
               </div>

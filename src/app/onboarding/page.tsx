@@ -55,7 +55,6 @@ export default async function OnboardingPage() {
       }>
         <OnboardingClient
           initialData={initialData}
-          kindeUserId={kindeUser.id}
         />
       </Suspense>
     </div>

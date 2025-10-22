@@ -23,7 +23,7 @@ export const ONBOARDING_STEPS = [
   {
     id: 3,
     title: "Category Preferences",
-    description: "Choose your loan categories",
+    description: "Choose your content preferences (rate alerts, program updates, etc.)",
     icon: CogIcon,
     isOptional: false,
   },

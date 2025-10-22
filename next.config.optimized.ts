@@ -110,7 +110,7 @@ const nextConfig: NextConfig = {
       config.optimization = {
         ...config.optimization,
         usedExports: true,
-        sideEffects: false,
+        // Removed global sideEffects: false - rely on package.json "sideEffects" entries instead
         splitChunks: {
           chunks: 'all',
           cacheGroups: {

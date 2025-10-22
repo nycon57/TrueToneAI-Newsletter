@@ -2009,6 +2009,7 @@ export namespace Prisma {
     lastName: string | null
     email: string | null
     company: string | null
+    avatar: string | null
     createdAt: Date | null
     updatedAt: Date | null
     kindeId: string | null
@@ -2034,6 +2035,7 @@ export namespace Prisma {
     lastName: string | null
     email: string | null
     company: string | null
+    avatar: string | null
     createdAt: Date | null
     updatedAt: Date | null
     kindeId: string | null
@@ -2059,6 +2061,7 @@ export namespace Prisma {
     lastName: number
     email: number
     company: number
+    avatar: number
     createdAt: number
     updatedAt: number
     kindeId: number
@@ -2100,6 +2103,7 @@ export namespace Prisma {
     lastName?: true
     email?: true
     company?: true
+    avatar?: true
     createdAt?: true
     updatedAt?: true
     kindeId?: true
@@ -2125,6 +2129,7 @@ export namespace Prisma {
     lastName?: true
     email?: true
     company?: true
+    avatar?: true
     createdAt?: true
     updatedAt?: true
     kindeId?: true
@@ -2150,6 +2155,7 @@ export namespace Prisma {
     lastName?: true
     email?: true
     company?: true
+    avatar?: true
     createdAt?: true
     updatedAt?: true
     kindeId?: true
@@ -2264,6 +2270,7 @@ export namespace Prisma {
     lastName: string
     email: string
     company: string | null
+    avatar: string | null
     createdAt: Date
     updatedAt: Date
     kindeId: string | null
@@ -2310,6 +2317,7 @@ export namespace Prisma {
     lastName?: boolean
     email?: boolean
     company?: boolean
+    avatar?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     kindeId?: boolean
@@ -2346,6 +2354,7 @@ export namespace Prisma {
     lastName?: boolean
     email?: boolean
     company?: boolean
+    avatar?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     kindeId?: boolean
@@ -2373,6 +2382,7 @@ export namespace Prisma {
     lastName?: boolean
     email?: boolean
     company?: boolean
+    avatar?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     kindeId?: boolean
@@ -2400,6 +2410,7 @@ export namespace Prisma {
     lastName?: boolean
     email?: boolean
     company?: boolean
+    avatar?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     kindeId?: boolean
@@ -2420,7 +2431,7 @@ export namespace Prisma {
     onboardingCompletedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "firstName" | "lastName" | "email" | "company" | "createdAt" | "updatedAt" | "kindeId" | "categoryPreferences" | "savedArticleIds" | "subscriptionTier" | "subscriptionStatus" | "subscriptionExpiresAt" | "subscriptionCreatedAt" | "monthlyGenerationLimit" | "monthlyGenerationsUsed" | "generationResetDate" | "stripeCustomerId" | "stripeSubscriptionId" | "stripePriceId" | "hasCompletedOnboarding" | "onboardingStep" | "onboardingCompletedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "firstName" | "lastName" | "email" | "company" | "avatar" | "createdAt" | "updatedAt" | "kindeId" | "categoryPreferences" | "savedArticleIds" | "subscriptionTier" | "subscriptionStatus" | "subscriptionExpiresAt" | "subscriptionCreatedAt" | "monthlyGenerationLimit" | "monthlyGenerationsUsed" | "generationResetDate" | "stripeCustomerId" | "stripeSubscriptionId" | "stripePriceId" | "hasCompletedOnboarding" | "onboardingStep" | "onboardingCompletedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     likes?: boolean | User$likesArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
@@ -2496,6 +2507,10 @@ export namespace Prisma {
        * Optional company name where the user works
        */
       company: string | null
+      /**
+       * URL to user profile avatar image stored in Supabase Storage
+       */
+      avatar: string | null
       /**
        * Timestamp when the user account was created
        */
@@ -3005,6 +3020,7 @@ export namespace Prisma {
     readonly lastName: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
     readonly company: FieldRef<"User", 'String'>
+    readonly avatar: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly kindeId: FieldRef<"User", 'String'>
@@ -13883,7 +13899,7 @@ export namespace Prisma {
        */
       id: string
       /**
-       * Client-generated session ID for tracking
+       * Client-generated session ID for tracking (unique for upserts)
        */
       sessionId: string
       /**
@@ -14718,6 +14734,7 @@ export namespace Prisma {
     lastName: 'lastName',
     email: 'email',
     company: 'company',
+    avatar: 'avatar',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     kindeId: 'kindeId',
@@ -15127,6 +15144,7 @@ export namespace Prisma {
     lastName?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
     company?: StringNullableFilter<"User"> | string | null
+    avatar?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     kindeId?: StringNullableFilter<"User"> | string | null
@@ -15162,6 +15180,7 @@ export namespace Prisma {
     lastName?: SortOrder
     email?: SortOrder
     company?: SortOrderInput | SortOrder
+    avatar?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     kindeId?: SortOrderInput | SortOrder
@@ -15203,6 +15222,7 @@ export namespace Prisma {
     firstName?: StringFilter<"User"> | string
     lastName?: StringFilter<"User"> | string
     company?: StringNullableFilter<"User"> | string | null
+    avatar?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     categoryPreferences?: StringNullableListFilter<"User">
@@ -15235,6 +15255,7 @@ export namespace Prisma {
     lastName?: SortOrder
     email?: SortOrder
     company?: SortOrderInput | SortOrder
+    avatar?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     kindeId?: SortOrderInput | SortOrder
@@ -15270,6 +15291,7 @@ export namespace Prisma {
     lastName?: StringWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
     company?: StringNullableWithAggregatesFilter<"User"> | string | null
+    avatar?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     kindeId?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -16092,15 +16114,15 @@ export namespace Prisma {
 
   export type AnonymousAiUsageWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    sessionId?: string
     AND?: AnonymousAiUsageWhereInput | AnonymousAiUsageWhereInput[]
     OR?: AnonymousAiUsageWhereInput[]
     NOT?: AnonymousAiUsageWhereInput | AnonymousAiUsageWhereInput[]
-    sessionId?: StringFilter<"AnonymousAiUsage"> | string
     ipAddress?: StringNullableFilter<"AnonymousAiUsage"> | string | null
     generationsUsed?: IntFilter<"AnonymousAiUsage"> | number
     createdAt?: DateTimeFilter<"AnonymousAiUsage"> | Date | string
     lastUsedAt?: DateTimeFilter<"AnonymousAiUsage"> | Date | string
-  }, "id">
+  }, "id" | "sessionId">
 
   export type AnonymousAiUsageOrderByWithAggregationInput = {
     id?: SortOrder
@@ -16135,6 +16157,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -16170,6 +16193,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -16205,6 +16229,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16240,6 +16265,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16275,6 +16301,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -16302,6 +16329,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16329,6 +16357,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17468,6 +17497,7 @@ export namespace Prisma {
     lastName?: SortOrder
     email?: SortOrder
     company?: SortOrder
+    avatar?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     kindeId?: SortOrder
@@ -17501,6 +17531,7 @@ export namespace Prisma {
     lastName?: SortOrder
     email?: SortOrder
     company?: SortOrder
+    avatar?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     kindeId?: SortOrder
@@ -17526,6 +17557,7 @@ export namespace Prisma {
     lastName?: SortOrder
     email?: SortOrder
     company?: SortOrder
+    avatar?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     kindeId?: SortOrder
@@ -20305,6 +20337,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -20339,6 +20372,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -20414,6 +20448,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20448,6 +20483,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20513,6 +20549,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -20547,6 +20584,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -20711,6 +20749,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20745,6 +20784,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20870,6 +20910,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -20904,6 +20945,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -21003,6 +21045,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21037,6 +21080,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21114,6 +21158,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -21148,6 +21193,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -21247,6 +21293,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21281,6 +21328,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21358,6 +21406,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -21392,6 +21441,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -21491,6 +21541,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21525,6 +21576,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21559,6 +21611,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -21593,6 +21646,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -21632,6 +21686,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -21666,6 +21721,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -21754,6 +21810,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21788,6 +21845,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21833,6 +21891,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21867,6 +21926,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21917,6 +21977,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -21951,6 +22012,7 @@ export namespace Prisma {
     lastName?: string
     email: string
     company?: string | null
+    avatar?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     kindeId?: string | null
@@ -22056,6 +22118,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22090,6 +22153,7 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null

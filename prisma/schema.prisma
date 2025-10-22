@@ -24,6 +24,7 @@ model User {
   lastName  String @default("Not Set")     /// User's last name - defaults to "Not Set" for existing records
   email     String   @unique               /// User's email address - must be unique across all users
   company   String?                        /// Optional company name where the user works
+  avatar    String?                        /// URL to user profile avatar image stored in Supabase Storage
   createdAt DateTime @default(now())       /// Timestamp when the user account was created
   updatedAt DateTime @updatedAt            /// Timestamp when the user record was last updated
 
@@ -39,7 +40,7 @@ model User {
   subscriptionStatus      String?                          @map("subscription_status")        /// Current subscription status (active, trialing, canceled, etc.)
   subscriptionExpiresAt   DateTime?                        @map("subscription_expires_at")    /// When subscription expires
   subscriptionCreatedAt   DateTime?                        @map("subscription_created_at")    /// When subscription was created
-  monthlyGenerationLimit  Int              @default(0)     @map("monthly_generation_limit")  /// Max AI generations per month
+  monthlyGenerationLimit  Int              @default(3)     @map("monthly_generation_limit")  /// Max AI generations per month
   monthlyGenerationsUsed  Int              @default(0)     @map("monthly_generations_used")  /// AI generations used this month
   generationResetDate     DateTime?        @default(now()) @db.Date @map("generation_reset_date") /// Date when monthly count resets
 
@@ -356,13 +357,11 @@ model PersonalizedOutput {
 /// Maps to "anonymous_ai_usage" table in the database
 model AnonymousAiUsage {
   id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid /// Unique identifier for the usage record
-  sessionId       String    @map("session_id")                                      /// Client-generated session ID for tracking
+  sessionId       String    @unique @map("session_id")                              /// Client-generated session ID for tracking (unique for upserts)
   ipAddress       String?   @map("ip_address")                                      /// IP address for additional verification
   generationsUsed Int       @default(0) @map("generations_used")                    /// Number of AI generations used by this session
   createdAt       DateTime  @default(now()) @map("created_at")                      /// When the usage record was first created
   lastUsedAt      DateTime  @default(now()) @map("last_used_at")                    /// When the last generation was performed
 
-  // Indexes for performance
-  @@index([sessionId])                                                              /// Fast session lookup for limit checks
   @@map("anonymous_ai_usage")
 }

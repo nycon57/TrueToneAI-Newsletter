@@ -17,7 +17,8 @@ const stepLabels = [
 ];
 
 export function ProgressIndicator({ currentStep, totalSteps, className }: ProgressIndicatorProps) {
-  const progressPercentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
+  // Guard against division by zero when totalSteps is 1
+  const progressPercentage = totalSteps > 1 ? ((currentStep - 1) / (totalSteps - 1)) * 100 : 0;
 
   return (
     <div className={cn("w-full max-w-4xl mx-auto px-4 py-6", className)}>
@@ -63,7 +64,7 @@ export function ProgressIndicator({ currentStep, totalSteps, className }: Progre
                     !isCompleted && !isCurrent && "text-muted-foreground"
                   )}
                 >
-                  {stepLabels[index]}
+                  {stepLabels[index] || `Step ${step}`}
                 </span>
               </div>
             );
@@ -74,7 +75,7 @@ export function ProgressIndicator({ currentStep, totalSteps, className }: Progre
       {/* Mobile step label */}
       <div className="mt-4 text-center sm:hidden">
         <p className="text-sm font-medium text-foreground">
-          Step {currentStep} of {totalSteps}: {stepLabels[currentStep - 1]}
+          Step {currentStep} of {totalSteps}: {stepLabels[currentStep - 1] || `Step ${currentStep}`}
         </p>
       </div>
 

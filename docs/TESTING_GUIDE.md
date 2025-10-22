@@ -1,542 +1,446 @@
-# Testing Guide - Newsletter Trigger & AI Limits
+# End-to-End Testing Guide
 
-This guide provides step-by-step instructions for testing the newly implemented newsletter trigger system and AI generation limits.
-
----
+This guide walks you through testing the complete Stripe Sync Engine integration and subscription flow.
 
 ## Prerequisites
 
-1. **Environment Variables**
-   ```bash
-   CRON_SECRET=your-secret-here
-   NEXT_PUBLIC_URL=http://localhost:3000
-   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
-   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-   ```
+Before testing, ensure you've completed:
 
-2. **Database Setup**
-   - Ensure `anonymous_ai_usage` table exists
-   - Ensure users have `category_preferences` field
-   - Ensure users have `subscription_tier` and limit fields
-
-3. **Test User Setup**
-   Create test users with different configurations:
-   ```sql
-   -- Free tier user with category preferences
-   UPDATE users SET
-     subscription_tier = 'free',
-     monthly_generation_limit = 3,
-     monthly_generations_used = 0,
-     category_preferences = ARRAY['rates', 'market']
-   WHERE email = 'free@test.com';
-
-   -- Paid tier user without preferences
-   UPDATE users SET
-     subscription_tier = 'paid',
-     monthly_generation_limit = 50,
-     monthly_generations_used = 0,
-     category_preferences = NULL
-   WHERE email = 'paid@test.com';
-   ```
+- ✅ Phase 1: Stripe schema created in database
+- ✅ Phase 2: Edge Function created
+- ✅ Phase 3: Database trigger created
+- ✅ Phase 4: Frontend components updated
+- ⏳ **USER ACTION REQUIRED**: Deploy Edge Function
+- ⏳ **USER ACTION REQUIRED**: Apply database trigger
+- ⏳ **USER ACTION REQUIRED**: Configure Stripe webhook
 
 ---
 
-## Test 1: Newsletter Trigger - Happy Path
+## Pre-Deployment Checklist
 
-**Goal:** Verify newsletter triggers when 3 articles are approved on Mon/Wed/Fri
+### 1. Verify Environment Variables
 
-### Setup
-1. Ensure today is Monday, Wednesday, or Friday
-2. Create 3 draft articles with different categories
-
-### Steps
-
-1. **Create draft articles:**
-   ```bash
-   # Use admin dashboard or API to create 3 draft articles
-   POST /api/admin/articles
-   {
-     "title": "Article 1",
-     "category": "rates",
-     "status": "draft"
-   }
-   ```
-
-2. **Approve first article:**
-   ```bash
-   POST /api/admin/articles/[id]/approve
-   {
-     "action": "approve"
-   }
-   ```
-
-   **Expected Response:**
-   ```json
-   {
-     "success": true,
-     "action": "approve",
-     "article": { ... },
-     "newsletter": {
-       "triggered": false,
-       "reason": "Only 1 article(s) approved since last newsletter. Need 3 to trigger."
-     }
-   }
-   ```
-
-3. **Approve second article:**
-   ```bash
-   POST /api/admin/articles/[id]/approve
-   {
-     "action": "approve"
-   }
-   ```
-
-   **Expected Response:**
-   ```json
-   {
-     "success": true,
-     "action": "approve",
-     "article": { ... },
-     "newsletter": {
-       "triggered": false,
-       "reason": "Only 2 article(s) approved since last newsletter. Need 3 to trigger."
-     }
-   }
-   ```
-
-4. **Approve third article:**
-   ```bash
-   POST /api/admin/articles/[id]/approve
-   {
-     "action": "approve"
-   }
-   ```
-
-   **Expected Response:**
-   ```json
-   {
-     "success": true,
-     "action": "approve",
-     "article": { ... },
-     "newsletter": {
-       "triggered": true,
-       "reason": "Newsletter successfully created and sent with 3 articles",
-       "newsletterId": "uuid-here"
-     }
-   }
-   ```
-
-5. **Verify newsletter created:**
-   ```sql
-   SELECT * FROM newsletter_posts
-   ORDER BY created_at DESC
-   LIMIT 1;
-   ```
-
-6. **Check email logs:**
-   - Verify emails sent via Resend
-   - Check subscriber received newsletter
-   - Verify category filtering worked
-
-### Cleanup
-```sql
--- Reset for next test
-DELETE FROM newsletter_posts WHERE id = 'uuid-from-test';
-UPDATE articles SET status = 'draft' WHERE id IN ('id1', 'id2', 'id3');
-```
-
----
-
-## Test 2: Newsletter Trigger - Wrong Day
-
-**Goal:** Verify newsletter does NOT trigger on Tue/Thu/Sat/Sun
-
-### Steps
-
-1. Ensure today is Tuesday, Thursday, Saturday, or Sunday
-2. Approve 3 articles
-3. **Expected:** Newsletter does NOT trigger
-
-**Expected Response:**
-```json
-{
-  "success": true,
-  "action": "approve",
-  "article": { ... },
-  "newsletter": {
-    "triggered": false,
-    "reason": "Today is Tuesday. Newsletters only send on Monday, Wednesday, and Friday."
-  }
-}
-```
-
----
-
-## Test 3: Category Preference Filtering
-
-**Goal:** Verify users only receive articles matching their preferences
-
-### Setup
-1. Create newsletter with articles from different categories:
-   - Article A: category = "rates"
-   - Article B: category = "market"
-   - Article C: category = "regulations"
-
-2. Create test users with preferences:
-   - User 1: preferences = ["rates", "market"]
-   - User 2: preferences = ["regulations"]
-   - User 3: preferences = [] (empty)
-
-### Steps
-
-1. **Trigger newsletter send:**
-   ```bash
-   GET /api/cron/newsletter
-   Authorization: Bearer <CRON_SECRET>
-   ```
-
-2. **Check email logs:**
-   - User 1 should receive Articles A & B only
-   - User 2 should receive Article C only
-   - User 3 should receive all articles
-
-3. **Verify console logs:**
-   ```
-   Newsletter contains articles from categories: rates, market, regulations
-   Sending 2 filtered articles to user1@test.com
-   Sending 1 filtered articles to user2@test.com
-   Sending 3 filtered articles to user3@test.com
-   ```
-
----
-
-## Test 4: AI Generation Limits - Anonymous User
-
-**Goal:** Verify anonymous users can generate 3 times then get blocked
-
-### Steps
-
-1. **Open browser in incognito mode**
-2. **Navigate to article page**
-3. **Click personalize button 3 times**
-
-   **1st Generation:**
-   - Should succeed
-   - Should set `anonymous_session` cookie
-
-   **2nd Generation:**
-   - Should succeed
-   - Should use same session
-
-   **3rd Generation:**
-   - Should succeed
-   - Session now at limit
-
-   **4th Generation:**
-   - Should fail with 429 status
-   - Should show upgrade prompt
-
-   **Expected Response (4th attempt):**
-   ```json
-   {
-     "error": "Free trial limit reached. Sign up to continue personalizing content.",
-     "remaining": 0,
-     "limit": 3,
-     "used": 3,
-     "tier": "anonymous"
-   }
-   ```
-
-4. **Verify database:**
-   ```sql
-   SELECT * FROM anonymous_ai_usage
-   WHERE session_id = 'anon_xxxxx';
-   -- Should show generations_used = 3
-   ```
-
----
-
-## Test 5: AI Generation Limits - Free Tier User
-
-**Goal:** Verify free tier users get 3 generations per month
-
-### Setup
-```sql
-UPDATE users SET
-  subscription_tier = 'free',
-  monthly_generation_limit = 3,
-  monthly_generations_used = 0
-WHERE email = 'free@test.com';
-```
-
-### Steps
-
-1. **Login as free tier user**
-2. **Generate AI content 3 times**
-
-   **Generations 1-3:**
-   - Should succeed
-   - Counter should increment
-
-   **4th Generation:**
-   - Should fail with 429 status
-
-   **Expected Response:**
-   ```json
-   {
-     "error": "Free tier limit reached. Upgrade to continue personalizing content.",
-     "remaining": 0,
-     "limit": 3,
-     "used": 3,
-     "tier": "free"
-   }
-   ```
-
-3. **Verify database:**
-   ```sql
-   SELECT monthly_generations_used FROM users
-   WHERE email = 'free@test.com';
-   -- Should show 3
-   ```
-
----
-
-## Test 6: AI Generation Limits - Paid Tier User
-
-**Goal:** Verify paid tier users respect their custom limit
-
-### Setup
-```sql
-UPDATE users SET
-  subscription_tier = 'paid',
-  monthly_generation_limit = 50,
-  monthly_generations_used = 0
-WHERE email = 'paid@test.com';
-```
-
-### Steps
-
-1. **Login as paid tier user**
-2. **Generate AI content multiple times**
-
-   **Generations 1-50:**
-   - Should all succeed
-   - Counter should increment
-
-   **51st Generation:**
-   - Should fail with 429 status
-
-   **Expected Response:**
-   ```json
-   {
-     "error": "Monthly generation limit reached. Your limit will reset next month.",
-     "remaining": 0,
-     "limit": 50,
-     "used": 50,
-     "tier": "paid"
-   }
-   ```
-
----
-
-## Test 7: Session Persistence
-
-**Goal:** Verify anonymous session persists across page refreshes
-
-### Steps
-
-1. **Open browser in incognito mode**
-2. **Generate AI content once**
-3. **Check cookie:** `anonymous_session` should be set
-4. **Refresh page**
-5. **Generate again**
-6. **Verify:** Same session used, counter at 2
-
-**Database Check:**
-```sql
-SELECT * FROM anonymous_ai_usage
-WHERE session_id = 'anon_xxxxx';
--- Should show same record, generations_used = 2
-```
-
----
-
-## Test 8: IP Fallback
-
-**Goal:** Verify IP address used when cookies blocked
-
-### Steps
-
-1. **Disable cookies in browser**
-2. **Generate AI content**
-3. **Verify:** Request still works
-4. **Check database:**
-   ```sql
-   SELECT * FROM anonymous_ai_usage
-   WHERE ip_address = 'your-ip-here';
-   -- Should find record by IP instead of session
-   ```
-
----
-
-## Test 9: Newsletter with Empty Preferences
-
-**Goal:** Verify users with no preferences get all articles
-
-### Setup
-```sql
-UPDATE users SET category_preferences = NULL
-WHERE email = 'test@test.com';
-```
-
-### Steps
-
-1. **Create newsletter with 3 articles**
-2. **Trigger send**
-3. **Verify:** User receives all 3 articles
-4. **Check logs:**
-   ```
-   Sending 3 filtered articles to test@test.com
-   ```
-
----
-
-## Test 10: Newsletter Skip (No Matching Articles)
-
-**Goal:** Verify newsletter skipped when user has no matching articles
-
-### Setup
-```sql
-UPDATE users SET category_preferences = ARRAY['regulations']
-WHERE email = 'test@test.com';
-```
-
-### Steps
-
-1. **Create newsletter with only "rates" and "market" articles**
-2. **Trigger send**
-3. **Verify:** User does NOT receive email
-4. **Check logs:**
-   ```
-   Skipping test@test.com - no articles match category preferences
-   ```
-
----
-
-## Debugging Tips
-
-### Newsletter Issues
-
-**Check approval counter:**
-```sql
-SELECT COUNT(*) FROM articles
-WHERE status = 'published'
-AND published_at >= (
-  SELECT published_at FROM newsletter_posts
-  ORDER BY published_at DESC
-  LIMIT 1
-);
-```
-
-**Check newsletter posts:**
-```sql
-SELECT * FROM newsletter_posts
-ORDER BY published_at DESC
-LIMIT 5;
-```
-
-**Check cron logs:**
+**In `.env`:**
 ```bash
-# Look for these logs in console:
-[Webhook] Processing newsletter delivery for X subscribers
-[Webhook] Newsletter contains articles from categories: X, Y, Z
-[Webhook] Sending N filtered articles to user@example.com
+# Stripe (using test keys for development!)
+STRIPE_SECRET_KEY=sk_test_... # Should start with sk_test_ for development
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_... # Should start with pk_test_
+STRIPE_WEBHOOK_SECRET=whsec_... # Get after creating webhook
+STRIPE_PRICE_ID_PAID_TIER=price_... # Your subscription price ID
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://rzuhnhnkhfehxaijmgho.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGci...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGci...
+DATABASE_URL=postgres://...
+DIRECT_URL=postgresql://...
 ```
 
-### AI Limit Issues
+**In `supabase/.env`:**
+```bash
+DATABASE_URL=postgres://postgres.rzuhnhnkhfehxaijmgho:JSttai2023!!@aws-1-us-east-1.pooler.supabase.com:5432/postgres
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
 
-**Check user limits:**
+---
+
+### 2. Deploy Edge Function
+
+```bash
+# Link your Supabase project (first time only)
+supabase link --project-ref rzuhnhnkhfehxaijmgho
+
+# Deploy the Edge Function
+supabase functions deploy stripe-webhook-sync
+
+# Set environment variables
+supabase secrets set --env-file supabase/.env
+```
+
+**Expected output:**
+```
+Deploying Function stripe-webhook-sync (project ref: rzuhnhnkhfehxaijmgho)
+✓ Function successfully deployed!
+```
+
+**Get the function URL:**
+```
+https://rzuhnhnkhfehxaijmgho.supabase.co/functions/v1/stripe-webhook-sync
+```
+
+---
+
+### 3. Apply Database Trigger
+
+**Option A: Via Supabase Dashboard (Recommended)**
+
+1. Go to: https://supabase.com/dashboard/project/rzuhnhnkhfehxaijmgho/sql/new
+2. Open: `supabase/migrations/20250121_stripe_subscription_sync.sql`
+3. Copy the entire contents
+4. Paste into SQL editor
+5. Click "Run"
+
+**Verify it worked:**
 ```sql
-SELECT
+-- Check if the trigger function exists
+SELECT routine_name, routine_type
+FROM information_schema.routines
+WHERE routine_name = 'sync_subscription_to_user';
+
+-- Check if the trigger exists
+SELECT trigger_name, event_manipulation, event_object_table
+FROM information_schema.triggers
+WHERE trigger_name = 'sync_subscription_on_change';
+```
+
+You should see:
+- ✅ 1 row for function: `sync_subscription_to_user`
+- ✅ 1 row for trigger: `sync_subscription_on_change`
+
+**Option B: Via Script (if database is accessible)**
+```bash
+npx tsx scripts/apply-trigger-migration.ts
+```
+
+---
+
+### 4. Configure Stripe Webhook
+
+1. Go to: https://dashboard.stripe.com/test/webhooks
+2. Click "Add endpoint"
+3. **Endpoint URL:** `https://rzuhnhnkhfehxaijmgho.supabase.co/functions/v1/stripe-webhook-sync`
+4. **Events to send:** Select "Select all events"
+5. Click "Add endpoint"
+6. Copy the **Signing secret** (starts with `whsec_`)
+7. Update both `.env` and `supabase/.env` with the new webhook secret
+8. Re-run: `supabase secrets set --env-file supabase/.env`
+
+---
+
+## Testing Methods
+
+### Method 1: Local Testing with Stripe CLI (Fastest)
+
+**Install Stripe CLI:**
+```bash
+brew install stripe/stripe-cli/stripe
+```
+
+**Login to Stripe:**
+```bash
+stripe login
+```
+
+**Forward webhooks to your Edge Function:**
+```bash
+stripe listen --forward-to https://rzuhnhnkhfehxaijmgho.supabase.co/functions/v1/stripe-webhook-sync
+```
+
+**Expected output:**
+```
+> Ready! Your webhook signing secret is whsec_xxxxx (^C to quit)
+```
+
+**Trigger a test checkout session:**
+```bash
+stripe trigger checkout.session.completed
+```
+
+**Watch the console for:**
+- ✅ Webhook received by Edge Function
+- ✅ Stripe Sync Engine processing event
+- ✅ Database trigger firing
+- ✅ User record updated
+
+---
+
+### Method 2: End-to-End Testing with Real Checkout
+
+#### Step 1: Start Development Server
+```bash
+npm run dev
+```
+
+#### Step 2: Create a Test User in Kinde
+
+1. Go to your Kinde dashboard
+2. Create a test user or use an existing one
+3. Note the user's ID
+
+#### Step 3: Add Test User to Supabase
+
+Run this SQL in Supabase Dashboard:
+```sql
+INSERT INTO public.users (
+  id,
   email,
+  name,
   subscription_tier,
   monthly_generation_limit,
-  monthly_generations_used,
-  generation_reset_date
-FROM users
-WHERE email = 'your-email';
+  has_completed_onboarding
+) VALUES (
+  'YOUR_KINDE_USER_ID',
+  'test@example.com',
+  'Test User',
+  'FREE',
+  3,
+  false
+) ON CONFLICT (id) DO NOTHING;
 ```
 
-**Check anonymous usage:**
-```sql
-SELECT * FROM anonymous_ai_usage
-ORDER BY created_at DESC
-LIMIT 10;
-```
+#### Step 4: Test the Onboarding Flow
 
-**Check session cookie:**
-```javascript
-// In browser console:
-document.cookie
-  .split('; ')
-  .find(row => row.startsWith('anonymous_session='));
-```
-
-### Common Issues
-
-**Newsletter not triggering:**
-- Check day of week (must be Mon/Wed/Fri)
-- Check article count (must be >= 3)
-- Check CRON_SECRET is set
-- Check NEXT_PUBLIC_URL is correct
-
-**AI limit not enforcing:**
-- Check subscription_tier is set correctly
-- Check monthly_generation_limit is set
-- Check monthly_generations_used is incrementing
-- Clear cookies and try again for anonymous
-
-**Category filtering not working:**
-- Check category_preferences field exists
-- Check article.category matches user preferences
-- Check for null/empty preferences (should send all)
+1. **Navigate to:** `http://localhost:3000/onboarding`
+2. **Complete steps 1-4** (profile, preferences, voice, etc.)
+3. **On subscription step**, click "Choose Pro Plan"
+4. **Verify:** You're redirected to Stripe Checkout
+5. **Use test card:** `4242 4242 4242 4242`
+   - Expiry: Any future date
+   - CVC: Any 3 digits
+   - ZIP: Any 5 digits
+6. **Complete payment**
+7. **Verify:** Redirected to `/onboarding/success?session_id=cs_xxx`
+8. **Check:** Success page shows "Welcome to TrueTone Newsletter! 🎉"
 
 ---
 
-## Test Data Reset
+### Method 3: Database Verification
+
+After completing a test checkout, verify the database was updated:
 
 ```sql
--- Reset newsletter posts
-DELETE FROM newsletter_posts;
+-- 1. Check if subscription was created in stripe.subscriptions
+SELECT
+  id,
+  customer,
+  status,
+  metadata,
+  created
+FROM stripe.subscriptions
+WHERE metadata->>'userId' = 'YOUR_KINDE_USER_ID'
+ORDER BY created DESC
+LIMIT 1;
 
--- Reset articles to draft
-UPDATE articles SET status = 'draft', published_at = NULL;
-
--- Reset user generation counts
-UPDATE users SET monthly_generations_used = 0;
-
--- Clear anonymous sessions
-DELETE FROM anonymous_ai_usage;
+-- 2. Check if user was updated in public.users
+SELECT
+  id,
+  email,
+  subscription_tier,
+  subscription_status,
+  stripe_customer_id,
+  stripe_subscription_id,
+  stripe_price_id,
+  monthly_generation_limit,
+  has_completed_onboarding,
+  onboarding_step
+FROM public.users
+WHERE id = 'YOUR_KINDE_USER_ID';
 ```
 
----
+**Expected results:**
 
-## Success Criteria
+**stripe.subscriptions:**
+- ✅ `status`: `active` or `trialing`
+- ✅ `metadata.userId`: Your Kinde user ID
+- ✅ `metadata.onboarding_session`: `true`
 
-✅ Newsletter triggers on 3rd approval (Mon/Wed/Fri only)
-✅ Newsletter does NOT trigger on wrong days
-✅ Newsletter sends to all active subscribers
-✅ Users receive only matching category articles
-✅ Users with no preferences receive all articles
-✅ Anonymous users can generate 3 times
-✅ Free tier users can generate 3 times per month
-✅ Paid tier users respect custom limits
-✅ Usage counters increment correctly
-✅ Session cookies persist across refreshes
-✅ IP fallback works when cookies disabled
-✅ Error messages are clear and actionable
-✅ Article approval succeeds even if newsletter fails
+**public.users:**
+- ✅ `subscription_tier`: `PAID`
+- ✅ `subscription_status`: `active` or `trialing`
+- ✅ `stripe_customer_id`: `cus_xxxxx`
+- ✅ `stripe_subscription_id`: `sub_xxxxx`
+- ✅ `monthly_generation_limit`: `25`
+- ✅ `has_completed_onboarding`: `true`
+- ✅ `onboarding_step`: `6`
 
 ---
 
-**Last Updated:** October 21, 2025
+## Testing Edge Cases
+
+### Test 1: Free Trial Selection
+
+1. Complete onboarding
+2. Select "Start Free Trial" instead of paid plan
+3. **Verify:** Success page shows immediately (no Stripe redirect)
+4. **Verify:** User record shows `subscription_tier: 'FREE'`
+
+### Test 2: Payment Failure
+
+1. Complete onboarding
+2. Select paid plan
+3. Use test card: `4000 0000 0000 0002` (declined)
+4. **Verify:** Error shown on Stripe Checkout
+5. **Verify:** User can retry payment
+
+### Test 3: Webhook Retry
+
+1. Complete a successful checkout
+2. In Stripe Dashboard → Webhooks → Select your endpoint
+3. Click on a recent event → Click "Resend"
+4. **Verify:** Database doesn't create duplicate records
+
+### Test 4: Session Verification
+
+1. Complete checkout
+2. Copy the `session_id` from URL
+3. Manually call: `http://localhost:3000/api/stripe/verify-session?session_id=cs_xxx`
+4. **Verify:** Returns `{ status: 'success', subscriptionId: 'sub_xxx' }`
+
+---
+
+## Monitoring & Debugging
+
+### Check Edge Function Logs
+
+```bash
+supabase functions logs stripe-webhook-sync --limit 20
+```
+
+Or in Supabase Dashboard:
+1. Go to: https://supabase.com/dashboard/project/rzuhnhnkhfehxaijmgho/functions/stripe-webhook-sync/logs
+2. Filter by recent errors
+
+### Check Stripe Webhook Logs
+
+1. Go to: https://dashboard.stripe.com/test/webhooks
+2. Click on your webhook endpoint
+3. View "Event logs" for delivery status
+
+### Check Supabase Logs
+
+1. Go to: https://supabase.com/dashboard/project/rzuhnhnkhfehxaijmgho/logs/postgres-logs
+2. Filter by "stripe" or "users"
+
+---
+
+## Common Issues
+
+### Issue 1: "Tenant or user not found" Error
+
+**Cause:** Database is paused (auto-pauses after inactivity)
+
+**Fix:**
+1. Go to Supabase Dashboard
+2. Click "Restore project"
+3. Wait 1-2 minutes for it to resume
+4. Re-run your script/query
+
+### Issue 2: Webhook Not Receiving Events
+
+**Check:**
+1. Edge Function deployed: `supabase functions list`
+2. Webhook endpoint URL correct in Stripe Dashboard
+3. Webhook secret correct in `supabase/.env`
+4. Secrets uploaded: `supabase secrets list`
+
+**Fix:**
+```bash
+supabase secrets set --env-file supabase/.env
+```
+
+### Issue 3: Trigger Not Firing
+
+**Check if trigger exists:**
+```sql
+SELECT trigger_name
+FROM information_schema.triggers
+WHERE trigger_name = 'sync_subscription_on_change';
+```
+
+**Manually test trigger:**
+```sql
+-- Insert a test subscription
+INSERT INTO stripe.subscriptions (
+  id,
+  customer,
+  status,
+  metadata,
+  items,
+  created,
+  current_period_end
+) VALUES (
+  'sub_test_manual',
+  'cus_test_manual',
+  'active',
+  '{"userId": "YOUR_USER_ID_HERE", "onboarding_session": "true"}'::jsonb,
+  '[{"price": "price_test"}]'::jsonb,
+  EXTRACT(EPOCH FROM NOW())::bigint,
+  EXTRACT(EPOCH FROM (NOW() + INTERVAL '30 days'))::bigint
+);
+
+-- Check if user was updated
+SELECT
+  subscription_tier,
+  subscription_status,
+  has_completed_onboarding
+FROM public.users
+WHERE id = 'YOUR_USER_ID_HERE';
+
+-- Clean up
+DELETE FROM stripe.subscriptions WHERE id = 'sub_test_manual';
+```
+
+### Issue 4: Success Page Shows Error
+
+**Check:**
+1. `stripe.checkout_sessions` table exists: `SELECT * FROM stripe.checkout_sessions LIMIT 1;`
+2. Session ID in URL is correct
+3. API route `/api/stripe/verify-session` is accessible
+4. Check browser console for errors
+
+---
+
+## Production Deployment Checklist
+
+Before deploying to production:
+
+1. **Switch to Live Stripe Keys**
+   - Update `.env` with `sk_live_` and `pk_live_` keys
+   - Update `supabase/.env` with live keys
+   - Re-run: `supabase secrets set --env-file supabase/.env`
+
+2. **Update Webhook Endpoint**
+   - Go to: https://dashboard.stripe.com/webhooks (live mode)
+   - Add production endpoint
+   - Update `STRIPE_WEBHOOK_SECRET` with live webhook secret
+
+3. **Test in Production**
+   - Use real credit card or test mode
+   - Verify webhook delivery
+   - Check database updates
+   - Monitor Edge Function logs
+
+4. **Monitor for Errors**
+   - Set up Sentry alerts
+   - Monitor Supabase logs
+   - Check Stripe webhook delivery success rate
+
+---
+
+## Next Steps
+
+After successful testing:
+
+1. ✅ Test end-to-end flow works
+2. ✅ Verify database triggers update users correctly
+3. ✅ Confirm webhook delivery is reliable
+4. → Deploy to production
+5. → Monitor initial users
+6. → Set up analytics and tracking
+
+---
+
+## Support
+
+- **Stripe Sync Engine Docs:** https://supabase.com/docs/guides/integrations/stripe
+- **Edge Functions Docs:** https://supabase.com/docs/guides/functions
+- **Stripe Testing:** https://stripe.com/docs/testing
+- **Project Docs:** See `docs/STRIPE_SYNC_ENGINE_INTEGRATION.md`
+
+---
+
+**Need Help?** See:
+- `supabase/MANUAL_TRIGGER_SETUP.md` - Database trigger setup
+- `supabase/DEPLOYMENT_GUIDE.md` - Edge Function deployment
+- `PROGRESS_SUMMARY.md` - Implementation status
