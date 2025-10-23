@@ -12,8 +12,9 @@ import {
   Bell,
 } from "lucide-react";
 
+// TODO: Add userRole prop for role-based navigation filtering when implementing permission-based menu items
 interface AdminSidebarProps {
-  userRole: string;
+  pendingCount?: number;
 }
 
 const navigation = [
@@ -51,7 +52,7 @@ const navigation = [
   },
 ];
 
-export function AdminSidebar({ userRole }: AdminSidebarProps) {
+export function AdminSidebar({ pendingCount }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -73,8 +74,11 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
             <item.icon className="h-4 w-4" />
             {item.name}
             {item.badge === "pending" && (
-              <span className="ml-auto flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
-                0
+              <span
+                className="ml-auto flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground"
+                aria-label={`${pendingCount ?? 0} pending articles`}
+              >
+                {pendingCount ?? 0}
               </span>
             )}
           </Link>

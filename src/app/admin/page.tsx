@@ -72,7 +72,7 @@ export default async function AdminDashboard() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard Overview</h2>
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard Overview</h1>
         <p className="text-muted-foreground">
           Manage and review article submissions
         </p>

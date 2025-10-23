@@ -2,7 +2,16 @@ require('dotenv').config();
 const Stripe = require('stripe');
 
 async function updateProduct() {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  // Validate Stripe secret key environment variable
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY?.trim();
+
+  if (!stripeSecretKey) {
+    console.error('❌ Error: STRIPE_SECRET_KEY environment variable is not set or is empty.');
+    console.error('Please set STRIPE_SECRET_KEY in your .env file or environment variables.');
+    process.exit(1);
+  }
+
+  const stripe = new Stripe(stripeSecretKey);
 
   try {
     const product = await stripe.products.update('prod_T6puiReAgktFLt', {

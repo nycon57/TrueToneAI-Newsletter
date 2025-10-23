@@ -28,7 +28,7 @@ export default async function ArticlesReviewQueue() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Review Queue</h2>
+        <h1 className="text-3xl font-bold tracking-tight">Review Queue</h1>
         <p className="text-muted-foreground">
           Articles pending approval ({articles.length})
         </p>
