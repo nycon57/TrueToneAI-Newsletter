@@ -134,32 +134,41 @@ export const WebPreviewUrl = ({
 }: WebPreviewUrlProps) => {
   const { url, setUrl } = useWebPreview();
   const [inputValue, setInputValue] = useState(url);
+  const isControlled = value !== undefined;
 
   // Sync input value with context URL when it changes externally
   useEffect(() => {
-    setInputValue(url);
-  }, [url]);
+    if (!isControlled) {
+      setInputValue(url);
+    }
+  }, [url, isControlled]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
+    const newValue = event.target.value;
+    // Only update internal state if uncontrolled
+    if (!isControlled) {
+      setInputValue(newValue);
+    }
     onChange?.(event);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      const target = event.target as HTMLInputElement;
-      setUrl(target.value);
+      const currentValue = isControlled ? value : inputValue;
+      setUrl(currentValue);
     }
     onKeyDown?.(event);
   };
 
+  const displayValue = isControlled ? value : inputValue;
+
   return (
     <Input
       className="h-8 flex-1 text-sm"
-      onChange={onChange ?? handleChange}
+      onChange={handleChange}
       onKeyDown={handleKeyDown}
       placeholder="Enter URL..."
-      value={value ?? inputValue}
+      value={displayValue}
       {...props}
     />
   );

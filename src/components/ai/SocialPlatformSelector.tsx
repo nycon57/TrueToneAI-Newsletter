@@ -325,16 +325,29 @@ export function SocialPlatformResults({
   const [copiedPlatform, setCopiedPlatform] = useState<SocialPlatform | null>(null);
   const [isSavingPlatform, setIsSavingPlatform] = useState<SocialPlatform | null>(null);
 
-  const handleCopyPlatform = (platform: SocialPlatform, content: string) => {
-    navigator.clipboard.writeText(content);
-    setCopiedPlatform(platform);
-    onCopy(platform, content);
-    toast.success(`${PLATFORM_CONFIGS.find(p => p.id === platform)?.name} content copied!`);
+  const handleCopyPlatform = async (platform: SocialPlatform, content: string) => {
+    if (!navigator.clipboard) {
+      toast.error('Clipboard not available');
+      return;
+    }
 
-    // Reset copied state after 2 seconds
-    setTimeout(() => {
-      setCopiedPlatform(null);
-    }, 2000);
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedPlatform(platform);
+      onCopy(platform, content);
+      toast.success(`${PLATFORM_CONFIGS.find(p => p.id === platform)?.name} content copied!`);
+
+      // Reset copied state after 2 seconds
+      const timeoutId = setTimeout(() => {
+        setCopiedPlatform(null);
+      }, 2000);
+
+      // Cleanup on unmount
+      return () => clearTimeout(timeoutId);
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+      toast.error('Failed to copy to clipboard');
+    }
   };
 
   const handleSavePlatform = async (platform: SocialPlatform, content: string) => {

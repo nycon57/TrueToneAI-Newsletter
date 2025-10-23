@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCompletion } from '@ai-sdk/react';
 import { Sparkles, Loader2, Save, RotateCw, Copy, XCircle, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { GENERATION_LIMITS } from '@/lib/constants/generation-limits';
 
 interface AIGenerationPanelProps {
   articleId: string;
@@ -32,6 +34,7 @@ export function AIGenerationPanel({
   onContentGenerated,
   className
 }: AIGenerationPanelProps) {
+  const router = useRouter();
   const [generatedContent, setGeneratedContent] = useState<string>(initialContent || '');
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -77,7 +80,7 @@ export function AIGenerationPanel({
     if (remainingGenerations <= 0) {
       if (userTier === 'free') {
         toast.error('You\'ve used all 3 free AI generations. Upgrade to Pro for more!');
-        window.location.href = '/account?tab=billing';
+        router.push('/account?tab=billing');
       } else {
         toast.error('Monthly generation limit reached. Your limit will reset next month.');
       }
@@ -167,12 +170,12 @@ export function AIGenerationPanel({
             </h4>
             <p className="text-xs text-muted-foreground mb-3">
               {userTier === 'free'
-                ? 'You\'ve used all 3 free AI generations. Upgrade to Pro for 25 generations per month!'
-                : `You've used all ${25} AI generations this month. Your limit will reset next month.`}
+                ? `You've used all ${GENERATION_LIMITS.FREE_TIER} free AI generations. Upgrade to Pro for ${GENERATION_LIMITS.PAID_TIER} generations per month!`
+                : `You've used all ${GENERATION_LIMITS.PAID_TIER} AI generations this month. Your limit will reset next month.`}
             </p>
             {userTier === 'free' && (
               <Button
-                onClick={() => window.location.href = '/account?tab=billing'}
+                onClick={() => router.push('/account?tab=billing')}
                 size="sm"
                 className="bg-gradient-to-r from-orchid to-indigo hover:from-indigo hover:to-shadow text-white"
               >
@@ -335,7 +338,7 @@ export function AIGenerationPanel({
                 <AlertTriangle className="h-4 w-4 text-yellow-600" />
                 <AlertDescription className="text-xs text-yellow-800">
                   {remainingGenerations === 0
-                    ? 'You\'ve used all your free generations. Upgrade to Pro for 25/month!'
+                    ? `You've used all your free generations. Upgrade to Pro for ${GENERATION_LIMITS.PAID_TIER}/month!`
                     : 'This is your last free generation. Upgrade to Pro for unlimited access!'}
                 </AlertDescription>
               </Alert>

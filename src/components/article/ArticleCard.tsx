@@ -70,11 +70,12 @@ export function ArticleCard({ article, isAuthenticated, isPaid, userGenerationSt
     // For now, we'll just trigger a re-render
   };
 
-  // Handle saving generated content to cache
-  const handleGenerationSave = (contentType: string, content: string) => {
+  // Handle saving generated content to cache - ensure all values are stringified
+  const handleGenerationSave = (contentType: string, content: string | Record<string, any>) => {
+    const stringValue = typeof content === 'string' ? content : JSON.stringify(content);
     setCachedGenerations(prev => ({
       ...prev,
-      [contentType]: content
+      [contentType]: stringValue
     }));
   };
 
@@ -295,7 +296,13 @@ export function ArticleCard({ article, isAuthenticated, isPaid, userGenerationSt
           articleId={article.id}
           userTier={isPaid ? 'paid' : 'free'}
           remainingGenerations={generationStats.remaining}
-          initialResults={cachedGenerations['social_platforms'] as any}
+          initialResults={
+            cachedGenerations['social_platforms']
+              ? (typeof cachedGenerations['social_platforms'] === 'string'
+                  ? JSON.parse(cachedGenerations['social_platforms'])
+                  : cachedGenerations['social_platforms'])
+              : undefined
+          }
           onContentGenerated={(results) => handleGenerationSave('social_platforms', JSON.stringify(results))}
         />
       </motion.div>
