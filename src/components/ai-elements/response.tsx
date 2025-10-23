@@ -16,7 +16,25 @@ export const Response = memo(
       {...props}
     />
   ),
-  (prevProps, nextProps) => prevProps.children === nextProps.children
+  (prevProps, nextProps) => {
+    // Perform shallow equality check across all props
+    if (prevProps.children !== nextProps.children) return false;
+    if (prevProps.className !== nextProps.className) return false;
+
+    // Check other props
+    const prevKeys = Object.keys(prevProps) as Array<keyof ResponseProps>;
+    const nextKeys = Object.keys(nextProps) as Array<keyof ResponseProps>;
+
+    if (prevKeys.length !== nextKeys.length) return false;
+
+    for (const key of prevKeys) {
+      if (key !== 'children' && key !== 'className' && prevProps[key] !== nextProps[key]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 );
 
 Response.displayName = "Response";

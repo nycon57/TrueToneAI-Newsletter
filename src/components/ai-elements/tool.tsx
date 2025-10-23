@@ -100,16 +100,43 @@ export type ToolInputProps = ComponentProps<"div"> & {
   input: ToolUIPart["input"];
 };
 
-export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
-  <div className={cn("space-y-2 overflow-hidden p-4", className)} {...props}>
-    <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-      Parameters
-    </h4>
-    <div className="rounded-md bg-muted/50">
-      <CodeBlock code={JSON.stringify(input, null, 2)} language="json" />
+export const ToolInput = ({ className, input, ...props }: ToolInputProps) => {
+  const safeStringify = (value: any): string => {
+    try {
+      // Handle circular references and non-serializable values
+      const seen = new WeakSet();
+      return JSON.stringify(value, (key, val) => {
+        // Handle BigInt
+        if (typeof val === 'bigint') {
+          return val.toString();
+        }
+        // Handle circular references
+        if (typeof val === 'object' && val !== null) {
+          if (seen.has(val)) {
+            return '[Circular]';
+          }
+          seen.add(val);
+        }
+        return val;
+      }, 2);
+    } catch (error) {
+      console.error('Failed to stringify input:', error);
+      // Fallback to a safe string representation
+      return String(value);
+    }
+  };
+
+  return (
+    <div className={cn("space-y-2 overflow-hidden p-4", className)} {...props}>
+      <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+        Parameters
+      </h4>
+      <div className="rounded-md bg-muted/50">
+        <CodeBlock code={safeStringify(input)} language="json" />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export type ToolOutputProps = ComponentProps<"div"> & {
   output: ToolUIPart["output"];
@@ -126,14 +153,50 @@ export const ToolOutput = ({
     return null;
   }
 
+  const safeStringify = (value: any): string => {
+    try {
+      // Handle circular references and non-serializable values
+      const seen = new WeakSet();
+      return JSON.stringify(value, (key, val) => {
+        // Handle BigInt
+        if (typeof val === 'bigint') {
+          return val.toString();
+        }
+        // Handle circular references
+        if (typeof val === 'object' && val !== null) {
+          if (seen.has(val)) {
+            return '[Circular]';
+          }
+          seen.add(val);
+        }
+        return val;
+      }, 2);
+    } catch (error) {
+      console.error('Failed to stringify output:', error);
+      // Fallback to a safe string representation
+      return String(value);
+    }
+  };
+
   let Output = <div>{output as ReactNode}</div>;
+  let language: "json" | "text" = "json";
 
   if (typeof output === "object" && !isValidElement(output)) {
-    Output = (
-      <CodeBlock code={JSON.stringify(output, null, 2)} language="json" />
-    );
+    try {
+      const code = safeStringify(output);
+      Output = <CodeBlock code={code} language="json" />;
+    } catch {
+      Output = <CodeBlock code={String(output)} language="text" />;
+    }
   } else if (typeof output === "string") {
-    Output = <CodeBlock code={output} language="json" />;
+    // Try to parse as JSON, if it fails treat as plain text
+    try {
+      JSON.parse(output);
+      language = "json";
+    } catch {
+      language = "text";
+    }
+    Output = <CodeBlock code={output} language={language} />;
   }
 
   return (

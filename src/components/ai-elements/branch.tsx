@@ -39,8 +39,17 @@ export const Branch = ({
   className,
   ...props
 }: BranchProps) => {
-  const [currentBranch, setCurrentBranch] = useState(defaultBranch);
+  // Validate and clamp defaultBranch to valid range
   const [branches, setBranches] = useState<ReactElement[]>([]);
+  const clampedDefaultBranch = Math.max(0, Math.min(defaultBranch, Math.max(0, branches.length - 1)));
+  const [currentBranch, setCurrentBranch] = useState(clampedDefaultBranch);
+
+  // Update currentBranch when defaultBranch or branches change
+  useEffect(() => {
+    const maxIndex = Math.max(0, branches.length - 1);
+    const clamped = Math.max(0, Math.min(defaultBranch, maxIndex));
+    setCurrentBranch(clamped);
+  }, [defaultBranch, branches]);
 
   const handleBranchChange = (newBranch: number) => {
     setCurrentBranch(newBranch);
@@ -82,14 +91,16 @@ export type BranchMessagesProps = HTMLAttributes<HTMLDivElement>;
 
 export const BranchMessages = ({ children, ...props }: BranchMessagesProps) => {
   const { currentBranch, setBranches, branches } = useBranch();
-  const childrenArray = Array.isArray(children) ? children : [children];
 
-  // Use useEffect to update branches when they change
+  // Use useEffect to update branches when children change
   useEffect(() => {
+    const childrenArray = Array.isArray(children) ? children : [children];
     if (branches.length !== childrenArray.length) {
       setBranches(childrenArray);
     }
-  }, [childrenArray, branches, setBranches]);
+  }, [children, branches, setBranches]);
+
+  const childrenArray = Array.isArray(children) ? children : [children];
 
   return childrenArray.map((branch, index) => (
     <div
@@ -97,7 +108,7 @@ export const BranchMessages = ({ children, ...props }: BranchMessagesProps) => {
         "grid gap-2 overflow-hidden [&>div]:pb-0",
         index === currentBranch ? "block" : "hidden"
       )}
-      key={branch.key}
+      key={branch.key ?? `branch-${index}`}
       {...props}
     >
       {branch}

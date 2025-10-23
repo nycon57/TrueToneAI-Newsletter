@@ -8,6 +8,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Sparkles, Loader2, Check, X, Copy, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -17,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { useSocialGeneration } from '@/hooks/use-social-generation';
 import type { SocialPlatform } from '@/types/social-media';
 import { PLATFORM_LIMITS } from '@/types/social-generation';
+import { GENERATION_LIMITS } from '@/lib/constants/generation-limits';
 
 interface EnhancedSocialMediaPanelProps {
   articleId: string;
@@ -65,6 +67,7 @@ export function EnhancedSocialMediaPanel({
   onSave,
   className
 }: EnhancedSocialMediaPanelProps) {
+  const router = useRouter();
   const [selectedPlatforms, setSelectedPlatforms] = useState<Set<SocialPlatform>>(new Set());
   const [generationsRemaining, setGenerationsRemaining] = useState(initialGenerationsRemaining);
   const [copiedPlatform, setCopiedPlatform] = useState<SocialPlatform | null>(null);
@@ -116,7 +119,7 @@ export function EnhancedSocialMediaPanel({
     if (generationsRemaining < selectedPlatforms.size) {
       if (userTier === 'free') {
         toast.error(`Not enough generations. You need ${selectedPlatforms.size}, but only have ${generationsRemaining}.`);
-        window.location.href = '/account?tab=billing';
+        router.push('/account?tab=billing');
       } else {
         toast.error('Not enough generations remaining this month');
       }
@@ -418,7 +421,7 @@ export function EnhancedSocialMediaPanel({
             <Alert className="bg-yellow-50 border-yellow-200">
               <AlertDescription className="text-xs text-yellow-800">
                 {generationsRemaining === 0
-                  ? 'You\'ve used all your free generations. Upgrade to Pro for 25/month!'
+                  ? `You've used all your free generations. Upgrade to Pro for ${GENERATION_LIMITS.PAID_TIER}/month!`
                   : 'This is your last free generation. Upgrade to Pro!'}
               </AlertDescription>
             </Alert>

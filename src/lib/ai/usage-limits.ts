@@ -350,3 +350,122 @@ export async function setAnonymousSessionCookie(sessionId: string): Promise<void
     maxAge: 60 * 60 * 24 * 30 // 30 days
   });
 }
+
+export interface RollbackResult {
+  success: boolean;
+  rolledBack: number;
+  used: number;
+  remaining: number;
+  limit: number;
+  message?: string;
+}
+
+/**
+ * Rollback (decrement) AI usage for a user
+ * Used when operations fail and usage increments need to be reversed
+ */
+export async function rollbackUserGenerations(
+  userId: string,
+  amount: number = 1
+): Promise<RollbackResult> {
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase.rpc('rollback_user_generations', {
+      user_id: userId,
+      amount
+    });
+
+    if (error) {
+      console.error('[AIUsageLimit] Database error in rollback:', {
+        userId,
+        amount,
+        error: error.message,
+        details: error.details
+      });
+
+      return {
+        success: false,
+        rolledBack: 0,
+        used: 0,
+        remaining: 0,
+        limit: 0,
+        message: 'Database error during rollback'
+      };
+    }
+
+    return {
+      success: data.success,
+      rolledBack: data.rolled_back,
+      used: data.used,
+      remaining: data.remaining,
+      limit: data.limit,
+      message: data.message
+    };
+  } catch (error) {
+    console.error('[AIUsageLimit] Unexpected error in rollback:', error);
+    return {
+      success: false,
+      rolledBack: 0,
+      used: 0,
+      remaining: 0,
+      limit: 0,
+      message: 'Unexpected error during rollback'
+    };
+  }
+}
+
+/**
+ * Rollback (decrement) AI usage for an anonymous session
+ * Used when operations fail and usage increments need to be reversed
+ */
+export async function rollbackAnonymousGenerations(
+  sessionId: string,
+  amount: number = 1
+): Promise<RollbackResult> {
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase.rpc('rollback_anonymous_generations', {
+      p_session_id: sessionId,
+      amount
+    });
+
+    if (error) {
+      console.error('[AIUsageLimit] Database error in anonymous rollback:', {
+        sessionId,
+        amount,
+        error: error.message,
+        details: error.details
+      });
+
+      return {
+        success: false,
+        rolledBack: 0,
+        used: 0,
+        remaining: 0,
+        limit: 0,
+        message: 'Database error during rollback'
+      };
+    }
+
+    return {
+      success: data.success,
+      rolledBack: data.rolled_back,
+      used: data.used,
+      remaining: data.remaining,
+      limit: data.limit,
+      message: data.message
+    };
+  } catch (error) {
+    console.error('[AIUsageLimit] Unexpected error in anonymous rollback:', error);
+    return {
+      success: false,
+      rolledBack: 0,
+      used: 0,
+      remaining: 0,
+      limit: 0,
+      message: 'Unexpected error during rollback'
+    };
+  }
+}

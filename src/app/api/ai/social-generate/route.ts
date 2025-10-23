@@ -15,7 +15,7 @@ import { openai } from '@ai-sdk/openai';
 import { streamText } from 'ai';
 import { getApiUser } from '@/lib/api/auth';
 import { createClient } from '@/lib/supabase/server';
-import { checkAndIncrementAIUsage, setAnonymousSessionCookie } from '@/lib/ai/usage-limits';
+import { checkAndIncrementAIUsage, setAnonymousSessionCookie, rollbackUserGenerations, rollbackAnonymousGenerations } from '@/lib/ai/usage-limits';
 import { getOrCreateAnonymousSession } from '@/lib/ai/anonymous-session';
 import { getUserSubscriptionStatus, checkAndResetGenerationQuota } from '@/lib/stripe/subscription-guards';
 import { buildPlatformPrompt, validatePlatformContent, getPlatformDisplayName } from '@/lib/ai/platform-prompts';
@@ -46,6 +46,11 @@ export async function POST(req: NextRequest) {
   // Create streaming response
   const stream = new ReadableStream({
     async start(streamController) {
+      // Variables for rollback tracking (must be in outer scope for catch block)
+      let incrementedCount = 0;
+      let rollbackUserId: string | undefined;
+      let rollbackSessionId: string | undefined;
+
       try {
         // Helper function to send SSE events
         const sendEvent = (event: PlatformGenerationStreamEvent) => {
@@ -130,6 +135,9 @@ export async function POST(req: NextRequest) {
             // Atomic check and increment for authenticated user
             usageCheck = await checkAndIncrementAIUsage({ userId: user.id });
 
+            // Track for potential rollback
+            rollbackUserId = user.id;
+
             // Get subscription status for additional context
             const subscriptionStatus = await getUserSubscriptionStatus(user.id);
 
@@ -144,6 +152,9 @@ export async function POST(req: NextRequest) {
             sessionId = session.sessionId;
             ipAddress = session.ipAddress;
 
+            // Track for potential rollback
+            rollbackSessionId = sessionId;
+
             // Atomic check and increment for anonymous user
             usageCheck = await checkAndIncrementAIUsage({
               sessionId,
@@ -156,8 +167,17 @@ export async function POST(req: NextRequest) {
 
           // Check if generation was allowed
           if (!usageCheck.allowed) {
-            // Rollback previous increments if any
-            // Note: In production, consider implementing a rollback RPC function
+            // Rollback all previous increments
+            if (incrementedCount > 0) {
+              if (rollbackUserId) {
+                await rollbackUserGenerations(rollbackUserId, incrementedCount);
+                console.log(`[SocialGenerate] Rolled back ${incrementedCount} user generations due to limit reached`);
+              } else if (rollbackSessionId) {
+                await rollbackAnonymousGenerations(rollbackSessionId, incrementedCount);
+                console.log(`[SocialGenerate] Rolled back ${incrementedCount} anonymous generations due to limit reached`);
+              }
+            }
+
             sendEvent({
               type: 'error',
               error: usageCheck.message || 'Generation limit reached',
@@ -168,6 +188,7 @@ export async function POST(req: NextRequest) {
             return;
           }
 
+          incrementedCount++;
           usageChecks.push(usageCheck);
         }
 
@@ -184,6 +205,17 @@ export async function POST(req: NextRequest) {
           .single();
 
         if (articleError || !article) {
+          // Rollback all increments since article fetch failed
+          if (incrementedCount > 0) {
+            if (rollbackUserId) {
+              await rollbackUserGenerations(rollbackUserId, incrementedCount);
+              console.log(`[SocialGenerate] Rolled back ${incrementedCount} user generations due to article not found`);
+            } else if (rollbackSessionId) {
+              await rollbackAnonymousGenerations(rollbackSessionId, incrementedCount);
+              console.log(`[SocialGenerate] Rolled back ${incrementedCount} anonymous generations due to article not found`);
+            }
+          }
+
           sendEvent({
             type: 'error',
             error: 'Article not found',
@@ -313,9 +345,28 @@ export async function POST(req: NextRequest) {
         const failedPlatforms = generationResults.filter(r => !r.success).length;
         const totalTokens = generationResults.reduce((sum, r) => sum + (r.tokensUsed || 0), 0);
 
+        // If ALL platforms failed, rollback all increments
+        if (successfulPlatforms === 0 && failedPlatforms > 0) {
+          if (rollbackUserId) {
+            const rollbackResult = await rollbackUserGenerations(rollbackUserId, platformsCount);
+            console.log(`[SocialGenerate] All platforms failed - rolled back ${rollbackResult.rolledBack} user generations`);
+
+            // Update final usage check with rollback values
+            finalUsageCheck.used = rollbackResult.used;
+            finalUsageCheck.remaining = rollbackResult.remaining;
+          } else if (rollbackSessionId) {
+            const rollbackResult = await rollbackAnonymousGenerations(rollbackSessionId, platformsCount);
+            console.log(`[SocialGenerate] All platforms failed - rolled back ${rollbackResult.rolledBack} anonymous generations`);
+
+            // Update final usage check with rollback values
+            finalUsageCheck.used = rollbackResult.used;
+            finalUsageCheck.remaining = rollbackResult.remaining;
+          }
+        }
+
         sendEvent({
           type: 'all_complete',
-          generationsUsed: platformsCount,
+          generationsUsed: successfulPlatforms, // Only count successful generations
           generationsRemaining: finalUsageCheck.remaining,
           timestamp: new Date().toISOString()
         });
@@ -327,7 +378,7 @@ export async function POST(req: NextRequest) {
           platformsRequested: platforms.length,
           platformsSucceeded: successfulPlatforms,
           platformsFailed: failedPlatforms,
-          generationsUsed: platformsCount,
+          generationsUsed: successfulPlatforms, // Only count successful generations
           generationsRemaining: finalUsageCheck.remaining,
           totalTokens,
           tier: finalUsageCheck.tier
@@ -336,6 +387,17 @@ export async function POST(req: NextRequest) {
         streamController.close();
       } catch (error) {
         console.error('[SocialGenerate] Unexpected error:', error);
+
+        // Rollback increments on unexpected error
+        if (incrementedCount > 0) {
+          if (rollbackUserId) {
+            await rollbackUserGenerations(rollbackUserId, incrementedCount);
+            console.log(`[SocialGenerate] Unexpected error - rolled back ${incrementedCount} user generations`);
+          } else if (rollbackSessionId) {
+            await rollbackAnonymousGenerations(rollbackSessionId, incrementedCount);
+            console.log(`[SocialGenerate] Unexpected error - rolled back ${incrementedCount} anonymous generations`);
+          }
+        }
 
         const sendEvent = (event: PlatformGenerationStreamEvent) => {
           const data = `data: ${JSON.stringify(event)}\n\n`;
