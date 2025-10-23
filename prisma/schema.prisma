@@ -301,6 +301,12 @@ model Article {
   createdAt    DateTime      @default(now())                                         /// When article was created
   updatedAt    DateTime      @updatedAt                                              /// When article was last updated
 
+  // Review tracking
+  submittedAt     DateTime?                                                          /// When article was submitted for review
+  reviewedAt      DateTime?                                                          /// When article was reviewed by admin
+  rejectionReason String?                                                            /// Reason for rejection (if applicable)
+  reviewNotes     String?                                                            /// Admin notes on the article review
+
   // Admin relations
   createdByAdminId    String?  @db.Uuid                                              /// Admin who created the article
   lastEditedByAdminId String?  @db.Uuid                                              /// Admin who last edited the article

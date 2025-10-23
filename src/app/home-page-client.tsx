@@ -59,20 +59,13 @@ export function HomePageClient({
   const [articles] = useState(initialArticles?.articles || []);
   const [user] = useState(initialUser);
 
-  // Client-side Kinde hooks for interactivity
-  const { logout, isAuthenticated: clientAuth } = useKindeBrowserClient();
+  // Client-side Kinde hooks for logout only
+  // We trust the server auth status completely to avoid 1+ second delay
+  const { logout } = useKindeBrowserClient();
 
-  // Use server auth status initially, then client auth when available
-  const isAuthenticated = clientAuth ?? serverAuth;
+  // Use server auth status (authoritative and instant)
+  const isAuthenticated = serverAuth;
   const kindeUser = serverKindeUser;
-
-  // Debug logging for avatar
-  console.log('[HomePageClient] User data:', {
-    hasUser: !!user,
-    userAvatar: user?.avatar,
-    kindeUserPicture: kindeUser?.picture,
-    userName: user?.name,
-  });
 
   const normalizedTier = user?.subscription_tier?.toUpperCase() || 'FREE';
   const isPaid = normalizedTier === 'PAID' || normalizedTier === 'PREMIUM';
@@ -95,13 +88,14 @@ export function HomePageClient({
       <div className="bg-white/80 backdrop-blur-sm border-b border-lavender/30">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <div className="relative h-10">
+            <div className="relative">
               <Image
                 src="/logo/landscape/TrueToneAI-Landscape-Logo-Full-Color.png"
                 alt="TrueTone AI"
                 width={200}
                 height={40}
-                className="h-10 w-auto object-contain"
+                className="object-contain"
+                style={{ height: '40px', width: 'auto' }}
                 priority
               />
             </div>

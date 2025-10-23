@@ -29,9 +29,13 @@ export async function POST(req: NextRequest) {
     const normalizedBaseUrl = baseUrl.replace(/\/$/, '');
     const returnUrl = `${normalizedBaseUrl}/account?tab=billing`;
 
+    // Use your custom billing portal configuration
+    const portalConfig = process.env.STRIPE_BILLING_PORTAL_CONFIG_ID || 'bpc_1SLPLHCezhgJ3dc1P6xPF58J';
+
     const session = await stripe.billingPortal.sessions.create({
       customer: user.stripe_customer_id,
       return_url: returnUrl,
+      configuration: portalConfig,
     });
 
     return NextResponse.json({ url: session.url });

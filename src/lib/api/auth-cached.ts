@@ -38,6 +38,9 @@ export const getCachedApiUser = cache(async () => {
         lastName: kindeUser.family_name || 'Not Set',
         name: `${kindeUser.given_name || ''} ${kindeUser.family_name || ''}`.trim() || 'Not Set',
         subscription_tier: 'free',
+        monthly_generation_limit: 3, // Lifetime limit for free tier
+        monthly_generations_used: 0,
+        generation_reset_date: null, // NULL for free tier (lifetime limit, no reset)
         createdAt: now,
         updatedAt: now,
       })

@@ -10,18 +10,21 @@ export async function getApiUser() {
   }
 
   const supabase = await createClient();
-  const { data: user } = await supabase
+  const { data: user, error: fetchError } = await supabase
     .from('users')
-    .select(`
-      *,
-      organization:organizations(*)
-    `)
+    .select('*')
     .eq('kinde_id', kindeUser.id)
     .single();
 
-  if (!user) {
+  if (fetchError) {
+    console.error('[Auth] Error fetching user:', fetchError);
+    // If user doesn't exist, we'll create them below
+  }
+
+  if (!user || fetchError) {
     // Create user on first login
-    const { data: newUser } = await supabase
+    console.log('[Auth] Creating new user for kinde_id:', kindeUser.id);
+    const { data: newUser, error: insertError } = await supabase
       .from('users')
       .insert({
         kinde_id: kindeUser.id,
@@ -29,13 +32,19 @@ export async function getApiUser() {
         firstName: kindeUser.given_name || 'Not Set',
         lastName: kindeUser.family_name || 'Not Set',
         name: `${kindeUser.given_name || ''} ${kindeUser.family_name || ''}`.trim() || 'Not Set',
-        status: 'pending'
+        subscription_tier: 'FREE',
       })
-      .select(`
-        *,
-        organization:organizations(*)
-      `)
+      .select('*')
       .single();
+
+    if (insertError) {
+      console.error('[Auth] Error creating user:', insertError);
+      throw new Error(`Failed to create user: ${insertError.message}`);
+    }
+
+    if (!newUser) {
+      throw new Error('Failed to create user: No data returned');
+    }
 
     return newUser;
   }

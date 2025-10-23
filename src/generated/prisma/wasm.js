@@ -252,6 +252,10 @@ exports.Prisma.ArticleScalarFieldEnum = {
   publishedAt: 'publishedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  submittedAt: 'submittedAt',
+  reviewedAt: 'reviewedAt',
+  rejectionReason: 'rejectionReason',
+  reviewNotes: 'reviewNotes',
   createdByAdminId: 'createdByAdminId',
   lastEditedByAdminId: 'lastEditedByAdminId'
 };
