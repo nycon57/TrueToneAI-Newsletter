@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getApiUser } from "@/lib/api/auth";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { Separator } from "@/components/ui/separator";
+import { prisma } from "@/lib/prisma";
 
 export default async function AdminLayout({
   children,
@@ -21,6 +23,11 @@ export default async function AdminLayout({
     redirect("/");
   }
 
+  // Get pending articles count for sidebar badge
+  const pendingCount = await prisma.article.count({
+    where: { status: "DRAFT" },
+  });
+
   return (
     <div className="flex min-h-screen w-full flex-col">
       <div className="flex flex-1">
@@ -28,12 +35,12 @@ export default async function AdminLayout({
         <aside className="hidden w-64 border-r bg-muted/40 md:block">
           <div className="flex h-full max-h-screen flex-col gap-2">
             <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-              <a href="/admin" className="flex items-center gap-2 font-semibold">
+              <Link href="/admin" className="flex items-center gap-2 font-semibold">
                 <span className="text-lg">Admin Dashboard</span>
-              </a>
+              </Link>
             </div>
             <div className="flex-1 overflow-auto py-2">
-              <AdminSidebar userRole={user.role} />
+              <AdminSidebar pendingCount={pendingCount} />
             </div>
           </div>
         </aside>
@@ -43,9 +50,7 @@ export default async function AdminLayout({
           {/* Top header */}
           <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
             <div className="flex-1">
-              <h1 className="text-lg font-semibold md:text-2xl">
-                Article Management
-              </h1>
+              {/* Page-specific titles are rendered by individual pages */}
             </div>
             <div className="flex items-center gap-4">
               <span className="text-sm text-muted-foreground">
