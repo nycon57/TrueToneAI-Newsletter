@@ -512,3 +512,208 @@ export async function sendOnboardingComplete(
     };
   }
 }
+
+// ============================================================================
+// ADMIN ARTICLE REVIEW NOTIFICATIONS
+// ============================================================================
+
+/**
+ * Article Submitted Notification Email Data
+ */
+export interface ArticleSubmittedNotificationData {
+  to: string | string[]; // Admin email(s)
+  articleId: string;
+  articleTitle: string;
+  articleSummary?: string;
+  creatorName: string;
+  creatorEmail: string;
+  category?: string;
+  tags?: string[];
+  reviewUrl: string;
+}
+
+/**
+ * Send article submitted notification to admin(s)
+ */
+export async function sendArticleSubmittedNotification(
+  data: ArticleSubmittedNotificationData
+): Promise<SendEmailResult> {
+  try {
+    const { ArticleSubmittedNotification } = await import('../templates/article-submitted-notification');
+
+    return await sendEmail({
+      to: data.to,
+      subject: `[Article Review] ${data.articleTitle}`,
+      template: ArticleSubmittedNotification({
+        articleId: data.articleId,
+        articleTitle: data.articleTitle,
+        articleSummary: data.articleSummary,
+        creatorName: data.creatorName,
+        creatorEmail: data.creatorEmail,
+        category: data.category,
+        tags: data.tags,
+        reviewUrl: data.reviewUrl,
+      }),
+      tags: [
+        { name: 'category', value: 'admin' },
+        { name: 'template', value: 'article-submitted' },
+      ],
+    });
+  } catch (error) {
+    console.error('[Email Service] Error sending article submitted notification:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send article submitted notification',
+    };
+  }
+}
+
+/**
+ * Article Approved Notification Email Data
+ */
+export interface ArticleApprovedNotificationData {
+  to: string; // Creator email
+  creatorName: string;
+  articleTitle: string;
+  articleSummary?: string;
+  reviewNotes?: string;
+  reviewedBy?: string;
+  articleUrl?: string;
+}
+
+/**
+ * Send article approved notification to creator
+ */
+export async function sendArticleApprovedNotification(
+  data: ArticleApprovedNotificationData
+): Promise<SendEmailResult> {
+  try {
+    const { ArticleApprovedNotification } = await import('../templates/article-approved-notification');
+
+    return await sendEmail({
+      to: data.to,
+      subject: `✅ Your article "${data.articleTitle}" has been approved!`,
+      template: ArticleApprovedNotification({
+        creatorName: data.creatorName,
+        articleTitle: data.articleTitle,
+        articleSummary: data.articleSummary,
+        reviewNotes: data.reviewNotes,
+        reviewedBy: data.reviewedBy,
+        articleUrl: data.articleUrl,
+      }),
+      tags: [
+        { name: 'category', value: 'article' },
+        { name: 'template', value: 'article-approved' },
+      ],
+    });
+  } catch (error) {
+    console.error('[Email Service] Error sending article approved notification:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send article approved notification',
+    };
+  }
+}
+
+/**
+ * Article Rejected Notification Email Data
+ */
+export interface ArticleRejectedNotificationData {
+  to: string; // Creator email
+  creatorName: string;
+  articleTitle: string;
+  articleSummary?: string;
+  rejectionReason: string;
+  reviewNotes?: string;
+  reviewedBy?: string;
+  editArticleUrl?: string;
+}
+
+/**
+ * Send article rejected notification to creator
+ */
+export async function sendArticleRejectedNotification(
+  data: ArticleRejectedNotificationData
+): Promise<SendEmailResult> {
+  try {
+    const { ArticleRejectedNotification } = await import('../templates/article-rejected-notification');
+
+    return await sendEmail({
+      to: data.to,
+      subject: `Your article "${data.articleTitle}" needs revision`,
+      template: ArticleRejectedNotification({
+        creatorName: data.creatorName,
+        articleTitle: data.articleTitle,
+        articleSummary: data.articleSummary,
+        rejectionReason: data.rejectionReason,
+        reviewNotes: data.reviewNotes,
+        reviewedBy: data.reviewedBy,
+        editArticleUrl: data.editArticleUrl,
+      }),
+      tags: [
+        { name: 'category', value: 'article' },
+        { name: 'template', value: 'article-rejected' },
+      ],
+    });
+  } catch (error) {
+    console.error('[Email Service] Error sending article rejected notification:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send article rejected notification',
+    };
+  }
+}
+
+/**
+ * Pending Article for digest
+ */
+export interface PendingArticle {
+  id: string;
+  title: string;
+  summary?: string;
+  creatorName: string;
+  submittedAt: Date;
+  daysWaiting: number;
+  reviewUrl: string;
+}
+
+/**
+ * Pending Review Digest Email Data
+ */
+export interface PendingReviewDigestData {
+  to: string | string[]; // Admin email(s)
+  pendingArticles: PendingArticle[];
+  totalCount: number;
+  dashboardUrl: string;
+}
+
+/**
+ * Send pending review digest to admin(s)
+ */
+export async function sendPendingReviewDigest(
+  data: PendingReviewDigestData
+): Promise<SendEmailResult> {
+  try {
+    const { PendingReviewDigest } = await import('../templates/pending-review-digest');
+
+    return await sendEmail({
+      to: data.to,
+      subject: `[Reminder] ${data.totalCount} article${data.totalCount !== 1 ? 's' : ''} awaiting review`,
+      template: PendingReviewDigest({
+        pendingArticles: data.pendingArticles,
+        totalCount: data.totalCount,
+        dashboardUrl: data.dashboardUrl,
+      }),
+      tags: [
+        { name: 'category', value: 'admin' },
+        { name: 'template', value: 'pending-review-digest' },
+      ],
+    });
+  } catch (error) {
+    console.error('[Email Service] Error sending pending review digest:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send pending review digest',
+    };
+  }
+}

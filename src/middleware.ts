@@ -6,7 +6,7 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Only apply middleware to protected routes
-  const protectedRoutes = ['/dashboard', '/onboarding'];
+  const protectedRoutes = ['/dashboard', '/onboarding', '/admin'];
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
   // Allow all other routes (homepage, newsletter, etc.) to pass through
@@ -73,6 +73,37 @@ export async function middleware(req: NextRequest) {
           console.log('[Middleware] User has not completed onboarding, redirecting to onboarding');
           return NextResponse.redirect(new URL('/onboarding', req.url));
         }
+
+        // Admin route protection - check role
+        if (pathname.startsWith('/admin')) {
+          const { data: userData, error: roleError } = await supabase
+            .from('users')
+            .select('role')
+            .eq('kinde_id', kindeUser.id)
+            .single();
+
+          if (roleError || !userData) {
+            console.warn('[Middleware] Could not fetch user role for admin access:', {
+              kindeId: kindeUser.id,
+              error: roleError?.message
+            });
+            return NextResponse.redirect(new URL('/', req.url));
+          }
+
+          // Only allow admin and super_admin roles
+          if (!userData.role || !['admin', 'super_admin'].includes(userData.role)) {
+            console.log('[Middleware] Unauthorized admin access attempt:', {
+              kindeId: kindeUser.id,
+              role: userData.role || 'none'
+            });
+            return NextResponse.redirect(new URL('/', req.url));
+          }
+
+          console.log('[Middleware] Admin access granted:', {
+            kindeId: kindeUser.id,
+            role: userData.role
+          });
+        }
       } catch (error) {
         console.error('[Middleware] Unexpected error checking onboarding status:', {
           error: error instanceof Error ? error.message : String(error),
@@ -106,11 +137,13 @@ export const config = {
      * Only match protected routes:
      * - /dashboard and its sub-routes
      * - /onboarding and its sub-routes
+     * - /admin and its sub-routes (role-based access)
      *
      * Explicitly exclude /api/* routes to prevent middleware from running
      * on API routes and causing infinite loops
      */
     '/dashboard/:path*',
     '/onboarding/:path*',
+    '/admin/:path*',
   ],
 };

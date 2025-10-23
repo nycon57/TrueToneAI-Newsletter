@@ -1,6 +1,6 @@
 "use client"
 
-import { Crown, CreditCard, LogOut, Settings, User as UserIcon } from "lucide-react"
+import { Crown, CreditCard, LogOut, Settings } from "lucide-react"
 import Link from "next/link"
 
 import {
@@ -133,12 +133,6 @@ export function NavUser({ user, onLogout }: NavUserProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard" className="flex items-center">
-              <UserIcon className="mr-2 h-4 w-4" />
-              Dashboard
-            </Link>
-          </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href="/account" className="flex items-center">
               <Settings className="mr-2 h-4 w-4" />

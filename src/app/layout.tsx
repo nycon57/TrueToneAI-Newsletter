@@ -36,14 +36,6 @@ export default function RootLayout({
         {/* DNS Prefetch & Preconnect for external resources */}
         <link rel="dns-prefetch" href="https://o4509674593124353.ingest.us.sentry.io" />
         <link rel="preconnect" href="https://o4509674593124353.ingest.us.sentry.io" crossOrigin="anonymous" />
-
-        {/* Preload critical assets */}
-        <link
-          rel="preload"
-          href="/logo/landscape/TrueToneAI-Landscape-Logo-Full-Color.png"
-          as="image"
-          type="image/png"
-        />
       </head>
       <body
         className={`${inter.variable} ${signal.variable} font-sans antialiased`}

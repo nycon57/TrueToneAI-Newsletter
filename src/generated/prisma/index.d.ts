@@ -11029,6 +11029,10 @@ export namespace Prisma {
     publishedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
+    submittedAt: Date | null
+    reviewedAt: Date | null
+    rejectionReason: string | null
+    reviewNotes: string | null
     createdByAdminId: string | null
     lastEditedByAdminId: string | null
   }
@@ -11050,6 +11054,10 @@ export namespace Prisma {
     publishedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
+    submittedAt: Date | null
+    reviewedAt: Date | null
+    rejectionReason: string | null
+    reviewNotes: string | null
     createdByAdminId: string | null
     lastEditedByAdminId: string | null
   }
@@ -11075,6 +11083,10 @@ export namespace Prisma {
     publishedAt: number
     createdAt: number
     updatedAt: number
+    submittedAt: number
+    reviewedAt: number
+    rejectionReason: number
+    reviewNotes: number
     createdByAdminId: number
     lastEditedByAdminId: number
     _all: number
@@ -11106,6 +11118,10 @@ export namespace Prisma {
     publishedAt?: true
     createdAt?: true
     updatedAt?: true
+    submittedAt?: true
+    reviewedAt?: true
+    rejectionReason?: true
+    reviewNotes?: true
     createdByAdminId?: true
     lastEditedByAdminId?: true
   }
@@ -11127,6 +11143,10 @@ export namespace Prisma {
     publishedAt?: true
     createdAt?: true
     updatedAt?: true
+    submittedAt?: true
+    reviewedAt?: true
+    rejectionReason?: true
+    reviewNotes?: true
     createdByAdminId?: true
     lastEditedByAdminId?: true
   }
@@ -11152,6 +11172,10 @@ export namespace Prisma {
     publishedAt?: true
     createdAt?: true
     updatedAt?: true
+    submittedAt?: true
+    reviewedAt?: true
+    rejectionReason?: true
+    reviewNotes?: true
     createdByAdminId?: true
     lastEditedByAdminId?: true
     _all?: true
@@ -11264,6 +11288,10 @@ export namespace Prisma {
     publishedAt: Date | null
     createdAt: Date
     updatedAt: Date
+    submittedAt: Date | null
+    reviewedAt: Date | null
+    rejectionReason: string | null
+    reviewNotes: string | null
     createdByAdminId: string | null
     lastEditedByAdminId: string | null
     _count: ArticleCountAggregateOutputType | null
@@ -11308,6 +11336,10 @@ export namespace Prisma {
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    submittedAt?: boolean
+    reviewedAt?: boolean
+    rejectionReason?: boolean
+    reviewNotes?: boolean
     createdByAdminId?: boolean
     lastEditedByAdminId?: boolean
     createdBy?: boolean | Article$createdByArgs<ExtArgs>
@@ -11337,6 +11369,10 @@ export namespace Prisma {
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    submittedAt?: boolean
+    reviewedAt?: boolean
+    rejectionReason?: boolean
+    reviewNotes?: boolean
     createdByAdminId?: boolean
     lastEditedByAdminId?: boolean
     createdBy?: boolean | Article$createdByArgs<ExtArgs>
@@ -11364,6 +11400,10 @@ export namespace Prisma {
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    submittedAt?: boolean
+    reviewedAt?: boolean
+    rejectionReason?: boolean
+    reviewNotes?: boolean
     createdByAdminId?: boolean
     lastEditedByAdminId?: boolean
     createdBy?: boolean | Article$createdByArgs<ExtArgs>
@@ -11391,11 +11431,15 @@ export namespace Prisma {
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    submittedAt?: boolean
+    reviewedAt?: boolean
+    rejectionReason?: boolean
+    reviewNotes?: boolean
     createdByAdminId?: boolean
     lastEditedByAdminId?: boolean
   }
 
-  export type ArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "summary" | "content" | "contentType" | "articleTopic" | "category" | "tags" | "defaultKeyInsights" | "defaultVideoScript" | "defaultEmailTemplate" | "defaultSocialContent" | "position" | "imageUrl" | "sourceUrl" | "metadata" | "status" | "publishedAt" | "createdAt" | "updatedAt" | "createdByAdminId" | "lastEditedByAdminId", ExtArgs["result"]["article"]>
+  export type ArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "summary" | "content" | "contentType" | "articleTopic" | "category" | "tags" | "defaultKeyInsights" | "defaultVideoScript" | "defaultEmailTemplate" | "defaultSocialContent" | "position" | "imageUrl" | "sourceUrl" | "metadata" | "status" | "publishedAt" | "createdAt" | "updatedAt" | "submittedAt" | "reviewedAt" | "rejectionReason" | "reviewNotes" | "createdByAdminId" | "lastEditedByAdminId", ExtArgs["result"]["article"]>
   export type ArticleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     createdBy?: boolean | Article$createdByArgs<ExtArgs>
     lastEditedBy?: boolean | Article$lastEditedByArgs<ExtArgs>
@@ -11502,6 +11546,22 @@ export namespace Prisma {
        * When article was last updated
        */
       updatedAt: Date
+      /**
+       * When article was submitted for review
+       */
+      submittedAt: Date | null
+      /**
+       * When article was reviewed by admin
+       */
+      reviewedAt: Date | null
+      /**
+       * Reason for rejection (if applicable)
+       */
+      rejectionReason: string | null
+      /**
+       * Admin notes on the article review
+       */
+      reviewNotes: string | null
       /**
        * Admin who created the article
        */
@@ -11956,6 +12016,10 @@ export namespace Prisma {
     readonly publishedAt: FieldRef<"Article", 'DateTime'>
     readonly createdAt: FieldRef<"Article", 'DateTime'>
     readonly updatedAt: FieldRef<"Article", 'DateTime'>
+    readonly submittedAt: FieldRef<"Article", 'DateTime'>
+    readonly reviewedAt: FieldRef<"Article", 'DateTime'>
+    readonly rejectionReason: FieldRef<"Article", 'String'>
+    readonly reviewNotes: FieldRef<"Article", 'String'>
     readonly createdByAdminId: FieldRef<"Article", 'String'>
     readonly lastEditedByAdminId: FieldRef<"Article", 'String'>
   }
@@ -14880,6 +14944,10 @@ export namespace Prisma {
     publishedAt: 'publishedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
+    submittedAt: 'submittedAt',
+    reviewedAt: 'reviewedAt',
+    rejectionReason: 'rejectionReason',
+    reviewNotes: 'reviewNotes',
     createdByAdminId: 'createdByAdminId',
     lastEditedByAdminId: 'lastEditedByAdminId'
   };
@@ -15871,6 +15939,10 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
     createdAt?: DateTimeFilter<"Article"> | Date | string
     updatedAt?: DateTimeFilter<"Article"> | Date | string
+    submittedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
+    reviewedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
+    rejectionReason?: StringNullableFilter<"Article"> | string | null
+    reviewNotes?: StringNullableFilter<"Article"> | string | null
     createdByAdminId?: UuidNullableFilter<"Article"> | string | null
     lastEditedByAdminId?: UuidNullableFilter<"Article"> | string | null
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -15899,6 +15971,10 @@ export namespace Prisma {
     publishedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    submittedAt?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    rejectionReason?: SortOrderInput | SortOrder
+    reviewNotes?: SortOrderInput | SortOrder
     createdByAdminId?: SortOrderInput | SortOrder
     lastEditedByAdminId?: SortOrderInput | SortOrder
     createdBy?: UserOrderByWithRelationInput
@@ -15930,6 +16006,10 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
     createdAt?: DateTimeFilter<"Article"> | Date | string
     updatedAt?: DateTimeFilter<"Article"> | Date | string
+    submittedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
+    reviewedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
+    rejectionReason?: StringNullableFilter<"Article"> | string | null
+    reviewNotes?: StringNullableFilter<"Article"> | string | null
     createdByAdminId?: UuidNullableFilter<"Article"> | string | null
     lastEditedByAdminId?: UuidNullableFilter<"Article"> | string | null
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -15958,6 +16038,10 @@ export namespace Prisma {
     publishedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    submittedAt?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    rejectionReason?: SortOrderInput | SortOrder
+    reviewNotes?: SortOrderInput | SortOrder
     createdByAdminId?: SortOrderInput | SortOrder
     lastEditedByAdminId?: SortOrderInput | SortOrder
     _count?: ArticleCountOrderByAggregateInput
@@ -15991,6 +16075,10 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableWithAggregatesFilter<"Article"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Article"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Article"> | Date | string
+    submittedAt?: DateTimeNullableWithAggregatesFilter<"Article"> | Date | string | null
+    reviewedAt?: DateTimeNullableWithAggregatesFilter<"Article"> | Date | string | null
+    rejectionReason?: StringNullableWithAggregatesFilter<"Article"> | string | null
+    reviewNotes?: StringNullableWithAggregatesFilter<"Article"> | string | null
     createdByAdminId?: UuidNullableWithAggregatesFilter<"Article"> | string | null
     lastEditedByAdminId?: UuidNullableWithAggregatesFilter<"Article"> | string | null
   }
@@ -16987,6 +17075,10 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    rejectionReason?: string | null
+    reviewNotes?: string | null
     createdBy?: UserCreateNestedOneWithoutCreatedArticlesInput
     lastEditedBy?: UserCreateNestedOneWithoutEditedArticlesInput
     personalizations?: PersonalizedOutputCreateNestedManyWithoutArticleInput
@@ -17013,6 +17105,10 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    rejectionReason?: string | null
+    reviewNotes?: string | null
     createdByAdminId?: string | null
     lastEditedByAdminId?: string | null
     personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutArticleInput
@@ -17039,6 +17135,10 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: UserUpdateOneWithoutCreatedArticlesNestedInput
     lastEditedBy?: UserUpdateOneWithoutEditedArticlesNestedInput
     personalizations?: PersonalizedOutputUpdateManyWithoutArticleNestedInput
@@ -17065,6 +17165,10 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
     personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutArticleNestedInput
@@ -17091,6 +17195,10 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    rejectionReason?: string | null
+    reviewNotes?: string | null
     createdByAdminId?: string | null
     lastEditedByAdminId?: string | null
   }
@@ -17116,6 +17224,10 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ArticleUncheckedUpdateManyInput = {
@@ -17139,6 +17251,10 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -18256,6 +18372,10 @@ export namespace Prisma {
     publishedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    submittedAt?: SortOrder
+    reviewedAt?: SortOrder
+    rejectionReason?: SortOrder
+    reviewNotes?: SortOrder
     createdByAdminId?: SortOrder
     lastEditedByAdminId?: SortOrder
   }
@@ -18281,6 +18401,10 @@ export namespace Prisma {
     publishedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    submittedAt?: SortOrder
+    reviewedAt?: SortOrder
+    rejectionReason?: SortOrder
+    reviewNotes?: SortOrder
     createdByAdminId?: SortOrder
     lastEditedByAdminId?: SortOrder
   }
@@ -18302,6 +18426,10 @@ export namespace Prisma {
     publishedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    submittedAt?: SortOrder
+    reviewedAt?: SortOrder
+    rejectionReason?: SortOrder
+    reviewNotes?: SortOrder
     createdByAdminId?: SortOrder
     lastEditedByAdminId?: SortOrder
   }
@@ -19885,6 +20013,10 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    rejectionReason?: string | null
+    reviewNotes?: string | null
     lastEditedBy?: UserCreateNestedOneWithoutEditedArticlesInput
     personalizations?: PersonalizedOutputCreateNestedManyWithoutArticleInput
   }
@@ -19910,6 +20042,10 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    rejectionReason?: string | null
+    reviewNotes?: string | null
     lastEditedByAdminId?: string | null
     personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutArticleInput
   }
@@ -19945,6 +20081,10 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    rejectionReason?: string | null
+    reviewNotes?: string | null
     createdBy?: UserCreateNestedOneWithoutCreatedArticlesInput
     personalizations?: PersonalizedOutputCreateNestedManyWithoutArticleInput
   }
@@ -19970,6 +20110,10 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    rejectionReason?: string | null
+    reviewNotes?: string | null
     createdByAdminId?: string | null
     personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutArticleInput
   }
@@ -20230,6 +20374,10 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
     createdAt?: DateTimeFilter<"Article"> | Date | string
     updatedAt?: DateTimeFilter<"Article"> | Date | string
+    submittedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
+    reviewedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
+    rejectionReason?: StringNullableFilter<"Article"> | string | null
+    reviewNotes?: StringNullableFilter<"Article"> | string | null
     createdByAdminId?: UuidNullableFilter<"Article"> | string | null
     lastEditedByAdminId?: UuidNullableFilter<"Article"> | string | null
   }
@@ -22066,6 +22214,10 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    rejectionReason?: string | null
+    reviewNotes?: string | null
     createdBy?: UserCreateNestedOneWithoutCreatedArticlesInput
     lastEditedBy?: UserCreateNestedOneWithoutEditedArticlesInput
   }
@@ -22091,6 +22243,10 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    rejectionReason?: string | null
+    reviewNotes?: string | null
     createdByAdminId?: string | null
     lastEditedByAdminId?: string | null
   }
@@ -22213,6 +22369,10 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: UserUpdateOneWithoutCreatedArticlesNestedInput
     lastEditedBy?: UserUpdateOneWithoutEditedArticlesNestedInput
   }
@@ -22238,6 +22398,10 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -22331,6 +22495,10 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    rejectionReason?: string | null
+    reviewNotes?: string | null
     lastEditedByAdminId?: string | null
   }
 
@@ -22355,6 +22523,10 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    rejectionReason?: string | null
+    reviewNotes?: string | null
     createdByAdminId?: string | null
   }
 
@@ -22603,6 +22775,10 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedBy?: UserUpdateOneWithoutEditedArticlesNestedInput
     personalizations?: PersonalizedOutputUpdateManyWithoutArticleNestedInput
   }
@@ -22628,6 +22804,10 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
     personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutArticleNestedInput
   }
@@ -22653,6 +22833,10 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -22677,6 +22861,10 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: UserUpdateOneWithoutCreatedArticlesNestedInput
     personalizations?: PersonalizedOutputUpdateManyWithoutArticleNestedInput
   }
@@ -22702,6 +22890,10 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
     personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutArticleNestedInput
   }
@@ -22727,6 +22919,10 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 

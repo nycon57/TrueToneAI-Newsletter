@@ -140,6 +140,10 @@ export async function POST(req: NextRequest) {
           const priceId = subscription.items.data[0].price.id;
           const monthlyLimit = getMonthlyLimitFromPrice(priceId);
 
+          // Calculate next reset date for PAID tier (first of next month)
+          const now = new Date();
+          const nextReset = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
           // Update user with subscription info
           const { error: updateError } = await supabase
             .from('users')
@@ -150,6 +154,7 @@ export async function POST(req: NextRequest) {
               subscription_status: subscription.status,
               monthly_generation_limit: monthlyLimit,
               monthly_generations_used: 0,
+              generation_reset_date: nextReset.toISOString(), // Set monthly reset for PAID tier
               subscription_created_at: new Date().toISOString(),
             })
             .eq('id', userId);
@@ -157,7 +162,7 @@ export async function POST(req: NextRequest) {
           if (updateError) {
             console.error('[Webhook] Error updating user:', updateError);
           } else {
-            console.log('[Webhook] User upgraded to PAID tier:', userId);
+            console.log('[Webhook] User upgraded to PAID tier with monthly reset:', userId);
           }
         }
         break;
@@ -219,16 +224,30 @@ export async function POST(req: NextRequest) {
         const priceId = subscription.items.data[0].price.id;
         const monthlyLimit = subscription.status === 'active' || subscription.status === 'trialing'
           ? getMonthlyLimitFromPrice(priceId)
-          : 3; // Free tier limit
+          : 3; // Free tier lifetime limit
+
+        // Prepare update data
+        const updateData: any = {
+          subscription_status: subscription.status,
+          subscription_tier: tier,
+          monthly_generation_limit: monthlyLimit,
+        };
+
+        // Set generation_reset_date based on tier
+        if (tier === 'PAID') {
+          // PAID tier: set next reset date if not already set
+          const now = new Date();
+          const nextReset = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+          updateData.generation_reset_date = nextReset.toISOString();
+        } else {
+          // FREE tier: null reset date (lifetime limit)
+          updateData.generation_reset_date = null;
+        }
 
         // Update subscription status and tier
         const { error: updateError } = await supabase
           .from('users')
-          .update({
-            subscription_status: subscription.status,
-            subscription_tier: tier,
-            monthly_generation_limit: monthlyLimit,
-          })
+          .update(updateData)
           .eq('id', userId);
 
         if (updateError) {
@@ -262,7 +281,8 @@ export async function POST(req: NextRequest) {
           .update({
             subscription_tier: 'FREE',
             subscription_status: 'canceled',
-            monthly_generation_limit: 3,
+            monthly_generation_limit: 3, // Lifetime limit for FREE tier
+            generation_reset_date: null, // No reset for FREE tier (lifetime limit)
             stripe_subscription_id: null,
           })
           .eq('id', user.id);
@@ -299,12 +319,17 @@ export async function POST(req: NextRequest) {
           const user = await getUserFromCustomer(invoice.customer as string, supabase);
 
           if (user && invoice.subscription) {
-            // Ensure subscription is active
+            // Calculate next reset date for PAID tier (first of next month)
+            const now = new Date();
+            const nextReset = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+            // Ensure subscription is active with proper reset date
             const { error: updateError } = await supabase
               .from('users')
               .update({
                 subscription_status: 'active',
                 subscription_tier: 'PAID',
+                generation_reset_date: nextReset.toISOString(), // Ensure monthly reset for PAID tier
               })
               .eq('id', user.id);
 

@@ -94,25 +94,47 @@ export default function AccountClient({ user }: AccountClientProps) {
             </TabsList>
 
             <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <TabsContent value="profile" className="mt-0">
-                  <ProfileTab user={user} />
-                </TabsContent>
+              {activeTab === 'profile' && (
+                <motion.div
+                  key="profile"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <TabsContent value="profile" className="mt-0">
+                    <ProfileTab user={user} />
+                  </TabsContent>
+                </motion.div>
+              )}
 
-                <TabsContent value="billing" className="mt-0">
-                  <BillingTab user={user} />
-                </TabsContent>
+              {activeTab === 'billing' && (
+                <motion.div
+                  key="billing"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <TabsContent value="billing" className="mt-0">
+                    <BillingTab user={user} />
+                  </TabsContent>
+                </motion.div>
+              )}
 
-                <TabsContent value="support" className="mt-0">
-                  <SupportTab user={user} />
-                </TabsContent>
-              </motion.div>
+              {activeTab === 'support' && (
+                <motion.div
+                  key="support"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <TabsContent value="support" className="mt-0">
+                    <SupportTab user={user} />
+                  </TabsContent>
+                </motion.div>
+              )}
             </AnimatePresence>
           </Tabs>
         </motion.div>

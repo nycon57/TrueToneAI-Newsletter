@@ -11,8 +11,8 @@ export interface SubscriptionStatus {
   isActive: boolean;
   isPaid: boolean;
   canAccessPaidFeatures: boolean;
-  monthlyGenerationLimit: number;
-  monthlyGenerationsUsed: number;
+  monthlyGenerationLimit: number; // For FREE tier: lifetime limit. For PAID/PREMIUM: monthly limit
+  monthlyGenerationsUsed: number; // For FREE tier: lifetime usage. For PAID/PREMIUM: monthly usage
   generationsRemaining: number;
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
@@ -20,6 +20,8 @@ export interface SubscriptionStatus {
 
 /**
  * Get user's subscription status from database
+ * For FREE tier: limits are lifetime (never reset)
+ * For PAID/PREMIUM tiers: limits are monthly (reset each month)
  */
 export async function getUserSubscriptionStatus(userId: string): Promise<SubscriptionStatus> {
   const supabase = await createClient();
@@ -32,27 +34,31 @@ export async function getUserSubscriptionStatus(userId: string): Promise<Subscri
 
   if (error || !user) {
     console.error('[SubscriptionGuard] Error fetching user subscription:', error);
-    // Return free tier defaults on error
+    // Return free tier defaults on error (lifetime limit of 3)
     return {
       tier: 'FREE',
       status: null,
       isActive: false,
       isPaid: false,
       canAccessPaidFeatures: false,
-      monthlyGenerationLimit: 3,
-      monthlyGenerationsUsed: 0,
+      monthlyGenerationLimit: 3, // Lifetime limit for free tier
+      monthlyGenerationsUsed: 0, // Lifetime usage for free tier
       generationsRemaining: 3,
       stripeCustomerId: null,
       stripeSubscriptionId: null,
     };
   }
 
-  const tier = user.subscription_tier || 'FREE';
-  const status = user.subscription_status;
+  // Normalize tier to uppercase for consistent comparison
+  const tier = (user.subscription_tier?.toUpperCase() || 'FREE') as 'FREE' | 'PAID' | 'PREMIUM';
+  // Normalize status to lowercase for consistent comparison
+  const status = user.subscription_status?.toLowerCase();
   const isActive = status === 'active' || status === 'trialing';
   const isPaid = tier === 'PAID' || tier === 'PREMIUM';
   const canAccessPaidFeatures = isPaid && isActive;
 
+  // For FREE tier: this is a lifetime limit and usage
+  // For PAID/PREMIUM: this is a monthly limit and usage
   const monthlyGenerationLimit = user.monthly_generation_limit || 3;
   const monthlyGenerationsUsed = user.monthly_generations_used || 0;
   const generationsRemaining = Math.max(0, monthlyGenerationLimit - monthlyGenerationsUsed);
@@ -175,20 +181,39 @@ export async function incrementGenerationCount(userId: string): Promise<number |
 }
 
 /**
+ * Helper function to determine if a tier should have generation resets
+ * FREE tier: NO resets (lifetime limit)
+ * PAID/PREMIUM tiers: Monthly resets
+ */
+export function shouldResetGenerations(tier: 'FREE' | 'PAID' | 'PREMIUM'): boolean {
+  return tier === 'PAID' || tier === 'PREMIUM';
+}
+
+/**
  * Check if user needs to reset their monthly generation count
  * Should be called before checking quota
+ * IMPORTANT: Only resets for PAID/PREMIUM tiers, NEVER for FREE tier
  */
 export async function checkAndResetGenerationQuota(userId: string): Promise<void> {
   const supabase = await createClient();
 
   const { data: user } = await supabase
     .from('users')
-    .select('generation_reset_date, monthly_generations_used')
+    .select('subscription_tier, generation_reset_date, monthly_generations_used')
     .eq('id', userId)
     .single();
 
   if (!user) return;
 
+  // Normalize tier to uppercase
+  const tier = (user.subscription_tier?.toUpperCase() || 'FREE') as 'FREE' | 'PAID' | 'PREMIUM';
+
+  // FREE tier users NEVER reset - they have lifetime limits
+  if (!shouldResetGenerations(tier)) {
+    return;
+  }
+
+  // Only proceed with reset logic for PAID/PREMIUM tiers
   const resetDate = user.generation_reset_date ? new Date(user.generation_reset_date) : null;
   const now = new Date();
 
@@ -205,7 +230,7 @@ export async function checkAndResetGenerationQuota(userId: string): Promise<void
       })
       .eq('id', userId);
 
-    console.log('[SubscriptionGuard] Reset generation quota for user:', userId);
+    console.log('[SubscriptionGuard] Reset generation quota for PAID/PREMIUM user:', userId);
   }
 }
 
