@@ -71,6 +71,14 @@ export function HomePageClient({
   const isPaid = normalizedTier === 'PAID' || normalizedTier === 'PREMIUM';
   const isFreeUser = !isAuthenticated || normalizedTier === 'FREE';
 
+  // Calculate generation stats from user data
+  const userGenerationStats = isAuthenticated && user ? {
+    remaining: Math.max(0, (user.monthly_generation_limit || 25) - (user.monthly_generations_used || 0)),
+    limit: user.monthly_generation_limit || 25,
+    tier: normalizedTier.toLowerCase() as 'free' | 'paid' | 'premium',
+    resetDate: user.generation_reset_date || undefined
+  } : undefined;
+
   // Handle filter changes with transitions for smooth updates
   const handleFilterChange = (newFilters: Record<string, string>) => {
     startTransition(() => {
@@ -85,7 +93,7 @@ export function HomePageClient({
   return (
     <div className="min-h-screen bg-gradient-to-br from-lavender/20 via-white to-lavender/20">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-lavender/30">
+      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-lavender/30">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="relative">
@@ -201,6 +209,7 @@ export function HomePageClient({
                     article={article}
                     isAuthenticated={isAuthenticated}
                     isPaid={isPaid}
+                    userGenerationStats={userGenerationStats}
                   />
                 </motion.div>
               ))}

@@ -98,94 +98,42 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: 'Article not found' }, { status: 404 });
     }
 
+    // Fetch extended user profile for authenticated users (for better personalization)
+    let enrichedUser = user;
+    if (isAuthenticated && user) {
+      const { data: userProfile } = await supabase
+        .from('users')
+        .select('tone_of_voice, formality, humor, emotional_expression, detail_orientation, vocabulary, content_length, engagement_style, user_persona, communication_style, speech_patterns, professional_indicators, unique_voice_markers')
+        .eq('id', user.id)
+        .single();
+
+      if (userProfile) {
+        enrichedUser = { ...user, ...userProfile };
+      }
+    }
+
     // Build prompt based on contentType and user profile
-    const prompt = buildPersonalizationPrompt(article, user, contentType);
+    const prompt = buildPersonalizationPrompt(article, enrichedUser, contentType);
 
     // Stream response using Vercel AI SDK
+    // Note: We removed auto-save logic from onFinish - users now manually save generations they want to keep
     const result = await streamText({
       model: openai('gpt-4o-mini'),
       prompt,
       temperature: 0.7,
       maxTokens: 2000,
       onFinish: async (completion) => {
-        try {
-          // Only save personalization for authenticated users
-          if (isAuthenticated && user) {
-            const fieldMap: Record<string, string> = {
-              'key_insights': 'personalized_key_insights',
-              'video_script': 'personalized_video_script',
-              'email_template': 'personalized_email_template',
-              'social_content': 'personalized_social_content'
-            };
+        // Log completion for analytics (optional)
+        console.log('[AI Generation] Completed:', {
+          userId: user?.id || sessionId,
+          articleId,
+          contentType,
+          tokensUsed: completion.usage?.totalTokens || 0,
+          tier: usageCheck.tier
+        });
 
-            const fieldName = fieldMap[contentType];
-            if (!fieldName) return;
-
-            let parsedContent = completion.text;
-
-            // Parse JSON for key_insights and social_content
-            if (contentType === 'key_insights') {
-              try {
-                parsedContent = JSON.parse(completion.text);
-              } catch {
-                // If parsing fails, split by newlines and clean up
-                parsedContent = completion.text
-                  .split('\n')
-                  .filter(line => line.trim())
-                  .map(line => line.replace(/^[-*•]\s*/, '').trim());
-              }
-            } else if (contentType === 'social_content') {
-              try {
-                parsedContent = JSON.parse(completion.text);
-              } catch {
-                // Default structure if parsing fails
-                parsedContent = {
-                  facebook: completion.text,
-                  instagram: completion.text,
-                  twitter: completion.text,
-                  linkedin: completion.text
-                };
-              }
-            }
-
-            const tokensToAdd = completion.usage?.totalTokens || 0;
-            const now = new Date().toISOString();
-
-            // Use atomic upsert with database-side increment to prevent race conditions
-            const personalizedData: any = {
-              user_id: user.id,
-              article_id: articleId,
-              [fieldName]: parsedContent,
-              last_generated_at: now,
-              truetone_settings: {
-                tone_of_voice: user.tone_of_voice,
-                formality: user.formality,
-                humor: user.humor
-              }
-            };
-
-            // Perform atomic upsert using Postgres ON CONFLICT
-            await supabase.rpc('upsert_personalized_output', {
-              p_user_id: user.id,
-              p_article_id: articleId,
-              p_field_name: fieldName,
-              p_field_value: parsedContent,
-              p_tokens_used: tokensToAdd,
-              p_last_generated_at: now,
-              p_truetone_settings: {
-                tone_of_voice: user.tone_of_voice,
-                formality: user.formality,
-                humor: user.humor
-              }
-            });
-          }
-
-          // Note: Usage counter was already atomically incremented at the start
-          // No need to increment again here - this prevents race conditions
-
-        } catch (error) {
-          console.error('Error saving personalization:', error);
-        }
+        // Note: No automatic saving here - users must explicitly save via /api/ai/save-generation
+        // This gives users control to review and approve generated content before saving
       }
     });
 
@@ -202,48 +150,188 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// Helper function to build prompt
-function buildPersonalizationPrompt(article: any, user: any | null, contentType: string): string {
-  const baseContext = `
-Article Title: ${article.title}
-Article Summary: ${article.summary}
+// Helper function to build enhanced personalization prompts
+function buildPersonalizationPrompt(article: Record<string, unknown>, user: Record<string, unknown> | null, contentType: string): string {
+  // Build comprehensive TrueTone profile context
+  const truetoneContext = user ? `
+AUTHENTIC VOICE PROFILE:
+- Persona: ${user.user_persona || 'Professional loan officer'}
+- Tone of Voice: ${user.tone_of_voice || 'professional'}
+- Formality Level: ${user.formality || 'semi-formal'}
+- Humor Style: ${user.humor || 'minimal'}
+- Emotional Expression: ${user.emotional_expression || 'moderate'}
+- Detail Orientation: ${user.detail_orientation || 'balanced'}
+- Vocabulary Level: ${user.vocabulary || 'professional'}
+- Content Length Preference: ${user.content_length || 'medium'}
+- Engagement Style: ${user.engagement_style || 'informative'}
 
-User Profile:
-- Tone: ${user?.tone_of_voice || 'professional'}
-- Formality: ${user?.formality || 'semi-formal'}
-- Humor: ${user?.humor || 'minimal'}
+COMMUNICATION PATTERNS:
+${user.communication_style ? JSON.stringify(user.communication_style, null, 2) : 'Standard professional communication'}
+
+SPEECH PATTERNS:
+${user.speech_patterns ? JSON.stringify(user.speech_patterns, null, 2) : 'Standard professional speech patterns'}
+
+PROFESSIONAL MARKERS:
+${user.professional_indicators ? JSON.stringify(user.professional_indicators, null, 2) : 'Mortgage and real estate industry terminology'}
+
+UNIQUE VOICE MARKERS:
+${user.unique_voice_markers ? JSON.stringify(user.unique_voice_markers, null, 2) : 'Professional and client-focused approach'}
+` : `
+USER PROFILE:
+- Tone: professional
+- Formality: semi-formal
+- Style: informative
 `;
 
+  const articleContext = `
+ARTICLE CONTEXT:
+Title: ${article.title}
+Summary: ${article.summary}
+Topic: ${article.article_topic || 'General'}
+Category: ${article.category || 'Mortgage Industry'}
+`;
+
+  // Content-type specific prompts
   switch (contentType) {
     case 'key_insights':
-      return `${baseContext}
+      return `You are personalizing mortgage industry content for a loan officer.
 
-Generate 4 key insights from this article, personalized for this user's tone and style.
-Return ONLY a JSON array of strings, nothing else. Example format:
-["Insight 1", "Insight 2", "Insight 3", "Insight 4"]`;
+${truetoneContext}
+
+${articleContext}
+
+TASK: Generate 4 actionable key insights from this article.
+
+REQUIREMENTS:
+1. Match the user's detail orientation (${user?.detail_orientation || 'balanced'})
+2. Use their professional terminology and vocabulary level
+3. Each insight should be specific, actionable, and valuable for their business
+4. Length: 15-25 words per insight
+5. Focus on what matters to mortgage professionals and their clients
+
+OUTPUT FORMAT:
+Return ONLY a JSON array of 4 strings, nothing else:
+["Insight 1 here", "Insight 2 here", "Insight 3 here", "Insight 4 here"]
+
+Do not include any explanations, meta-commentary, or additional text outside the JSON array.`;
 
     case 'video_script':
-      return `${baseContext}
+      return `You are personalizing mortgage industry content for a loan officer.
 
-Write a 30-60 second video script for this article, matching the user's communication style.
-Make it engaging and conversational. Return only the script text, ready to read.`;
+${truetoneContext}
+
+${articleContext}
+
+TASK: Write a 30-60 second video script for this article.
+
+VOICE REQUIREMENTS:
+1. Match the user's speaking style and energy level (${user?.engagement_style || 'informative'})
+2. Use their typical phrases: ${user?.speech_patterns?.common_phrases?.join(', ') || 'professional and client-focused language'}
+3. Humor level: ${user?.humor || 'minimal'} - adjust accordingly
+4. Formality: ${user?.formality || 'semi-formal'} - this affects greeting and tone
+
+STRUCTURE:
+- Hook (5 seconds): Attention-grabbing opening
+- Context (15 seconds): Explain the news/topic
+- Value (25 seconds): Why this matters to clients
+- CTA (5 seconds): Clear call-to-action
+
+CONSTRAINTS:
+- Reading time: 30-60 seconds (~150-300 words)
+- Sound natural and conversational, not scripted
+- Use "you" language to engage viewers
+- End with specific action they can take
+
+Return only the script text, ready to read aloud. No stage directions or meta-commentary.`;
 
     case 'email_template':
-      return `${baseContext}
+      return `You are personalizing mortgage industry content for a loan officer.
 
-Create an email template about this article for the user to send to their clients.
-Include a compelling subject line and clear call-to-action.
-Format it as a complete, ready-to-send email.`;
+${truetoneContext}
+
+${articleContext}
+
+TASK: Create a professional email template about this article.
+
+TONE REQUIREMENTS:
+1. Formality: ${user?.formality || 'semi-formal'} - adjust greeting and language
+2. Emotional expression: ${user?.emotional_expression || 'moderate'} - affects warmth and enthusiasm
+3. Professional indicators: Use appropriate mortgage industry terminology
+4. Vocabulary: ${user?.vocabulary || 'professional'} level
+
+EMAIL STRUCTURE:
+1. Subject Line (under 50 characters, compelling, ${user?.humor === 'frequent' ? 'can be slightly playful' : 'professional'})
+2. Preview Text (under 100 characters, creates curiosity)
+3. Greeting (match formality: "${user?.formality === 'very-formal' ? 'Dear [Client Name]' : user?.formality === 'casual' ? 'Hey [Client Name]!' : 'Hi [Client Name],'}")
+4. Body (2-3 short paragraphs, scannable, mobile-optimized)
+5. CTA (clear action step with urgency if appropriate)
+6. Signature (professional closing)
+
+PERSONALIZATION TOKENS:
+- Use [Client Name] for personalization
+- Use [Your Name] for signature
+- Include [Your Phone] or [Schedule Link] placeholders
+
+CONSTRAINTS:
+- Lead with value/benefit to recipient
+- Short paragraphs (2-3 sentences max)
+- One clear CTA
+- Professional but warm tone
+
+Return the complete email template, ready to use.`;
 
     case 'social_content':
-      return `${baseContext}
+      return `You are personalizing mortgage industry content for a loan officer.
 
-Generate social media posts for Facebook, Instagram, Twitter, and LinkedIn.
-Match the user's tone and keep within platform character limits.
-Return ONLY a JSON object with this exact structure:
-{"facebook": "post text", "instagram": "post text", "twitter": "post text", "linkedin": "post text"}`;
+${truetoneContext}
+
+${articleContext}
+
+TASK: Generate platform-specific social media posts for this article.
+
+PLATFORM REQUIREMENTS:
+
+FACEBOOK (up to 500 characters):
+- Tone: Conversational and community-focused
+- Can use ${user?.humor === 'minimal' ? 'minimal emojis' : user?.humor === 'frequent' ? '3-5 relevant emojis' : '1-2 emojis'}
+- Include context and why it matters
+- End with soft CTA (comment, share, reach out)
+
+INSTAGRAM (caption ~300 characters + 5-10 hashtags):
+- Visual and concise
+- Emoji usage: ${user?.humor === 'minimal' ? 'minimal (1-2)' : user?.humor === 'frequent' ? 'moderate (3-4)' : 'light (2-3)'}
+- Engaging opening line
+- Mix branded + trending + niche hashtags
+
+TWITTER/X (up to 280 characters):
+- Punchy and direct
+- Hook in first 7 words
+- Use thread if needed for complex topics
+- ${user?.humor === 'frequent' ? 'Can be slightly witty' : 'Professional and clear'}
+
+LINKEDIN (up to 700 characters):
+- Professional and insightful
+- Thought leadership angle
+- Industry terminology welcome
+- End with question to drive engagement
+
+VOICE CONSISTENCY:
+- Vocabulary level: ${user?.vocabulary || 'professional'}
+- Engagement style: ${user?.engagement_style || 'informative'}
+- All posts should feel authentic to this person
+
+OUTPUT FORMAT:
+Return ONLY a JSON object with this exact structure, no additional text:
+{
+  "facebook": "Facebook post here",
+  "instagram": "Instagram caption here",
+  "twitter": "Twitter/X post here",
+  "linkedin": "LinkedIn post here"
+}
+
+Do not include explanations or meta-commentary outside the JSON object.`;
 
     default:
-      return baseContext;
+      return `${truetoneContext}\n\n${articleContext}`;
   }
 }
