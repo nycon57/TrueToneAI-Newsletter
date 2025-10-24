@@ -133,6 +133,14 @@ exports.Prisma.UserScalarFieldEnum = {
   kindeId: 'kindeId',
   categoryPreferences: 'categoryPreferences',
   savedArticleIds: 'savedArticleIds',
+  toneOfVoice: 'toneOfVoice',
+  humor: 'humor',
+  detailOrientation: 'detailOrientation',
+  contentLength: 'contentLength',
+  formality: 'formality',
+  emotionalExpression: 'emotionalExpression',
+  vocabulary: 'vocabulary',
+  engagementStyle: 'engagementStyle',
   subscriptionTier: 'subscriptionTier',
   subscriptionStatus: 'subscriptionStatus',
   subscriptionExpiresAt: 'subscriptionExpiresAt',
@@ -275,6 +283,19 @@ exports.Prisma.PersonalizedOutputScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.GenerationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  articleId: 'articleId',
+  contentType: 'contentType',
+  platform: 'platform',
+  content: 'content',
+  contentArray: 'contentArray',
+  tokensUsed: 'tokensUsed',
+  generatedAt: 'generatedAt',
+  truetoneSnapshot: 'truetoneSnapshot'
+};
+
 exports.Prisma.AnonymousAiUsageScalarFieldEnum = {
   id: 'id',
   sessionId: 'sessionId',
@@ -346,6 +367,20 @@ exports.ArticleStatus = exports.$Enums.ArticleStatus = {
   ARCHIVED: 'ARCHIVED'
 };
 
+exports.GenerationContentType = exports.$Enums.GenerationContentType = {
+  KEY_INSIGHTS: 'KEY_INSIGHTS',
+  VIDEO_SCRIPT: 'VIDEO_SCRIPT',
+  EMAIL_TEMPLATE: 'EMAIL_TEMPLATE',
+  SOCIAL_MEDIA: 'SOCIAL_MEDIA'
+};
+
+exports.SocialPlatform = exports.$Enums.SocialPlatform = {
+  FACEBOOK: 'FACEBOOK',
+  INSTAGRAM: 'INSTAGRAM',
+  TWITTER: 'TWITTER',
+  LINKEDIN: 'LINKEDIN'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Post: 'Post',
@@ -356,6 +391,7 @@ exports.Prisma.ModelName = {
   ChatAnalytics: 'ChatAnalytics',
   Article: 'Article',
   PersonalizedOutput: 'PersonalizedOutput',
+  Generation: 'Generation',
   AnonymousAiUsage: 'AnonymousAiUsage'
 };
 

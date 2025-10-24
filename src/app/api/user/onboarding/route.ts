@@ -14,6 +14,16 @@ const OnboardingSchema = z.object({
   }),
   transcript: z.string().max(50000).optional(),
   analysisResults: z.any().optional(), // Complex nested object, validated separately if needed
+  truetoneSettings: z.object({
+    tone_of_voice: z.string().optional(),
+    humor: z.string().optional(),
+    detail_orientation: z.string().optional(),
+    content_length: z.string().optional(),
+    formality: z.string().optional(),
+    emotional_expression: z.string().optional(),
+    vocabulary: z.string().optional(),
+    engagement_style: z.string().optional(),
+  }).optional(), // TrueTone characteristics as individual fields
   categoryPreferences: z.array(z.string()).optional(),
   tagPreferences: z.array(z.string()).optional(),
   billingData: z.object({
@@ -52,7 +62,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { profileData, transcript, analysisResults, categoryPreferences, tagPreferences, billingData } = validationResult.data;
+    const { profileData, transcript, analysisResults, truetoneSettings, categoryPreferences, tagPreferences, billingData } = validationResult.data;
 
     const supabase = await createClient();
 
@@ -78,6 +88,14 @@ export async function POST(request: NextRequest) {
             company: profileData.company || null,
             category_preferences: categoryPreferences || [],
             tag_preferences: tagPreferences || [],
+            tone_of_voice: truetoneSettings?.tone_of_voice || 'Friendly',
+            humor: truetoneSettings?.humor || 'Dry',
+            detail_orientation: truetoneSettings?.detail_orientation || 'Comprehensive',
+            content_length: truetoneSettings?.content_length || 'Thorough',
+            formality: truetoneSettings?.formality || 'Professional',
+            emotional_expression: truetoneSettings?.emotional_expression || 'Reserved',
+            vocabulary: truetoneSettings?.vocabulary || 'Sophisticated',
+            engagement_style: truetoneSettings?.engagement_style || 'Interactive',
             subscription_tier: 'free',
             subscription_status: billingData?.billingType === 'free_trial' ? 'trialing' : null,
             createdAt: now,
@@ -149,6 +167,14 @@ export async function POST(request: NextRequest) {
         company: profileData.company || null,
         category_preferences: categoryPreferences || [],
         tag_preferences: tagPreferences || [],
+        tone_of_voice: truetoneSettings?.tone_of_voice || 'Friendly',
+        humor: truetoneSettings?.humor || 'Dry',
+        detail_orientation: truetoneSettings?.detail_orientation || 'Comprehensive',
+        content_length: truetoneSettings?.content_length || 'Thorough',
+        formality: truetoneSettings?.formality || 'Professional',
+        emotional_expression: truetoneSettings?.emotional_expression || 'Reserved',
+        vocabulary: truetoneSettings?.vocabulary || 'Sophisticated',
+        engagement_style: truetoneSettings?.engagement_style || 'Interactive',
         subscription_tier: subscriptionTier,
         subscription_status: subscriptionStatus,
         updatedAt: new Date().toISOString(),

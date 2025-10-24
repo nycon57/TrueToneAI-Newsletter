@@ -1,17 +1,22 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Sparkles, UserPlus, FileText } from 'lucide-react';
 import Image from 'next/image';
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
 import { RegisterLink } from '@kinde-oss/kinde-auth-nextjs/components';
 import { useRouter } from 'next/navigation';
+import { useQueryState } from 'nuqs';
 
 // UI Components
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { NavUser } from '@/components/ui/nav-user';
+
+// Filter Components
+import { GenerationFilterPanel, GenerationFilters } from '@/components/filters/GenerationFilterPanel';
+import { SortDropdown, SortOption } from '@/components/filters/SortDropdown';
 
 // Custom Components - Lazy load non-critical components
 import dynamic from 'next/dynamic';
@@ -56,12 +61,52 @@ export function HomePageClient({
   const [isPending, startTransition] = useTransition();
 
   // Use server data as initial state
-  const [articles] = useState(initialArticles?.articles || []);
+  const [articles, setArticles] = useState(initialArticles?.articles || []);
   const [user] = useState(initialUser);
+
+  // URL state management for generation filters
+  const [contentTypesParam, setContentTypesParam] = useQueryState('contentTypes');
+  const [platformsParam, setPlatformsParam] = useQueryState('platforms');
+  const [dateRangeParam, setDateRangeParam] = useQueryState('dateRange');
+  const [dateFromParam, setDateFromParam] = useQueryState('dateFrom');
+  const [dateToParam, setDateToParam] = useQueryState('dateTo');
+  const [sortParam, setSortParam] = useQueryState('sort');
+
+  // Parse URL params into filter object
+  const generationFilters: GenerationFilters = {
+    contentTypes: contentTypesParam ? contentTypesParam.split(',') : [],
+    platforms: platformsParam ? platformsParam.split(',') : [],
+    dateRange: (dateRangeParam as GenerationFilters['dateRange']) || 'all',
+    customDateFrom: dateFromParam || undefined,
+    customDateTo: dateToParam || undefined,
+  };
+
+  const currentSort: SortOption = (sortParam as SortOption) || 'newest';
+
+  // Calculate active filter count
+  const activeFilterCount =
+    generationFilters.contentTypes.length +
+    generationFilters.platforms.length +
+    (generationFilters.dateRange !== 'all' ? 1 : 0);
 
   // Client-side Kinde hooks for logout only
   // We trust the server auth status completely to avoid 1+ second delay
-  const { logout } = useKindeBrowserClient();
+  const kindeClient = useKindeBrowserClient();
+
+  // Debug: Log what Kinde returns
+  console.log('[HomePageClient] Kinde client:', kindeClient);
+  console.log('[HomePageClient] Kinde client keys:', Object.keys(kindeClient || {}));
+
+  // Create a proper logout handler
+  const handleLogout = async () => {
+    console.log('[HomePageClient] handleLogout called');
+    try {
+      // Kinde logout is done via a redirect to /api/auth/logout
+      window.location.href = '/api/auth/logout';
+    } catch (error) {
+      console.error('[HomePageClient] Logout error:', error);
+    }
+  };
 
   // Use server auth status (authoritative and instant)
   const isAuthenticated = serverAuth;
@@ -79,7 +124,60 @@ export function HomePageClient({
     resetDate: user.generation_reset_date || undefined
   } : undefined;
 
-  // Handle filter changes with transitions for smooth updates
+  // Handle generation filter changes
+  const handleGenerationFiltersChange = (newFilters: GenerationFilters) => {
+    setContentTypesParam(newFilters.contentTypes.length > 0 ? newFilters.contentTypes.join(',') : null);
+    setPlatformsParam(newFilters.platforms.length > 0 ? newFilters.platforms.join(',') : null);
+    setDateRangeParam(newFilters.dateRange !== 'all' ? newFilters.dateRange : null);
+    setDateFromParam(newFilters.customDateFrom || null);
+    setDateToParam(newFilters.customDateTo || null);
+  };
+
+  // Handle sort change
+  const handleSortChange = (newSort: SortOption) => {
+    setSortParam(newSort !== 'newest' ? newSort : null);
+  };
+
+  // Fetch articles when filters or sort changes
+  useEffect(() => {
+    // Only fetch if user is authenticated and paid (filters only work for paid users)
+    if (!isPaid) return;
+
+    const fetchArticles = async () => {
+      startTransition(async () => {
+        try {
+          const params = new URLSearchParams();
+
+          // Add existing filters
+          if (filters.industry) params.set('industry', filters.industry);
+          if (filters.category) params.set('category', filters.category);
+          if (filters.tags) params.set('tags', filters.tags);
+          if (filters.saved) params.set('saved', filters.saved);
+
+          // Add generation filters
+          if (contentTypesParam) params.set('contentTypes', contentTypesParam);
+          if (platformsParam) params.set('platforms', platformsParam);
+          if (dateRangeParam) params.set('dateRange', dateRangeParam);
+          if (dateFromParam) params.set('dateFrom', dateFromParam);
+          if (dateToParam) params.set('dateTo', dateToParam);
+          if (sortParam) params.set('sort', sortParam);
+
+          const response = await fetch(`/api/articles?${params.toString()}`);
+          const data = await response.json();
+
+          if (data.articles) {
+            setArticles(data.articles);
+          }
+        } catch (error) {
+          console.error('Error fetching articles:', error);
+        }
+      });
+    };
+
+    fetchArticles();
+  }, [contentTypesParam, platformsParam, dateRangeParam, dateFromParam, dateToParam, sortParam, isPaid, filters]);
+
+  // Handle filter changes with transitions for smooth updates (for old filters)
   const handleFilterChange = (newFilters: Record<string, string>) => {
     startTransition(() => {
       const params = new URLSearchParams();
@@ -116,7 +214,7 @@ export function HomePageClient({
                     avatar: user?.avatar || kindeUser?.picture || '',
                     subscription_tier: user?.subscription_tier?.toUpperCase() || 'FREE'
                   }}
-                  onLogout={logout}
+                  onLogout={handleLogout}
                 />
               ) : (
                 <div className="flex items-center gap-4">
@@ -183,6 +281,32 @@ export function HomePageClient({
           </motion.div>
         </div>
       </div>
+
+      {/* Filter and Sort Controls - Only show for paid users */}
+      {isPaid && (
+        <div className="max-w-4xl mx-auto px-4 pb-6">
+          <div className="space-y-4">
+            {/* Generation Filters */}
+            <GenerationFilterPanel
+              filters={generationFilters}
+              onFiltersChange={handleGenerationFiltersChange}
+              activeFilterCount={activeFilterCount}
+            />
+
+            {/* Sort Dropdown */}
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-600">
+                {articles.length} {articles.length === 1 ? 'article' : 'articles'} found
+              </p>
+              <SortDropdown
+                value={currentSort}
+                onChange={handleSortChange}
+                className="w-[200px]"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Articles - Optimized with minimal animations */}
       <div className="max-w-4xl mx-auto px-4 py-8 pb-32">

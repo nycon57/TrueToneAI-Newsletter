@@ -3,6 +3,7 @@ import {
   UserIcon,
   CogIcon,
   CreditCardIcon,
+  AdjustmentsHorizontalIcon,
 } from "@heroicons/react/24/outline";
 
 export const ONBOARDING_STEPS = [
@@ -22,13 +23,20 @@ export const ONBOARDING_STEPS = [
   },
   {
     id: 3,
+    title: "TrueTone Settings",
+    description: "Customize your content characteristics",
+    icon: AdjustmentsHorizontalIcon,
+    isOptional: false,
+  },
+  {
+    id: 4,
     title: "Category Preferences",
     description: "Choose your content preferences (rate alerts, program updates, etc.)",
     icon: CogIcon,
     isOptional: false,
   },
   {
-    id: 4,
+    id: 5,
     title: "Subscription",
     description: "Choose your plan",
     icon: CreditCardIcon,

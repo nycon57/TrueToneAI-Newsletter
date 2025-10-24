@@ -14,6 +14,18 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const showSavedOnly = searchParams.get('saved') === 'true';
 
+    // Generation filtering parameters (PAID users only)
+    const contentTypesParam = searchParams.get('contentTypes');
+    const platformsParam = searchParams.get('platforms');
+    const dateRange = searchParams.get('dateRange') || 'all';
+    const dateFrom = searchParams.get('dateFrom');
+    const dateTo = searchParams.get('dateTo');
+    const sort = searchParams.get('sort') || 'newest';
+
+    const contentTypes = contentTypesParam ? contentTypesParam.split(',') : [];
+    const platforms = platformsParam ? platformsParam.split(',') : [];
+    const hasGenerationFilters = contentTypes.length > 0 || platforms.length > 0 || dateRange !== 'all';
+
     // Check if user is authenticated (using cached auth for performance)
     const user = await getCachedApiUserSafe();
     const isAuthenticated = !!user;
@@ -92,34 +104,135 @@ export async function GET(req: NextRequest) {
 
     // PAID: Full access with single query optimization (LEFT JOIN)
     // At this point, user is guaranteed to be authenticated and not null
+
+    // If generation filters are active, use INNER JOIN to only show articles with matching generations
+    if (hasGenerationFilters) {
+      let generationsSelect = `
+        *,
+        generations!inner (
+          id,
+          content_type,
+          platform,
+          generated_at
+        )
+      `;
+
+      query = query
+        .select(generationsSelect)
+        .eq('generations.user_id', user.id);
+
+      // Apply content type filters
+      if (contentTypes.length > 0) {
+        query = query.in('generations.content_type', contentTypes);
+      }
+
+      // Apply platform filters (only if SOCIAL_MEDIA is selected)
+      if (platforms.length > 0 && contentTypes.includes('SOCIAL_MEDIA')) {
+        query = query.in('generations.platform', platforms);
+      }
+
+      // Apply date filters
+      if (dateRange === 'week') {
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        query = query.gte('generations.generated_at', weekAgo.toISOString());
+      } else if (dateRange === 'month') {
+        const monthAgo = new Date();
+        monthAgo.setDate(monthAgo.getDate() - 30);
+        query = query.gte('generations.generated_at', monthAgo.toISOString());
+      } else if (dateRange === 'custom' && dateFrom) {
+        query = query.gte('generations.generated_at', dateFrom);
+        if (dateTo) {
+          query = query.lte('generations.generated_at', dateTo);
+        }
+      }
+    }
+
     // Filter by saved articles if requested
     if (showSavedOnly && user.saved_article_ids?.length > 0) {
       query = query.in('id', user.saved_article_ids);
     }
 
-    // Optimize: Fetch articles with their personalizations in a single query using LEFT JOIN
-    // This replaces the N+1 query pattern (1 query for articles + N queries for personalizations)
-    query = query
-      .select(`
-        *,
-        personalized_outputs!left (
-          id,
-          article_id,
-          user_id,
-          personalized_key_insights,
-          personalized_video_script,
-          personalized_email_template,
-          personalized_social_content
-        )
-      `)
-      .order('published_at', { ascending: false })
-      .limit(limit);
+    // If NOT filtering by generations, use LEFT JOIN to get personalizations (old behavior)
+    if (!hasGenerationFilters) {
+      // Optimize: Fetch articles with their personalizations in a single query using LEFT JOIN
+      // This replaces the N+1 query pattern (1 query for articles + N queries for personalizations)
+      query = query
+        .select(`
+          *,
+          personalized_outputs!left (
+            id,
+            article_id,
+            user_id,
+            personalized_key_insights,
+            personalized_video_script,
+            personalized_email_template,
+            personalized_social_content
+          )
+        `);
+    }
+
+    // Apply sorting
+    switch (sort) {
+      case 'oldest':
+        query = query.order('published_at', { ascending: true });
+        break;
+      case 'alpha-asc':
+        query = query.order('title', { ascending: true });
+        break;
+      case 'alpha-desc':
+        query = query.order('title', { ascending: false });
+        break;
+      case 'newest':
+      default:
+        query = query.order('published_at', { ascending: false });
+        break;
+    }
+
+    query = query.limit(limit);
 
     const { data: articlesWithPersonalizations, error } = await query;
 
     if (error) {
       console.error('Error fetching articles:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // Fetch generation counts for all articles (for badges)
+    const articleIds = articlesWithPersonalizations?.map(a => a.id) || [];
+    let generationCountsMap = new Map();
+
+    if (articleIds.length > 0) {
+      const { data: generationCounts } = await supabase
+        .from('generations')
+        .select('article_id, content_type, platform')
+        .eq('user_id', user.id)
+        .in('article_id', articleIds);
+
+      // Build a map of article_id -> generation stats
+      generationCounts?.forEach(gen => {
+        if (!generationCountsMap.has(gen.article_id)) {
+          generationCountsMap.set(gen.article_id, {
+            total: 0,
+            hasKeyInsights: false,
+            hasVideoScript: false,
+            hasEmailTemplate: false,
+            hasSocialMedia: false,
+            socialPlatforms: []
+          });
+        }
+
+        const stats = generationCountsMap.get(gen.article_id);
+        stats.total++;
+
+        if (gen.content_type === 'KEY_INSIGHTS') stats.hasKeyInsights = true;
+        if (gen.content_type === 'VIDEO_SCRIPT') stats.hasVideoScript = true;
+        if (gen.content_type === 'EMAIL_TEMPLATE') stats.hasEmailTemplate = true;
+        if (gen.content_type === 'SOCIAL_MEDIA') {
+          stats.hasSocialMedia = true;
+          if (gen.platform) stats.socialPlatforms.push(gen.platform);
+        }
+      });
     }
 
     // Filter personalizations to only include those for the current user
@@ -132,8 +245,18 @@ export async function GET(req: NextRequest) {
 
       const personalization = personalizations.find(p => p?.user_id === user.id);
 
+      // Get generation stats for this article
+      const generationStats = generationCountsMap.get(article.id) || {
+        total: 0,
+        hasKeyInsights: false,
+        hasVideoScript: false,
+        hasEmailTemplate: false,
+        hasSocialMedia: false,
+        socialPlatforms: []
+      };
+
       // Remove the joined data from the article object
-      const { personalized_outputs, ...articleData } = article;
+      const { personalized_outputs, generations, ...articleData } = article;
 
       return {
         id: articleData.id,
@@ -152,7 +275,8 @@ export async function GET(req: NextRequest) {
         is_personalized: !!personalization,
         personalization_id: personalization?.id,
         tier: user.subscription_tier,
-        is_saved: user.saved_article_ids?.includes(articleData.id) || false
+        is_saved: user.saved_article_ids?.includes(articleData.id) || false,
+        generation_stats: generationStats
       };
     });
 

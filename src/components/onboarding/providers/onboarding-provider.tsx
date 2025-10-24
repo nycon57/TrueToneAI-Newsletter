@@ -16,6 +16,16 @@ export interface OnboardingData {
     key_insights: string[];
     confidence_score: number;
   };
+  truetoneSettings?: {
+    tone_of_voice?: string;
+    humor?: string;
+    detail_orientation?: string;
+    content_length?: string;
+    formality?: string;
+    emotional_expression?: string;
+    vocabulary?: string;
+    engagement_style?: string;
+  };
   categoryPreferences: string[];
   tagPreferences: string[];
   selectedPlan?: string;
@@ -93,7 +103,7 @@ export function OnboardingProvider({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');
 
-  const totalSteps = 4;
+  const totalSteps = 5;
 
   const updateData = useCallback((field: keyof OnboardingData, value: unknown) => {
     setData(prev => ({
@@ -210,6 +220,7 @@ export function OnboardingProvider({
           },
           transcript: data.transcript,
           analysisResults: data.voiceAnalysis,
+          truetoneSettings: data.truetoneSettings,
           categoryPreferences: data.categoryPreferences,
           tagPreferences: data.tagPreferences,
           billingData: {

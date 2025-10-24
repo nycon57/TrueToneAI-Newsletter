@@ -2,6 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getApiUser } from '@/lib/api/auth';
 import { createClient } from '@/lib/supabase/server';
 
+/**
+ * POST /api/ai/save-generation
+ *
+ * Saves AI-generated content to the Generation table.
+ * Each generation is stored as a separate record for better querying.
+ *
+ * Request body:
+ * - articleId: string - ID of the article
+ * - contentType: 'key_insights' | 'video_script' | 'email_template' | 'social_content'
+ * - generatedContent: string | string[] | object - The generated content
+ * - platform?: 'facebook' | 'instagram' | 'twitter' | 'linkedin' - For social content
+ */
 export async function POST(req: NextRequest) {
   try {
     // Authenticate user
@@ -15,7 +27,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Parse request body
-    const { articleId, contentType, generatedContent } = await req.json();
+    const { articleId, contentType, generatedContent, platform } = await req.json();
 
     if (!articleId || !contentType || !generatedContent) {
       return NextResponse.json(
@@ -29,6 +41,14 @@ export async function POST(req: NextRequest) {
     if (!validContentTypes.includes(contentType)) {
       return NextResponse.json(
         { error: `Invalid contentType. Must be one of: ${validContentTypes.join(', ')}` },
+        { status: 400 }
+      );
+    }
+
+    // For social_content, platform is required
+    if (contentType === 'social_content' && !platform) {
+      return NextResponse.json(
+        { error: 'platform is required for social_content type' },
         { status: 400 }
       );
     }
@@ -56,7 +76,7 @@ export async function POST(req: NextRequest) {
       .eq('id', user.id)
       .single();
 
-    const truetoneSettings = userProfile ? {
+    const truetoneSnapshot = userProfile ? {
       tone_of_voice: userProfile.tone_of_voice,
       formality: userProfile.formality,
       humor: userProfile.humor,
@@ -67,86 +87,71 @@ export async function POST(req: NextRequest) {
       engagement_style: userProfile.engagement_style
     } : null;
 
-    // Map content type to database field name
-    const fieldMap: Record<string, string> = {
-      'key_insights': 'personalized_key_insights',
-      'video_script': 'personalized_video_script',
-      'email_template': 'personalized_email_template',
-      'social_content': 'personalized_social_content'
+    // Map content type to database enum
+    const contentTypeMap: Record<string, string> = {
+      'key_insights': 'KEY_INSIGHTS',
+      'video_script': 'VIDEO_SCRIPT',
+      'email_template': 'EMAIL_TEMPLATE',
+      'social_content': 'SOCIAL_MEDIA'
     };
 
-    const fieldName = fieldMap[contentType];
+    const dbContentType = contentTypeMap[contentType];
 
-    // Parse content if it's JSON type
-    let parsedContent = generatedContent;
+    // Map platform to database enum
+    const platformMap: Record<string, string> = {
+      'facebook': 'FACEBOOK',
+      'instagram': 'INSTAGRAM',
+      'twitter': 'TWITTER',
+      'linkedin': 'LINKEDIN'
+    };
+
+    const dbPlatform = platform ? platformMap[platform.toLowerCase()] : null;
+
+    // Parse and prepare content
+    let content: string | null = null;
+    let contentArray: string[] = [];
+
     if (contentType === 'key_insights') {
-      // Ensure it's an array
+      // Key insights should be an array
       if (typeof generatedContent === 'string') {
         try {
-          parsedContent = JSON.parse(generatedContent);
+          contentArray = JSON.parse(generatedContent);
         } catch {
           // If not valid JSON, split by newlines
-          parsedContent = generatedContent
+          contentArray = generatedContent
             .split('\n')
             .filter((line: string) => line.trim())
             .map((line: string) => line.replace(/^[-*•]\s*/, '').trim());
         }
+      } else if (Array.isArray(generatedContent)) {
+        contentArray = generatedContent;
       }
-    } else if (contentType === 'social_content') {
-      // Ensure it's an object
-      if (typeof generatedContent === 'string') {
-        try {
-          parsedContent = JSON.parse(generatedContent);
-        } catch {
-          // If not valid JSON, create default structure
-          parsedContent = {
-            facebook: generatedContent,
-            instagram: generatedContent,
-            twitter: generatedContent,
-            linkedin: generatedContent
-          };
-        }
-      }
+    } else {
+      // Other types are strings
+      content = typeof generatedContent === 'string'
+        ? generatedContent
+        : JSON.stringify(generatedContent);
     }
 
-    // Check if personalization already exists
+    // Check if generation already exists for this user, article, content type, and platform
     const { data: existing } = await supabase
-      .from('personalized_outputs')
-      .select('id, generation_count')
+      .from('generations')
+      .select('id')
       .eq('user_id', user.id)
       .eq('article_id', articleId)
-      .single();
-
-    const now = new Date().toISOString();
+      .eq('content_type', dbContentType)
+      .eq('platform', dbPlatform)
+      .maybeSingle();
 
     if (existing) {
-      // For social_content, merge with existing data instead of overwriting
-      let updateContent = parsedContent;
-      if (contentType === 'social_content' && typeof parsedContent === 'object') {
-        // Fetch existing social content to merge
-        const { data: existingData } = await supabase
-          .from('personalized_outputs')
-          .select(fieldName)
-          .eq('id', existing.id)
-          .single();
-
-        if (existingData && existingData[fieldName]) {
-          // Merge new platforms with existing ones
-          updateContent = {
-            ...existingData[fieldName],
-            ...parsedContent
-          };
-        }
-      }
-
-      // Update existing record
+      // Update existing generation
       const { data, error } = await supabase
-        .from('personalized_outputs')
+        .from('generations')
         .update({
-          [fieldName]: updateContent,
-          truetone_settings: truetoneSettings,
-          last_generated_at: now,
-          generation_count: (existing.generation_count || 0) + 1
+          content,
+          content_array: contentArray,
+          truetone_snapshot: truetoneSnapshot,
+          generated_at: new Date().toISOString()
         })
         .eq('id', existing.id)
         .select()
@@ -163,21 +168,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         saved_id: data.id,
-        message: 'Generation saved successfully',
+        message: 'Generation updated successfully',
         is_update: true
       });
     } else {
-      // Create new record
+      // Create new generation record
       const { data, error } = await supabase
-        .from('personalized_outputs')
+        .from('generations')
         .insert({
           user_id: user.id,
           article_id: articleId,
-          [fieldName]: parsedContent,
-          truetone_settings: truetoneSettings,
-          last_generated_at: now,
-          created_at: now,
-          generation_count: 1
+          content_type: dbContentType,
+          platform: dbPlatform,
+          content,
+          content_array: contentArray,
+          truetone_snapshot: truetoneSnapshot,
+          generated_at: new Date().toISOString()
         })
         .select()
         .single();

@@ -147,7 +147,20 @@ export function NavUser({ user, onLogout }: NavUserProps) {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onLogout} className="text-red-600 focus:text-red-600">
+        <DropdownMenuItem
+          onClick={() => {
+            console.log('[NavUser] Sign Out clicked');
+            console.log('[NavUser] onLogout function:', onLogout);
+            console.log('[NavUser] Calling onLogout...');
+            try {
+              onLogout();
+              console.log('[NavUser] onLogout called successfully');
+            } catch (error) {
+              console.error('[NavUser] Error calling onLogout:', error);
+            }
+          }}
+          className="text-red-600 focus:text-red-600"
+        >
           <LogOut className="mr-2 h-4 w-4" />
           Sign Out
         </DropdownMenuItem>

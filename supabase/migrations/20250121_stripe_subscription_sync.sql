@@ -46,13 +46,13 @@ BEGIN
   LIMIT 1;
 
   -- Determine tier based on subscription status
-  -- During trial period, users get PAID access
-  -- When active, users get PAID access
+  -- During trial period, users get paid access
+  -- When active, users get paid access
   -- When canceled/past_due, we keep access during grace period
   v_tier := CASE
-    WHEN NEW.status IN ('active', 'trialing') THEN 'PAID'
-    WHEN NEW.status IN ('past_due', 'unpaid') THEN 'PAID'  -- Keep access during grace period
-    ELSE 'FREE'
+    WHEN NEW.status IN ('active', 'trialing') THEN 'paid'
+    WHEN NEW.status IN ('past_due', 'unpaid') THEN 'paid'  -- Keep access during grace period
+    ELSE 'free'
   END;
 
   -- Determine monthly limit based on status and price

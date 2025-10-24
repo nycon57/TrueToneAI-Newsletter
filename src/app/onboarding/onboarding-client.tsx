@@ -9,6 +9,12 @@ import { OnboardingLayoutWrapper } from './onboarding-layout-wrapper';
 import { WelcomeStep } from '@/components/onboarding/steps/welcome-step';
 import { ProfileDetailsStep } from '@/components/onboarding/steps/profile-details-step';
 
+const TrueToneCharacteristicsStep = lazy(() =>
+  import('@/components/onboarding/steps/truetone-step').then(module => ({
+    default: module.TrueToneCharacteristicsStep
+  }))
+);
+
 const CategorySelection = lazy(() =>
   import('@/components/onboarding/steps/category-selection').then(module => ({
     default: module.CategorySelection
@@ -88,8 +94,10 @@ function OnboardingContent() {
         case 2:
           return ProfileDetailsStep;
         case 3:
-          return CategorySelection;
+          return TrueToneCharacteristicsStep;
         case 4:
+          return CategorySelection;
+        case 5:
           return SubscriptionStep;
         default:
           return WelcomeStep;
