@@ -150,19 +150,19 @@ export async function POST(req: NextRequest) {
             .update({
               stripe_customer_id: session.customer as string,
               stripe_subscription_id: session.subscription as string,
-              subscription_tier: 'PAID',
+              subscription_tier: 'paid',
               subscription_status: subscription.status,
               monthly_generation_limit: monthlyLimit,
               monthly_generations_used: 0,
-              generation_reset_date: nextReset.toISOString(), // Set monthly reset for PAID tier
-              subscription_created_at: new Date().toISOString(),
+              generation_reset_date: nextReset.toISOString().split('T')[0], // Set monthly reset for paid tier (date only)
+              updatedAt: new Date().toISOString(),
             })
             .eq('id', userId);
 
           if (updateError) {
             console.error('[Webhook] Error updating user:', updateError);
           } else {
-            console.log('[Webhook] User upgraded to PAID tier with monthly reset:', userId);
+            console.log('[Webhook] User upgraded to paid tier with monthly reset:', userId);
           }
         }
         break;
@@ -218,8 +218,8 @@ export async function POST(req: NextRequest) {
         }
 
         // Determine tier based on status
-        const tier = subscription.status === 'active' ? 'PAID' :
-                     subscription.status === 'trialing' ? 'PAID' : 'FREE';
+        const tier = subscription.status === 'active' ? 'paid' :
+                     subscription.status === 'trialing' ? 'paid' : 'free';
 
         const priceId = subscription.items.data[0].price.id;
         const monthlyLimit = subscription.status === 'active' || subscription.status === 'trialing'
@@ -234,13 +234,13 @@ export async function POST(req: NextRequest) {
         };
 
         // Set generation_reset_date based on tier
-        if (tier === 'PAID') {
-          // PAID tier: set next reset date if not already set
+        if (tier === 'paid') {
+          // paid tier: set next reset date if not already set
           const now = new Date();
           const nextReset = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-          updateData.generation_reset_date = nextReset.toISOString();
+          updateData.generation_reset_date = nextReset.toISOString().split('T')[0];
         } else {
-          // FREE tier: null reset date (lifetime limit)
+          // free tier: null reset date (lifetime limit)
           updateData.generation_reset_date = null;
         }
 
@@ -279,18 +279,19 @@ export async function POST(req: NextRequest) {
         const { error: updateError } = await supabase
           .from('users')
           .update({
-            subscription_tier: 'FREE',
+            subscription_tier: 'free',
             subscription_status: 'canceled',
-            monthly_generation_limit: 3, // Lifetime limit for FREE tier
-            generation_reset_date: null, // No reset for FREE tier (lifetime limit)
+            monthly_generation_limit: 3, // Lifetime limit for free tier
+            generation_reset_date: null, // No reset for free tier (lifetime limit)
             stripe_subscription_id: null,
+            updatedAt: new Date().toISOString(),
           })
           .eq('id', user.id);
 
         if (updateError) {
           console.error('[Webhook] Error downgrading user:', updateError);
         } else {
-          console.log('[Webhook] User downgraded to FREE tier:', user.id);
+          console.log('[Webhook] User downgraded to free tier:', user.id);
 
           // Send subscription cancelled email (non-blocking)
           sendSubscriptionCancelled({
@@ -328,8 +329,9 @@ export async function POST(req: NextRequest) {
               .from('users')
               .update({
                 subscription_status: 'active',
-                subscription_tier: 'PAID',
-                generation_reset_date: nextReset.toISOString(), // Ensure monthly reset for PAID tier
+                subscription_tier: 'paid',
+                generation_reset_date: nextReset.toISOString().split('T')[0], // Ensure monthly reset for paid tier (date only)
+                updatedAt: new Date().toISOString(),
               })
               .eq('id', user.id);
 
