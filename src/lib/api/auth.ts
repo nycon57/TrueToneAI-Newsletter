@@ -24,6 +24,7 @@ export async function getApiUser() {
   if (!user || fetchError) {
     // Create user on first login
     console.log('[Auth] Creating new user for kinde_id:', kindeUser.id);
+    const now = new Date().toISOString();
     const { data: newUser, error: insertError } = await supabase
       .from('users')
       .insert({
@@ -32,7 +33,9 @@ export async function getApiUser() {
         firstName: kindeUser.given_name || 'Not Set',
         lastName: kindeUser.family_name || 'Not Set',
         name: `${kindeUser.given_name || ''} ${kindeUser.family_name || ''}`.trim() || 'Not Set',
-        subscription_tier: 'FREE',
+        subscription_tier: 'free',
+        createdAt: now,
+        updatedAt: now,
       })
       .select('*')
       .single();

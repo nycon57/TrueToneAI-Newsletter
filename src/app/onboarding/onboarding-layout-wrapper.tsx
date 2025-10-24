@@ -107,9 +107,9 @@ function EnhancedDesktopSidebar({ currentStep }: {
 
   return (
     <div className="hidden lg:flex flex-col bg-gradient-to-tr from-shadow to-orchid text-white transition-all duration-300 h-screen w-80">
-      <div className="p-6 border-b border-white/10 flex-shrink-0">
-        <h1 className="text-xl font-bold">TrueTone Newsletter</h1>
-        <p className="text-white/70 text-sm mt-1">Setup your account</p>
+      <div className="p-6 border-b border-white/20 flex-shrink-0">
+        <h1 className="text-xl font-bold text-white">TRUETONE<br/>NEWSLETTER</h1>
+        <p className="text-white/90 text-sm mt-1">Setup your account</p>
       </div>
 
       <div className="flex-1 p-6 overflow-y-auto min-h-0">
@@ -164,24 +164,24 @@ function EnhancedDesktopSidebar({ currentStep }: {
                     <div className="flex items-center gap-2 mb-1">
                       <h3
                         className={cn(
-                          "text-white font-medium text-sm transition-all duration-300 truncate",
-                          isActive || isPast ? "opacity-100" : "opacity-70",
-                          isClickable && !isActive && !isPast && "group-hover:opacity-90"
+                          "text-white font-semibold text-sm transition-all duration-300 truncate",
+                          isActive || isPast ? "opacity-100" : "opacity-80",
+                          isClickable && !isActive && !isPast && "group-hover:opacity-95"
                         )}
                       >
                         {step.title}
                       </h3>
                       {step.isOptional && (
-                        <span className="px-1.5 py-0.5 text-xs bg-white/20 rounded text-white/80">
+                        <span className="px-1.5 py-0.5 text-xs bg-white/30 rounded text-white">
                           Optional
                         </span>
                       )}
                     </div>
                     <p
                       className={cn(
-                        "text-white/70 text-xs transition-all duration-300 truncate",
-                        isActive || isPast ? "opacity-100" : "opacity-60",
-                        isClickable && !isActive && !isPast && "group-hover:opacity-80"
+                        "text-white/90 text-xs transition-all duration-300 truncate",
+                        isActive || isPast ? "opacity-100" : "opacity-75",
+                        isClickable && !isActive && !isPast && "group-hover:opacity-90"
                       )}
                     >
                       {step.description}
@@ -208,21 +208,32 @@ export function OnboardingLayoutWrapper({ children }: { children: React.ReactNod
 
   return (
     <div className={cn(
-      "flex h-screen bg-background overflow-hidden",
+      "min-h-screen bg-gradient-to-br from-lavender/20 via-white to-lavender/20",
       signal.variable,
       inter.variable
     )}>
-      <EnhancedDesktopSidebar
-        currentStep={currentStep}
-      />
-
-      <div className="flex-1 flex flex-col h-full relative overflow-hidden">
-        <MobileProgressStepper currentStep={currentStep} />
-
-        <div className="flex-1 bg-background overflow-y-auto">
-          <div className="h-full">
-            {children}
+      <div className="w-full">
+        {/* Simple progress bar at top */}
+        <div className="w-full bg-white border-b border-lavender/30 sticky top-0 z-50">
+          <div className="max-w-4xl mx-auto px-4 py-4">
+            <div className="flex justify-between items-center mb-2">
+              <h1 className="text-lg font-bold text-gray-900">Spark by TrueTone AI</h1>
+              <span className="text-sm text-gray-600">
+                Step {currentStep} of {ONBOARDING_STEPS.length}
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-gradient-to-r from-orchid to-indigo h-2 rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${(currentStep / ONBOARDING_STEPS.length) * 100}%` }}
+              />
+            </div>
           </div>
+        </div>
+
+        {/* Content */}
+        <div className="w-full">
+          {children}
         </div>
       </div>
     </div>

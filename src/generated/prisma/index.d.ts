@@ -70,6 +70,13 @@ export type Article = $Result.DefaultSelection<Prisma.$ArticlePayload>
  */
 export type PersonalizedOutput = $Result.DefaultSelection<Prisma.$PersonalizedOutputPayload>
 /**
+ * Model Generation
+ * Generation model represents individual AI-generated content pieces
+ * Each generation is a separate record for better querying and filtering
+ * Maps to "generations" table in the database
+ */
+export type Generation = $Result.DefaultSelection<Prisma.$GenerationPayload>
+/**
  * Model AnonymousAiUsage
  * AnonymousAiUsage model tracks AI generation usage for non-authenticated users
  * Used to enforce free tier limits for anonymous users via session/IP tracking
@@ -128,6 +135,26 @@ export const ArticleStatus: {
 
 export type ArticleStatus = (typeof ArticleStatus)[keyof typeof ArticleStatus]
 
+
+export const GenerationContentType: {
+  KEY_INSIGHTS: 'KEY_INSIGHTS',
+  VIDEO_SCRIPT: 'VIDEO_SCRIPT',
+  EMAIL_TEMPLATE: 'EMAIL_TEMPLATE',
+  SOCIAL_MEDIA: 'SOCIAL_MEDIA'
+};
+
+export type GenerationContentType = (typeof GenerationContentType)[keyof typeof GenerationContentType]
+
+
+export const SocialPlatform: {
+  FACEBOOK: 'FACEBOOK',
+  INSTAGRAM: 'INSTAGRAM',
+  TWITTER: 'TWITTER',
+  LINKEDIN: 'LINKEDIN'
+};
+
+export type SocialPlatform = (typeof SocialPlatform)[keyof typeof SocialPlatform]
+
 }
 
 export type PublishedStatus = $Enums.PublishedStatus
@@ -149,6 +176,14 @@ export const SubscriptionTier: typeof $Enums.SubscriptionTier
 export type ArticleStatus = $Enums.ArticleStatus
 
 export const ArticleStatus: typeof $Enums.ArticleStatus
+
+export type GenerationContentType = $Enums.GenerationContentType
+
+export const GenerationContentType: typeof $Enums.GenerationContentType
+
+export type SocialPlatform = $Enums.SocialPlatform
+
+export const SocialPlatform: typeof $Enums.SocialPlatform
 
 /**
  * ##  Prisma Client ʲˢ
@@ -364,6 +399,16 @@ export class PrismaClient<
     * ```
     */
   get personalizedOutput(): Prisma.PersonalizedOutputDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.generation`: Exposes CRUD operations for the **Generation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Generations
+    * const generations = await prisma.generation.findMany()
+    * ```
+    */
+  get generation(): Prisma.GenerationDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.anonymousAiUsage`: Exposes CRUD operations for the **AnonymousAiUsage** model.
@@ -823,6 +868,7 @@ export namespace Prisma {
     ChatAnalytics: 'ChatAnalytics',
     Article: 'Article',
     PersonalizedOutput: 'PersonalizedOutput',
+    Generation: 'Generation',
     AnonymousAiUsage: 'AnonymousAiUsage'
   };
 
@@ -842,7 +888,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "post" | "like" | "userSession" | "analyticsEvent" | "pageView" | "chatAnalytics" | "article" | "personalizedOutput" | "anonymousAiUsage"
+      modelProps: "user" | "post" | "like" | "userSession" | "analyticsEvent" | "pageView" | "chatAnalytics" | "article" | "personalizedOutput" | "generation" | "anonymousAiUsage"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1512,6 +1558,80 @@ export namespace Prisma {
           }
         }
       }
+      Generation: {
+        payload: Prisma.$GenerationPayload<ExtArgs>
+        fields: Prisma.GenerationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GenerationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GenerationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GenerationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GenerationPayload>
+          }
+          findFirst: {
+            args: Prisma.GenerationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GenerationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GenerationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GenerationPayload>
+          }
+          findMany: {
+            args: Prisma.GenerationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GenerationPayload>[]
+          }
+          create: {
+            args: Prisma.GenerationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GenerationPayload>
+          }
+          createMany: {
+            args: Prisma.GenerationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.GenerationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GenerationPayload>[]
+          }
+          delete: {
+            args: Prisma.GenerationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GenerationPayload>
+          }
+          update: {
+            args: Prisma.GenerationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GenerationPayload>
+          }
+          deleteMany: {
+            args: Prisma.GenerationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GenerationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.GenerationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GenerationPayload>[]
+          }
+          upsert: {
+            args: Prisma.GenerationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GenerationPayload>
+          }
+          aggregate: {
+            args: Prisma.GenerationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGeneration>
+          }
+          groupBy: {
+            args: Prisma.GenerationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GenerationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GenerationCountArgs<ExtArgs>
+            result: $Utils.Optional<GenerationCountAggregateOutputType> | number
+          }
+        }
+      }
       AnonymousAiUsage: {
         payload: Prisma.$AnonymousAiUsagePayload<ExtArgs>
         fields: Prisma.AnonymousAiUsageFieldRefs
@@ -1679,6 +1799,7 @@ export namespace Prisma {
     chatAnalytics?: ChatAnalyticsOmit
     article?: ArticleOmit
     personalizedOutput?: PersonalizedOutputOmit
+    generation?: GenerationOmit
     anonymousAiUsage?: AnonymousAiUsageOmit
   }
 
@@ -1782,6 +1903,7 @@ export namespace Prisma {
     createdArticles: number
     editedArticles: number
     personalizations: number
+    generations: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1793,6 +1915,7 @@ export namespace Prisma {
     createdArticles?: boolean | UserCountOutputTypeCountCreatedArticlesArgs
     editedArticles?: boolean | UserCountOutputTypeCountEditedArticlesArgs
     personalizations?: boolean | UserCountOutputTypeCountPersonalizationsArgs
+    generations?: boolean | UserCountOutputTypeCountGenerationsArgs
   }
 
   // Custom InputTypes
@@ -1860,6 +1983,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountPersonalizationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PersonalizedOutputWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountGenerationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GenerationWhereInput
   }
 
 
@@ -1949,10 +2079,12 @@ export namespace Prisma {
 
   export type ArticleCountOutputType = {
     personalizations: number
+    generations: number
   }
 
   export type ArticleCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     personalizations?: boolean | ArticleCountOutputTypeCountPersonalizationsArgs
+    generations?: boolean | ArticleCountOutputTypeCountGenerationsArgs
   }
 
   // Custom InputTypes
@@ -1971,6 +2103,13 @@ export namespace Prisma {
    */
   export type ArticleCountOutputTypeCountPersonalizationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PersonalizedOutputWhereInput
+  }
+
+  /**
+   * ArticleCountOutputType without action
+   */
+  export type ArticleCountOutputTypeCountGenerationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GenerationWhereInput
   }
 
 
@@ -2013,6 +2152,14 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     kindeId: string | null
+    toneOfVoice: string | null
+    humor: string | null
+    detailOrientation: string | null
+    contentLength: string | null
+    formality: string | null
+    emotionalExpression: string | null
+    vocabulary: string | null
+    engagementStyle: string | null
     subscriptionTier: $Enums.SubscriptionTier | null
     subscriptionStatus: string | null
     subscriptionExpiresAt: Date | null
@@ -2039,6 +2186,14 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     kindeId: string | null
+    toneOfVoice: string | null
+    humor: string | null
+    detailOrientation: string | null
+    contentLength: string | null
+    formality: string | null
+    emotionalExpression: string | null
+    vocabulary: string | null
+    engagementStyle: string | null
     subscriptionTier: $Enums.SubscriptionTier | null
     subscriptionStatus: string | null
     subscriptionExpiresAt: Date | null
@@ -2067,6 +2222,14 @@ export namespace Prisma {
     kindeId: number
     categoryPreferences: number
     savedArticleIds: number
+    toneOfVoice: number
+    humor: number
+    detailOrientation: number
+    contentLength: number
+    formality: number
+    emotionalExpression: number
+    vocabulary: number
+    engagementStyle: number
     subscriptionTier: number
     subscriptionStatus: number
     subscriptionExpiresAt: number
@@ -2107,6 +2270,14 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     kindeId?: true
+    toneOfVoice?: true
+    humor?: true
+    detailOrientation?: true
+    contentLength?: true
+    formality?: true
+    emotionalExpression?: true
+    vocabulary?: true
+    engagementStyle?: true
     subscriptionTier?: true
     subscriptionStatus?: true
     subscriptionExpiresAt?: true
@@ -2133,6 +2304,14 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     kindeId?: true
+    toneOfVoice?: true
+    humor?: true
+    detailOrientation?: true
+    contentLength?: true
+    formality?: true
+    emotionalExpression?: true
+    vocabulary?: true
+    engagementStyle?: true
     subscriptionTier?: true
     subscriptionStatus?: true
     subscriptionExpiresAt?: true
@@ -2161,6 +2340,14 @@ export namespace Prisma {
     kindeId?: true
     categoryPreferences?: true
     savedArticleIds?: true
+    toneOfVoice?: true
+    humor?: true
+    detailOrientation?: true
+    contentLength?: true
+    formality?: true
+    emotionalExpression?: true
+    vocabulary?: true
+    engagementStyle?: true
     subscriptionTier?: true
     subscriptionStatus?: true
     subscriptionExpiresAt?: true
@@ -2276,6 +2463,14 @@ export namespace Prisma {
     kindeId: string | null
     categoryPreferences: string[]
     savedArticleIds: string[]
+    toneOfVoice: string | null
+    humor: string | null
+    detailOrientation: string | null
+    contentLength: string | null
+    formality: string | null
+    emotionalExpression: string | null
+    vocabulary: string | null
+    engagementStyle: string | null
     subscriptionTier: $Enums.SubscriptionTier
     subscriptionStatus: string | null
     subscriptionExpiresAt: Date | null
@@ -2323,6 +2518,14 @@ export namespace Prisma {
     kindeId?: boolean
     categoryPreferences?: boolean
     savedArticleIds?: boolean
+    toneOfVoice?: boolean
+    humor?: boolean
+    detailOrientation?: boolean
+    contentLength?: boolean
+    formality?: boolean
+    emotionalExpression?: boolean
+    vocabulary?: boolean
+    engagementStyle?: boolean
     subscriptionTier?: boolean
     subscriptionStatus?: boolean
     subscriptionExpiresAt?: boolean
@@ -2344,6 +2547,7 @@ export namespace Prisma {
     createdArticles?: boolean | User$createdArticlesArgs<ExtArgs>
     editedArticles?: boolean | User$editedArticlesArgs<ExtArgs>
     personalizations?: boolean | User$personalizationsArgs<ExtArgs>
+    generations?: boolean | User$generationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2360,6 +2564,14 @@ export namespace Prisma {
     kindeId?: boolean
     categoryPreferences?: boolean
     savedArticleIds?: boolean
+    toneOfVoice?: boolean
+    humor?: boolean
+    detailOrientation?: boolean
+    contentLength?: boolean
+    formality?: boolean
+    emotionalExpression?: boolean
+    vocabulary?: boolean
+    engagementStyle?: boolean
     subscriptionTier?: boolean
     subscriptionStatus?: boolean
     subscriptionExpiresAt?: boolean
@@ -2388,6 +2600,14 @@ export namespace Prisma {
     kindeId?: boolean
     categoryPreferences?: boolean
     savedArticleIds?: boolean
+    toneOfVoice?: boolean
+    humor?: boolean
+    detailOrientation?: boolean
+    contentLength?: boolean
+    formality?: boolean
+    emotionalExpression?: boolean
+    vocabulary?: boolean
+    engagementStyle?: boolean
     subscriptionTier?: boolean
     subscriptionStatus?: boolean
     subscriptionExpiresAt?: boolean
@@ -2416,6 +2636,14 @@ export namespace Prisma {
     kindeId?: boolean
     categoryPreferences?: boolean
     savedArticleIds?: boolean
+    toneOfVoice?: boolean
+    humor?: boolean
+    detailOrientation?: boolean
+    contentLength?: boolean
+    formality?: boolean
+    emotionalExpression?: boolean
+    vocabulary?: boolean
+    engagementStyle?: boolean
     subscriptionTier?: boolean
     subscriptionStatus?: boolean
     subscriptionExpiresAt?: boolean
@@ -2431,7 +2659,7 @@ export namespace Prisma {
     onboardingCompletedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "firstName" | "lastName" | "email" | "company" | "avatar" | "createdAt" | "updatedAt" | "kindeId" | "categoryPreferences" | "savedArticleIds" | "subscriptionTier" | "subscriptionStatus" | "subscriptionExpiresAt" | "subscriptionCreatedAt" | "monthlyGenerationLimit" | "monthlyGenerationsUsed" | "generationResetDate" | "stripeCustomerId" | "stripeSubscriptionId" | "stripePriceId" | "hasCompletedOnboarding" | "onboardingStep" | "onboardingCompletedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "firstName" | "lastName" | "email" | "company" | "avatar" | "createdAt" | "updatedAt" | "kindeId" | "categoryPreferences" | "savedArticleIds" | "toneOfVoice" | "humor" | "detailOrientation" | "contentLength" | "formality" | "emotionalExpression" | "vocabulary" | "engagementStyle" | "subscriptionTier" | "subscriptionStatus" | "subscriptionExpiresAt" | "subscriptionCreatedAt" | "monthlyGenerationLimit" | "monthlyGenerationsUsed" | "generationResetDate" | "stripeCustomerId" | "stripeSubscriptionId" | "stripePriceId" | "hasCompletedOnboarding" | "onboardingStep" | "onboardingCompletedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     likes?: boolean | User$likesArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
@@ -2441,6 +2669,7 @@ export namespace Prisma {
     createdArticles?: boolean | User$createdArticlesArgs<ExtArgs>
     editedArticles?: boolean | User$editedArticlesArgs<ExtArgs>
     personalizations?: boolean | User$personalizationsArgs<ExtArgs>
+    generations?: boolean | User$generationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2481,6 +2710,10 @@ export namespace Prisma {
        * User's personalized content outputs
        */
       personalizations: Prisma.$PersonalizedOutputPayload<ExtArgs>[]
+      /**
+       * User's AI-generated content
+       */
+      generations: Prisma.$GenerationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       /**
@@ -2531,6 +2764,38 @@ export namespace Prisma {
        * IDs of articles saved by the user
        */
       savedArticleIds: string[]
+      /**
+       * TrueTone: Tone of Voice characteristic
+       */
+      toneOfVoice: string | null
+      /**
+       * TrueTone: Humor characteristic
+       */
+      humor: string | null
+      /**
+       * TrueTone: Detail Orientation characteristic
+       */
+      detailOrientation: string | null
+      /**
+       * TrueTone: Content Length characteristic
+       */
+      contentLength: string | null
+      /**
+       * TrueTone: Formality characteristic
+       */
+      formality: string | null
+      /**
+       * TrueTone: Emotional Expression characteristic
+       */
+      emotionalExpression: string | null
+      /**
+       * TrueTone: Vocabulary characteristic
+       */
+      vocabulary: string | null
+      /**
+       * TrueTone: Engagement Style characteristic
+       */
+      engagementStyle: string | null
       /**
        * User's subscription level
        */
@@ -2985,6 +3250,7 @@ export namespace Prisma {
     createdArticles<T extends User$createdArticlesArgs<ExtArgs> = {}>(args?: Subset<T, User$createdArticlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     editedArticles<T extends User$editedArticlesArgs<ExtArgs> = {}>(args?: Subset<T, User$editedArticlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     personalizations<T extends User$personalizationsArgs<ExtArgs> = {}>(args?: Subset<T, User$personalizationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    generations<T extends User$generationsArgs<ExtArgs> = {}>(args?: Subset<T, User$generationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3026,6 +3292,14 @@ export namespace Prisma {
     readonly kindeId: FieldRef<"User", 'String'>
     readonly categoryPreferences: FieldRef<"User", 'String[]'>
     readonly savedArticleIds: FieldRef<"User", 'String[]'>
+    readonly toneOfVoice: FieldRef<"User", 'String'>
+    readonly humor: FieldRef<"User", 'String'>
+    readonly detailOrientation: FieldRef<"User", 'String'>
+    readonly contentLength: FieldRef<"User", 'String'>
+    readonly formality: FieldRef<"User", 'String'>
+    readonly emotionalExpression: FieldRef<"User", 'String'>
+    readonly vocabulary: FieldRef<"User", 'String'>
+    readonly engagementStyle: FieldRef<"User", 'String'>
     readonly subscriptionTier: FieldRef<"User", 'SubscriptionTier'>
     readonly subscriptionStatus: FieldRef<"User", 'String'>
     readonly subscriptionExpiresAt: FieldRef<"User", 'DateTime'>
@@ -3616,6 +3890,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PersonalizedOutputScalarFieldEnum | PersonalizedOutputScalarFieldEnum[]
+  }
+
+  /**
+   * User.generations
+   */
+  export type User$generationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationInclude<ExtArgs> | null
+    where?: GenerationWhereInput
+    orderBy?: GenerationOrderByWithRelationInput | GenerationOrderByWithRelationInput[]
+    cursor?: GenerationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GenerationScalarFieldEnum | GenerationScalarFieldEnum[]
   }
 
   /**
@@ -11345,6 +11643,7 @@ export namespace Prisma {
     createdBy?: boolean | Article$createdByArgs<ExtArgs>
     lastEditedBy?: boolean | Article$lastEditedByArgs<ExtArgs>
     personalizations?: boolean | Article$personalizationsArgs<ExtArgs>
+    generations?: boolean | Article$generationsArgs<ExtArgs>
     _count?: boolean | ArticleCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["article"]>
 
@@ -11444,6 +11743,7 @@ export namespace Prisma {
     createdBy?: boolean | Article$createdByArgs<ExtArgs>
     lastEditedBy?: boolean | Article$lastEditedByArgs<ExtArgs>
     personalizations?: boolean | Article$personalizationsArgs<ExtArgs>
+    generations?: boolean | Article$generationsArgs<ExtArgs>
     _count?: boolean | ArticleCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ArticleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11464,6 +11764,10 @@ export namespace Prisma {
        * User personalizations of this article
        */
       personalizations: Prisma.$PersonalizedOutputPayload<ExtArgs>[]
+      /**
+       * AI-generated content for this article
+       */
+      generations: Prisma.$GenerationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       /**
@@ -11967,6 +12271,7 @@ export namespace Prisma {
     createdBy<T extends Article$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Article$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     lastEditedBy<T extends Article$lastEditedByArgs<ExtArgs> = {}>(args?: Subset<T, Article$lastEditedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     personalizations<T extends Article$personalizationsArgs<ExtArgs> = {}>(args?: Subset<T, Article$personalizationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    generations<T extends Article$generationsArgs<ExtArgs> = {}>(args?: Subset<T, Article$generationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12477,6 +12782,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PersonalizedOutputScalarFieldEnum | PersonalizedOutputScalarFieldEnum[]
+  }
+
+  /**
+   * Article.generations
+   */
+  export type Article$generationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationInclude<ExtArgs> | null
+    where?: GenerationWhereInput
+    orderBy?: GenerationOrderByWithRelationInput | GenerationOrderByWithRelationInput[]
+    cursor?: GenerationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GenerationScalarFieldEnum | GenerationScalarFieldEnum[]
   }
 
   /**
@@ -13718,6 +14047,1193 @@ export namespace Prisma {
 
 
   /**
+   * Model Generation
+   */
+
+  export type AggregateGeneration = {
+    _count: GenerationCountAggregateOutputType | null
+    _avg: GenerationAvgAggregateOutputType | null
+    _sum: GenerationSumAggregateOutputType | null
+    _min: GenerationMinAggregateOutputType | null
+    _max: GenerationMaxAggregateOutputType | null
+  }
+
+  export type GenerationAvgAggregateOutputType = {
+    tokensUsed: number | null
+  }
+
+  export type GenerationSumAggregateOutputType = {
+    tokensUsed: number | null
+  }
+
+  export type GenerationMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    articleId: string | null
+    contentType: $Enums.GenerationContentType | null
+    platform: $Enums.SocialPlatform | null
+    content: string | null
+    tokensUsed: number | null
+    generatedAt: Date | null
+  }
+
+  export type GenerationMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    articleId: string | null
+    contentType: $Enums.GenerationContentType | null
+    platform: $Enums.SocialPlatform | null
+    content: string | null
+    tokensUsed: number | null
+    generatedAt: Date | null
+  }
+
+  export type GenerationCountAggregateOutputType = {
+    id: number
+    userId: number
+    articleId: number
+    contentType: number
+    platform: number
+    content: number
+    contentArray: number
+    tokensUsed: number
+    generatedAt: number
+    truetoneSnapshot: number
+    _all: number
+  }
+
+
+  export type GenerationAvgAggregateInputType = {
+    tokensUsed?: true
+  }
+
+  export type GenerationSumAggregateInputType = {
+    tokensUsed?: true
+  }
+
+  export type GenerationMinAggregateInputType = {
+    id?: true
+    userId?: true
+    articleId?: true
+    contentType?: true
+    platform?: true
+    content?: true
+    tokensUsed?: true
+    generatedAt?: true
+  }
+
+  export type GenerationMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    articleId?: true
+    contentType?: true
+    platform?: true
+    content?: true
+    tokensUsed?: true
+    generatedAt?: true
+  }
+
+  export type GenerationCountAggregateInputType = {
+    id?: true
+    userId?: true
+    articleId?: true
+    contentType?: true
+    platform?: true
+    content?: true
+    contentArray?: true
+    tokensUsed?: true
+    generatedAt?: true
+    truetoneSnapshot?: true
+    _all?: true
+  }
+
+  export type GenerationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Generation to aggregate.
+     */
+    where?: GenerationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Generations to fetch.
+     */
+    orderBy?: GenerationOrderByWithRelationInput | GenerationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GenerationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Generations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Generations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Generations
+    **/
+    _count?: true | GenerationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: GenerationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: GenerationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GenerationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GenerationMaxAggregateInputType
+  }
+
+  export type GetGenerationAggregateType<T extends GenerationAggregateArgs> = {
+        [P in keyof T & keyof AggregateGeneration]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGeneration[P]>
+      : GetScalarType<T[P], AggregateGeneration[P]>
+  }
+
+
+
+
+  export type GenerationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GenerationWhereInput
+    orderBy?: GenerationOrderByWithAggregationInput | GenerationOrderByWithAggregationInput[]
+    by: GenerationScalarFieldEnum[] | GenerationScalarFieldEnum
+    having?: GenerationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GenerationCountAggregateInputType | true
+    _avg?: GenerationAvgAggregateInputType
+    _sum?: GenerationSumAggregateInputType
+    _min?: GenerationMinAggregateInputType
+    _max?: GenerationMaxAggregateInputType
+  }
+
+  export type GenerationGroupByOutputType = {
+    id: string
+    userId: string
+    articleId: string
+    contentType: $Enums.GenerationContentType
+    platform: $Enums.SocialPlatform | null
+    content: string | null
+    contentArray: string[]
+    tokensUsed: number | null
+    generatedAt: Date
+    truetoneSnapshot: JsonValue | null
+    _count: GenerationCountAggregateOutputType | null
+    _avg: GenerationAvgAggregateOutputType | null
+    _sum: GenerationSumAggregateOutputType | null
+    _min: GenerationMinAggregateOutputType | null
+    _max: GenerationMaxAggregateOutputType | null
+  }
+
+  type GetGenerationGroupByPayload<T extends GenerationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GenerationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GenerationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GenerationGroupByOutputType[P]>
+            : GetScalarType<T[P], GenerationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GenerationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    articleId?: boolean
+    contentType?: boolean
+    platform?: boolean
+    content?: boolean
+    contentArray?: boolean
+    tokensUsed?: boolean
+    generatedAt?: boolean
+    truetoneSnapshot?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    article?: boolean | ArticleDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["generation"]>
+
+  export type GenerationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    articleId?: boolean
+    contentType?: boolean
+    platform?: boolean
+    content?: boolean
+    contentArray?: boolean
+    tokensUsed?: boolean
+    generatedAt?: boolean
+    truetoneSnapshot?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    article?: boolean | ArticleDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["generation"]>
+
+  export type GenerationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    articleId?: boolean
+    contentType?: boolean
+    platform?: boolean
+    content?: boolean
+    contentArray?: boolean
+    tokensUsed?: boolean
+    generatedAt?: boolean
+    truetoneSnapshot?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    article?: boolean | ArticleDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["generation"]>
+
+  export type GenerationSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    articleId?: boolean
+    contentType?: boolean
+    platform?: boolean
+    content?: boolean
+    contentArray?: boolean
+    tokensUsed?: boolean
+    generatedAt?: boolean
+    truetoneSnapshot?: boolean
+  }
+
+  export type GenerationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "articleId" | "contentType" | "platform" | "content" | "contentArray" | "tokensUsed" | "generatedAt" | "truetoneSnapshot", ExtArgs["result"]["generation"]>
+  export type GenerationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    article?: boolean | ArticleDefaultArgs<ExtArgs>
+  }
+  export type GenerationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    article?: boolean | ArticleDefaultArgs<ExtArgs>
+  }
+  export type GenerationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    article?: boolean | ArticleDefaultArgs<ExtArgs>
+  }
+
+  export type $GenerationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Generation"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      article: Prisma.$ArticlePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      /**
+       * Unique identifier for the generation
+       */
+      id: string
+      /**
+       * User who owns this generation
+       */
+      userId: string
+      /**
+       * Article this generation is based on
+       */
+      articleId: string
+      /**
+       * Type of content generated
+       */
+      contentType: $Enums.GenerationContentType
+      /**
+       * Social media platform (only for SOCIAL_MEDIA type)
+       */
+      platform: $Enums.SocialPlatform | null
+      /**
+       * Text content (for scripts, emails, social posts)
+       */
+      content: string | null
+      /**
+       * Array content (for key insights)
+       */
+      contentArray: string[]
+      /**
+       * AI tokens consumed for this generation
+       */
+      tokensUsed: number | null
+      /**
+       * When this generation was created
+       */
+      generatedAt: Date
+      /**
+       * TrueTone settings used for generation
+       */
+      truetoneSnapshot: Prisma.JsonValue | null
+    }, ExtArgs["result"]["generation"]>
+    composites: {}
+  }
+
+  type GenerationGetPayload<S extends boolean | null | undefined | GenerationDefaultArgs> = $Result.GetResult<Prisma.$GenerationPayload, S>
+
+  type GenerationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<GenerationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: GenerationCountAggregateInputType | true
+    }
+
+  export interface GenerationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Generation'], meta: { name: 'Generation' } }
+    /**
+     * Find zero or one Generation that matches the filter.
+     * @param {GenerationFindUniqueArgs} args - Arguments to find a Generation
+     * @example
+     * // Get one Generation
+     * const generation = await prisma.generation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GenerationFindUniqueArgs>(args: SelectSubset<T, GenerationFindUniqueArgs<ExtArgs>>): Prisma__GenerationClient<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Generation that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {GenerationFindUniqueOrThrowArgs} args - Arguments to find a Generation
+     * @example
+     * // Get one Generation
+     * const generation = await prisma.generation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GenerationFindUniqueOrThrowArgs>(args: SelectSubset<T, GenerationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GenerationClient<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Generation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GenerationFindFirstArgs} args - Arguments to find a Generation
+     * @example
+     * // Get one Generation
+     * const generation = await prisma.generation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GenerationFindFirstArgs>(args?: SelectSubset<T, GenerationFindFirstArgs<ExtArgs>>): Prisma__GenerationClient<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Generation that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GenerationFindFirstOrThrowArgs} args - Arguments to find a Generation
+     * @example
+     * // Get one Generation
+     * const generation = await prisma.generation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GenerationFindFirstOrThrowArgs>(args?: SelectSubset<T, GenerationFindFirstOrThrowArgs<ExtArgs>>): Prisma__GenerationClient<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Generations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GenerationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Generations
+     * const generations = await prisma.generation.findMany()
+     * 
+     * // Get first 10 Generations
+     * const generations = await prisma.generation.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const generationWithIdOnly = await prisma.generation.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends GenerationFindManyArgs>(args?: SelectSubset<T, GenerationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Generation.
+     * @param {GenerationCreateArgs} args - Arguments to create a Generation.
+     * @example
+     * // Create one Generation
+     * const Generation = await prisma.generation.create({
+     *   data: {
+     *     // ... data to create a Generation
+     *   }
+     * })
+     * 
+     */
+    create<T extends GenerationCreateArgs>(args: SelectSubset<T, GenerationCreateArgs<ExtArgs>>): Prisma__GenerationClient<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Generations.
+     * @param {GenerationCreateManyArgs} args - Arguments to create many Generations.
+     * @example
+     * // Create many Generations
+     * const generation = await prisma.generation.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GenerationCreateManyArgs>(args?: SelectSubset<T, GenerationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Generations and returns the data saved in the database.
+     * @param {GenerationCreateManyAndReturnArgs} args - Arguments to create many Generations.
+     * @example
+     * // Create many Generations
+     * const generation = await prisma.generation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Generations and only return the `id`
+     * const generationWithIdOnly = await prisma.generation.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GenerationCreateManyAndReturnArgs>(args?: SelectSubset<T, GenerationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Generation.
+     * @param {GenerationDeleteArgs} args - Arguments to delete one Generation.
+     * @example
+     * // Delete one Generation
+     * const Generation = await prisma.generation.delete({
+     *   where: {
+     *     // ... filter to delete one Generation
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GenerationDeleteArgs>(args: SelectSubset<T, GenerationDeleteArgs<ExtArgs>>): Prisma__GenerationClient<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Generation.
+     * @param {GenerationUpdateArgs} args - Arguments to update one Generation.
+     * @example
+     * // Update one Generation
+     * const generation = await prisma.generation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GenerationUpdateArgs>(args: SelectSubset<T, GenerationUpdateArgs<ExtArgs>>): Prisma__GenerationClient<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Generations.
+     * @param {GenerationDeleteManyArgs} args - Arguments to filter Generations to delete.
+     * @example
+     * // Delete a few Generations
+     * const { count } = await prisma.generation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GenerationDeleteManyArgs>(args?: SelectSubset<T, GenerationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Generations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GenerationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Generations
+     * const generation = await prisma.generation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GenerationUpdateManyArgs>(args: SelectSubset<T, GenerationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Generations and returns the data updated in the database.
+     * @param {GenerationUpdateManyAndReturnArgs} args - Arguments to update many Generations.
+     * @example
+     * // Update many Generations
+     * const generation = await prisma.generation.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Generations and only return the `id`
+     * const generationWithIdOnly = await prisma.generation.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends GenerationUpdateManyAndReturnArgs>(args: SelectSubset<T, GenerationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Generation.
+     * @param {GenerationUpsertArgs} args - Arguments to update or create a Generation.
+     * @example
+     * // Update or create a Generation
+     * const generation = await prisma.generation.upsert({
+     *   create: {
+     *     // ... data to create a Generation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Generation we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GenerationUpsertArgs>(args: SelectSubset<T, GenerationUpsertArgs<ExtArgs>>): Prisma__GenerationClient<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Generations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GenerationCountArgs} args - Arguments to filter Generations to count.
+     * @example
+     * // Count the number of Generations
+     * const count = await prisma.generation.count({
+     *   where: {
+     *     // ... the filter for the Generations we want to count
+     *   }
+     * })
+    **/
+    count<T extends GenerationCountArgs>(
+      args?: Subset<T, GenerationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GenerationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Generation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GenerationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GenerationAggregateArgs>(args: Subset<T, GenerationAggregateArgs>): Prisma.PrismaPromise<GetGenerationAggregateType<T>>
+
+    /**
+     * Group by Generation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GenerationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GenerationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GenerationGroupByArgs['orderBy'] }
+        : { orderBy?: GenerationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GenerationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGenerationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Generation model
+   */
+  readonly fields: GenerationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Generation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GenerationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    article<T extends ArticleDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ArticleDefaultArgs<ExtArgs>>): Prisma__ArticleClient<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Generation model
+   */
+  interface GenerationFieldRefs {
+    readonly id: FieldRef<"Generation", 'String'>
+    readonly userId: FieldRef<"Generation", 'String'>
+    readonly articleId: FieldRef<"Generation", 'String'>
+    readonly contentType: FieldRef<"Generation", 'GenerationContentType'>
+    readonly platform: FieldRef<"Generation", 'SocialPlatform'>
+    readonly content: FieldRef<"Generation", 'String'>
+    readonly contentArray: FieldRef<"Generation", 'String[]'>
+    readonly tokensUsed: FieldRef<"Generation", 'Int'>
+    readonly generatedAt: FieldRef<"Generation", 'DateTime'>
+    readonly truetoneSnapshot: FieldRef<"Generation", 'Json'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Generation findUnique
+   */
+  export type GenerationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationInclude<ExtArgs> | null
+    /**
+     * Filter, which Generation to fetch.
+     */
+    where: GenerationWhereUniqueInput
+  }
+
+  /**
+   * Generation findUniqueOrThrow
+   */
+  export type GenerationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationInclude<ExtArgs> | null
+    /**
+     * Filter, which Generation to fetch.
+     */
+    where: GenerationWhereUniqueInput
+  }
+
+  /**
+   * Generation findFirst
+   */
+  export type GenerationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationInclude<ExtArgs> | null
+    /**
+     * Filter, which Generation to fetch.
+     */
+    where?: GenerationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Generations to fetch.
+     */
+    orderBy?: GenerationOrderByWithRelationInput | GenerationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Generations.
+     */
+    cursor?: GenerationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Generations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Generations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Generations.
+     */
+    distinct?: GenerationScalarFieldEnum | GenerationScalarFieldEnum[]
+  }
+
+  /**
+   * Generation findFirstOrThrow
+   */
+  export type GenerationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationInclude<ExtArgs> | null
+    /**
+     * Filter, which Generation to fetch.
+     */
+    where?: GenerationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Generations to fetch.
+     */
+    orderBy?: GenerationOrderByWithRelationInput | GenerationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Generations.
+     */
+    cursor?: GenerationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Generations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Generations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Generations.
+     */
+    distinct?: GenerationScalarFieldEnum | GenerationScalarFieldEnum[]
+  }
+
+  /**
+   * Generation findMany
+   */
+  export type GenerationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationInclude<ExtArgs> | null
+    /**
+     * Filter, which Generations to fetch.
+     */
+    where?: GenerationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Generations to fetch.
+     */
+    orderBy?: GenerationOrderByWithRelationInput | GenerationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Generations.
+     */
+    cursor?: GenerationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Generations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Generations.
+     */
+    skip?: number
+    distinct?: GenerationScalarFieldEnum | GenerationScalarFieldEnum[]
+  }
+
+  /**
+   * Generation create
+   */
+  export type GenerationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Generation.
+     */
+    data: XOR<GenerationCreateInput, GenerationUncheckedCreateInput>
+  }
+
+  /**
+   * Generation createMany
+   */
+  export type GenerationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Generations.
+     */
+    data: GenerationCreateManyInput | GenerationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Generation createManyAndReturn
+   */
+  export type GenerationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * The data used to create many Generations.
+     */
+    data: GenerationCreateManyInput | GenerationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Generation update
+   */
+  export type GenerationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Generation.
+     */
+    data: XOR<GenerationUpdateInput, GenerationUncheckedUpdateInput>
+    /**
+     * Choose, which Generation to update.
+     */
+    where: GenerationWhereUniqueInput
+  }
+
+  /**
+   * Generation updateMany
+   */
+  export type GenerationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Generations.
+     */
+    data: XOR<GenerationUpdateManyMutationInput, GenerationUncheckedUpdateManyInput>
+    /**
+     * Filter which Generations to update
+     */
+    where?: GenerationWhereInput
+    /**
+     * Limit how many Generations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Generation updateManyAndReturn
+   */
+  export type GenerationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * The data used to update Generations.
+     */
+    data: XOR<GenerationUpdateManyMutationInput, GenerationUncheckedUpdateManyInput>
+    /**
+     * Filter which Generations to update
+     */
+    where?: GenerationWhereInput
+    /**
+     * Limit how many Generations to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Generation upsert
+   */
+  export type GenerationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Generation to update in case it exists.
+     */
+    where: GenerationWhereUniqueInput
+    /**
+     * In case the Generation found by the `where` argument doesn't exist, create a new Generation with this data.
+     */
+    create: XOR<GenerationCreateInput, GenerationUncheckedCreateInput>
+    /**
+     * In case the Generation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GenerationUpdateInput, GenerationUncheckedUpdateInput>
+  }
+
+  /**
+   * Generation delete
+   */
+  export type GenerationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationInclude<ExtArgs> | null
+    /**
+     * Filter which Generation to delete.
+     */
+    where: GenerationWhereUniqueInput
+  }
+
+  /**
+   * Generation deleteMany
+   */
+  export type GenerationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Generations to delete
+     */
+    where?: GenerationWhereInput
+    /**
+     * Limit how many Generations to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Generation without action
+   */
+  export type GenerationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model AnonymousAiUsage
    */
 
@@ -14804,6 +16320,14 @@ export namespace Prisma {
     kindeId: 'kindeId',
     categoryPreferences: 'categoryPreferences',
     savedArticleIds: 'savedArticleIds',
+    toneOfVoice: 'toneOfVoice',
+    humor: 'humor',
+    detailOrientation: 'detailOrientation',
+    contentLength: 'contentLength',
+    formality: 'formality',
+    emotionalExpression: 'emotionalExpression',
+    vocabulary: 'vocabulary',
+    engagementStyle: 'engagementStyle',
     subscriptionTier: 'subscriptionTier',
     subscriptionStatus: 'subscriptionStatus',
     subscriptionExpiresAt: 'subscriptionExpiresAt',
@@ -14971,6 +16495,22 @@ export namespace Prisma {
   };
 
   export type PersonalizedOutputScalarFieldEnum = (typeof PersonalizedOutputScalarFieldEnum)[keyof typeof PersonalizedOutputScalarFieldEnum]
+
+
+  export const GenerationScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    articleId: 'articleId',
+    contentType: 'contentType',
+    platform: 'platform',
+    content: 'content',
+    contentArray: 'contentArray',
+    tokensUsed: 'tokensUsed',
+    generatedAt: 'generatedAt',
+    truetoneSnapshot: 'truetoneSnapshot'
+  };
+
+  export type GenerationScalarFieldEnum = (typeof GenerationScalarFieldEnum)[keyof typeof GenerationScalarFieldEnum]
 
 
   export const AnonymousAiUsageScalarFieldEnum: {
@@ -15186,6 +16726,34 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'GenerationContentType'
+   */
+  export type EnumGenerationContentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'GenerationContentType'>
+    
+
+
+  /**
+   * Reference to a field of type 'GenerationContentType[]'
+   */
+  export type ListEnumGenerationContentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'GenerationContentType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'SocialPlatform'
+   */
+  export type EnumSocialPlatformFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SocialPlatform'>
+    
+
+
+  /**
+   * Reference to a field of type 'SocialPlatform[]'
+   */
+  export type ListEnumSocialPlatformFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SocialPlatform[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -15218,6 +16786,14 @@ export namespace Prisma {
     kindeId?: StringNullableFilter<"User"> | string | null
     categoryPreferences?: StringNullableListFilter<"User">
     savedArticleIds?: StringNullableListFilter<"User">
+    toneOfVoice?: StringNullableFilter<"User"> | string | null
+    humor?: StringNullableFilter<"User"> | string | null
+    detailOrientation?: StringNullableFilter<"User"> | string | null
+    contentLength?: StringNullableFilter<"User"> | string | null
+    formality?: StringNullableFilter<"User"> | string | null
+    emotionalExpression?: StringNullableFilter<"User"> | string | null
+    vocabulary?: StringNullableFilter<"User"> | string | null
+    engagementStyle?: StringNullableFilter<"User"> | string | null
     subscriptionTier?: EnumSubscriptionTierFilter<"User"> | $Enums.SubscriptionTier
     subscriptionStatus?: StringNullableFilter<"User"> | string | null
     subscriptionExpiresAt?: DateTimeNullableFilter<"User"> | Date | string | null
@@ -15239,6 +16815,7 @@ export namespace Prisma {
     createdArticles?: ArticleListRelationFilter
     editedArticles?: ArticleListRelationFilter
     personalizations?: PersonalizedOutputListRelationFilter
+    generations?: GenerationListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -15254,6 +16831,14 @@ export namespace Prisma {
     kindeId?: SortOrderInput | SortOrder
     categoryPreferences?: SortOrder
     savedArticleIds?: SortOrder
+    toneOfVoice?: SortOrderInput | SortOrder
+    humor?: SortOrderInput | SortOrder
+    detailOrientation?: SortOrderInput | SortOrder
+    contentLength?: SortOrderInput | SortOrder
+    formality?: SortOrderInput | SortOrder
+    emotionalExpression?: SortOrderInput | SortOrder
+    vocabulary?: SortOrderInput | SortOrder
+    engagementStyle?: SortOrderInput | SortOrder
     subscriptionTier?: SortOrder
     subscriptionStatus?: SortOrderInput | SortOrder
     subscriptionExpiresAt?: SortOrderInput | SortOrder
@@ -15275,6 +16860,7 @@ export namespace Prisma {
     createdArticles?: ArticleOrderByRelationAggregateInput
     editedArticles?: ArticleOrderByRelationAggregateInput
     personalizations?: PersonalizedOutputOrderByRelationAggregateInput
+    generations?: GenerationOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -15295,6 +16881,14 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     categoryPreferences?: StringNullableListFilter<"User">
     savedArticleIds?: StringNullableListFilter<"User">
+    toneOfVoice?: StringNullableFilter<"User"> | string | null
+    humor?: StringNullableFilter<"User"> | string | null
+    detailOrientation?: StringNullableFilter<"User"> | string | null
+    contentLength?: StringNullableFilter<"User"> | string | null
+    formality?: StringNullableFilter<"User"> | string | null
+    emotionalExpression?: StringNullableFilter<"User"> | string | null
+    vocabulary?: StringNullableFilter<"User"> | string | null
+    engagementStyle?: StringNullableFilter<"User"> | string | null
     subscriptionTier?: EnumSubscriptionTierFilter<"User"> | $Enums.SubscriptionTier
     subscriptionStatus?: StringNullableFilter<"User"> | string | null
     subscriptionExpiresAt?: DateTimeNullableFilter<"User"> | Date | string | null
@@ -15314,6 +16908,7 @@ export namespace Prisma {
     createdArticles?: ArticleListRelationFilter
     editedArticles?: ArticleListRelationFilter
     personalizations?: PersonalizedOutputListRelationFilter
+    generations?: GenerationListRelationFilter
   }, "id" | "email" | "kindeId" | "stripeCustomerId" | "stripeSubscriptionId">
 
   export type UserOrderByWithAggregationInput = {
@@ -15329,6 +16924,14 @@ export namespace Prisma {
     kindeId?: SortOrderInput | SortOrder
     categoryPreferences?: SortOrder
     savedArticleIds?: SortOrder
+    toneOfVoice?: SortOrderInput | SortOrder
+    humor?: SortOrderInput | SortOrder
+    detailOrientation?: SortOrderInput | SortOrder
+    contentLength?: SortOrderInput | SortOrder
+    formality?: SortOrderInput | SortOrder
+    emotionalExpression?: SortOrderInput | SortOrder
+    vocabulary?: SortOrderInput | SortOrder
+    engagementStyle?: SortOrderInput | SortOrder
     subscriptionTier?: SortOrder
     subscriptionStatus?: SortOrderInput | SortOrder
     subscriptionExpiresAt?: SortOrderInput | SortOrder
@@ -15365,6 +16968,14 @@ export namespace Prisma {
     kindeId?: StringNullableWithAggregatesFilter<"User"> | string | null
     categoryPreferences?: StringNullableListFilter<"User">
     savedArticleIds?: StringNullableListFilter<"User">
+    toneOfVoice?: StringNullableWithAggregatesFilter<"User"> | string | null
+    humor?: StringNullableWithAggregatesFilter<"User"> | string | null
+    detailOrientation?: StringNullableWithAggregatesFilter<"User"> | string | null
+    contentLength?: StringNullableWithAggregatesFilter<"User"> | string | null
+    formality?: StringNullableWithAggregatesFilter<"User"> | string | null
+    emotionalExpression?: StringNullableWithAggregatesFilter<"User"> | string | null
+    vocabulary?: StringNullableWithAggregatesFilter<"User"> | string | null
+    engagementStyle?: StringNullableWithAggregatesFilter<"User"> | string | null
     subscriptionTier?: EnumSubscriptionTierWithAggregatesFilter<"User"> | $Enums.SubscriptionTier
     subscriptionStatus?: StringNullableWithAggregatesFilter<"User"> | string | null
     subscriptionExpiresAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
@@ -15948,6 +17559,7 @@ export namespace Prisma {
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     lastEditedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     personalizations?: PersonalizedOutputListRelationFilter
+    generations?: GenerationListRelationFilter
   }
 
   export type ArticleOrderByWithRelationInput = {
@@ -15980,6 +17592,7 @@ export namespace Prisma {
     createdBy?: UserOrderByWithRelationInput
     lastEditedBy?: UserOrderByWithRelationInput
     personalizations?: PersonalizedOutputOrderByRelationAggregateInput
+    generations?: GenerationOrderByRelationAggregateInput
   }
 
   export type ArticleWhereUniqueInput = Prisma.AtLeast<{
@@ -16015,6 +17628,7 @@ export namespace Prisma {
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     lastEditedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     personalizations?: PersonalizedOutputListRelationFilter
+    generations?: GenerationListRelationFilter
   }, "id">
 
   export type ArticleOrderByWithAggregationInput = {
@@ -16179,6 +17793,91 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"PersonalizedOutput"> | Date | string
   }
 
+  export type GenerationWhereInput = {
+    AND?: GenerationWhereInput | GenerationWhereInput[]
+    OR?: GenerationWhereInput[]
+    NOT?: GenerationWhereInput | GenerationWhereInput[]
+    id?: UuidFilter<"Generation"> | string
+    userId?: UuidFilter<"Generation"> | string
+    articleId?: UuidFilter<"Generation"> | string
+    contentType?: EnumGenerationContentTypeFilter<"Generation"> | $Enums.GenerationContentType
+    platform?: EnumSocialPlatformNullableFilter<"Generation"> | $Enums.SocialPlatform | null
+    content?: StringNullableFilter<"Generation"> | string | null
+    contentArray?: StringNullableListFilter<"Generation">
+    tokensUsed?: IntNullableFilter<"Generation"> | number | null
+    generatedAt?: DateTimeFilter<"Generation"> | Date | string
+    truetoneSnapshot?: JsonNullableFilter<"Generation">
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    article?: XOR<ArticleScalarRelationFilter, ArticleWhereInput>
+  }
+
+  export type GenerationOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    articleId?: SortOrder
+    contentType?: SortOrder
+    platform?: SortOrderInput | SortOrder
+    content?: SortOrderInput | SortOrder
+    contentArray?: SortOrder
+    tokensUsed?: SortOrderInput | SortOrder
+    generatedAt?: SortOrder
+    truetoneSnapshot?: SortOrderInput | SortOrder
+    user?: UserOrderByWithRelationInput
+    article?: ArticleOrderByWithRelationInput
+  }
+
+  export type GenerationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: GenerationWhereInput | GenerationWhereInput[]
+    OR?: GenerationWhereInput[]
+    NOT?: GenerationWhereInput | GenerationWhereInput[]
+    userId?: UuidFilter<"Generation"> | string
+    articleId?: UuidFilter<"Generation"> | string
+    contentType?: EnumGenerationContentTypeFilter<"Generation"> | $Enums.GenerationContentType
+    platform?: EnumSocialPlatformNullableFilter<"Generation"> | $Enums.SocialPlatform | null
+    content?: StringNullableFilter<"Generation"> | string | null
+    contentArray?: StringNullableListFilter<"Generation">
+    tokensUsed?: IntNullableFilter<"Generation"> | number | null
+    generatedAt?: DateTimeFilter<"Generation"> | Date | string
+    truetoneSnapshot?: JsonNullableFilter<"Generation">
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    article?: XOR<ArticleScalarRelationFilter, ArticleWhereInput>
+  }, "id">
+
+  export type GenerationOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    articleId?: SortOrder
+    contentType?: SortOrder
+    platform?: SortOrderInput | SortOrder
+    content?: SortOrderInput | SortOrder
+    contentArray?: SortOrder
+    tokensUsed?: SortOrderInput | SortOrder
+    generatedAt?: SortOrder
+    truetoneSnapshot?: SortOrderInput | SortOrder
+    _count?: GenerationCountOrderByAggregateInput
+    _avg?: GenerationAvgOrderByAggregateInput
+    _max?: GenerationMaxOrderByAggregateInput
+    _min?: GenerationMinOrderByAggregateInput
+    _sum?: GenerationSumOrderByAggregateInput
+  }
+
+  export type GenerationScalarWhereWithAggregatesInput = {
+    AND?: GenerationScalarWhereWithAggregatesInput | GenerationScalarWhereWithAggregatesInput[]
+    OR?: GenerationScalarWhereWithAggregatesInput[]
+    NOT?: GenerationScalarWhereWithAggregatesInput | GenerationScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"Generation"> | string
+    userId?: UuidWithAggregatesFilter<"Generation"> | string
+    articleId?: UuidWithAggregatesFilter<"Generation"> | string
+    contentType?: EnumGenerationContentTypeWithAggregatesFilter<"Generation"> | $Enums.GenerationContentType
+    platform?: EnumSocialPlatformNullableWithAggregatesFilter<"Generation"> | $Enums.SocialPlatform | null
+    content?: StringNullableWithAggregatesFilter<"Generation"> | string | null
+    contentArray?: StringNullableListFilter<"Generation">
+    tokensUsed?: IntNullableWithAggregatesFilter<"Generation"> | number | null
+    generatedAt?: DateTimeWithAggregatesFilter<"Generation"> | Date | string
+    truetoneSnapshot?: JsonNullableWithAggregatesFilter<"Generation">
+  }
+
   export type AnonymousAiUsageWhereInput = {
     AND?: AnonymousAiUsageWhereInput | AnonymousAiUsageWhereInput[]
     OR?: AnonymousAiUsageWhereInput[]
@@ -16251,6 +17950,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -16272,6 +17979,7 @@ export namespace Prisma {
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
     personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
+    generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -16287,6 +17995,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -16308,6 +18024,7 @@ export namespace Prisma {
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
     personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
+    generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -16323,6 +18040,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -16344,6 +18069,7 @@ export namespace Prisma {
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
     personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
+    generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -16359,6 +18085,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -16380,6 +18114,7 @@ export namespace Prisma {
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
     personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
+    generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -16395,6 +18130,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -16423,6 +18166,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -16451,6 +18202,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17082,6 +18841,7 @@ export namespace Prisma {
     createdBy?: UserCreateNestedOneWithoutCreatedArticlesInput
     lastEditedBy?: UserCreateNestedOneWithoutEditedArticlesInput
     personalizations?: PersonalizedOutputCreateNestedManyWithoutArticleInput
+    generations?: GenerationCreateNestedManyWithoutArticleInput
   }
 
   export type ArticleUncheckedCreateInput = {
@@ -17112,6 +18872,7 @@ export namespace Prisma {
     createdByAdminId?: string | null
     lastEditedByAdminId?: string | null
     personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutArticleInput
+    generations?: GenerationUncheckedCreateNestedManyWithoutArticleInput
   }
 
   export type ArticleUpdateInput = {
@@ -17142,6 +18903,7 @@ export namespace Prisma {
     createdBy?: UserUpdateOneWithoutCreatedArticlesNestedInput
     lastEditedBy?: UserUpdateOneWithoutEditedArticlesNestedInput
     personalizations?: PersonalizedOutputUpdateManyWithoutArticleNestedInput
+    generations?: GenerationUpdateManyWithoutArticleNestedInput
   }
 
   export type ArticleUncheckedUpdateInput = {
@@ -17172,6 +18934,7 @@ export namespace Prisma {
     createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
     personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutArticleNestedInput
+    generations?: GenerationUncheckedUpdateManyWithoutArticleNestedInput
   }
 
   export type ArticleCreateManyInput = {
@@ -17360,6 +19123,95 @@ export namespace Prisma {
     generationCount?: IntFieldUpdateOperationsInput | number
     lastGeneratedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GenerationCreateInput = {
+    id?: string
+    contentType: $Enums.GenerationContentType
+    platform?: $Enums.SocialPlatform | null
+    content?: string | null
+    contentArray?: GenerationCreatecontentArrayInput | string[]
+    tokensUsed?: number | null
+    generatedAt?: Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    user: UserCreateNestedOneWithoutGenerationsInput
+    article: ArticleCreateNestedOneWithoutGenerationsInput
+  }
+
+  export type GenerationUncheckedCreateInput = {
+    id?: string
+    userId: string
+    articleId: string
+    contentType: $Enums.GenerationContentType
+    platform?: $Enums.SocialPlatform | null
+    content?: string | null
+    contentArray?: GenerationCreatecontentArrayInput | string[]
+    tokensUsed?: number | null
+    generatedAt?: Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type GenerationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    contentType?: EnumGenerationContentTypeFieldUpdateOperationsInput | $Enums.GenerationContentType
+    platform?: NullableEnumSocialPlatformFieldUpdateOperationsInput | $Enums.SocialPlatform | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentArray?: GenerationUpdatecontentArrayInput | string[]
+    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
+    generatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    user?: UserUpdateOneRequiredWithoutGenerationsNestedInput
+    article?: ArticleUpdateOneRequiredWithoutGenerationsNestedInput
+  }
+
+  export type GenerationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    articleId?: StringFieldUpdateOperationsInput | string
+    contentType?: EnumGenerationContentTypeFieldUpdateOperationsInput | $Enums.GenerationContentType
+    platform?: NullableEnumSocialPlatformFieldUpdateOperationsInput | $Enums.SocialPlatform | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentArray?: GenerationUpdatecontentArrayInput | string[]
+    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
+    generatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type GenerationCreateManyInput = {
+    id?: string
+    userId: string
+    articleId: string
+    contentType: $Enums.GenerationContentType
+    platform?: $Enums.SocialPlatform | null
+    content?: string | null
+    contentArray?: GenerationCreatecontentArrayInput | string[]
+    tokensUsed?: number | null
+    generatedAt?: Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type GenerationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    contentType?: EnumGenerationContentTypeFieldUpdateOperationsInput | $Enums.GenerationContentType
+    platform?: NullableEnumSocialPlatformFieldUpdateOperationsInput | $Enums.SocialPlatform | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentArray?: GenerationUpdatecontentArrayInput | string[]
+    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
+    generatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type GenerationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    articleId?: StringFieldUpdateOperationsInput | string
+    contentType?: EnumGenerationContentTypeFieldUpdateOperationsInput | $Enums.GenerationContentType
+    platform?: NullableEnumSocialPlatformFieldUpdateOperationsInput | $Enums.SocialPlatform | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentArray?: GenerationUpdatecontentArrayInput | string[]
+    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
+    generatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type AnonymousAiUsageCreateInput = {
@@ -17573,6 +19425,12 @@ export namespace Prisma {
     none?: PersonalizedOutputWhereInput
   }
 
+  export type GenerationListRelationFilter = {
+    every?: GenerationWhereInput
+    some?: GenerationWhereInput
+    none?: GenerationWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -17606,6 +19464,10 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type GenerationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -17619,6 +19481,14 @@ export namespace Prisma {
     kindeId?: SortOrder
     categoryPreferences?: SortOrder
     savedArticleIds?: SortOrder
+    toneOfVoice?: SortOrder
+    humor?: SortOrder
+    detailOrientation?: SortOrder
+    contentLength?: SortOrder
+    formality?: SortOrder
+    emotionalExpression?: SortOrder
+    vocabulary?: SortOrder
+    engagementStyle?: SortOrder
     subscriptionTier?: SortOrder
     subscriptionStatus?: SortOrder
     subscriptionExpiresAt?: SortOrder
@@ -17651,6 +19521,14 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     kindeId?: SortOrder
+    toneOfVoice?: SortOrder
+    humor?: SortOrder
+    detailOrientation?: SortOrder
+    contentLength?: SortOrder
+    formality?: SortOrder
+    emotionalExpression?: SortOrder
+    vocabulary?: SortOrder
+    engagementStyle?: SortOrder
     subscriptionTier?: SortOrder
     subscriptionStatus?: SortOrder
     subscriptionExpiresAt?: SortOrder
@@ -17677,6 +19555,14 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     kindeId?: SortOrder
+    toneOfVoice?: SortOrder
+    humor?: SortOrder
+    detailOrientation?: SortOrder
+    contentLength?: SortOrder
+    formality?: SortOrder
+    emotionalExpression?: SortOrder
+    vocabulary?: SortOrder
+    engagementStyle?: SortOrder
     subscriptionTier?: SortOrder
     subscriptionStatus?: SortOrder
     subscriptionExpiresAt?: SortOrder
@@ -18507,6 +20393,83 @@ export namespace Prisma {
     generationCount?: SortOrder
   }
 
+  export type EnumGenerationContentTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.GenerationContentType | EnumGenerationContentTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.GenerationContentType[] | ListEnumGenerationContentTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.GenerationContentType[] | ListEnumGenerationContentTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumGenerationContentTypeFilter<$PrismaModel> | $Enums.GenerationContentType
+  }
+
+  export type EnumSocialPlatformNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.SocialPlatform | EnumSocialPlatformFieldRefInput<$PrismaModel> | null
+    in?: $Enums.SocialPlatform[] | ListEnumSocialPlatformFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.SocialPlatform[] | ListEnumSocialPlatformFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumSocialPlatformNullableFilter<$PrismaModel> | $Enums.SocialPlatform | null
+  }
+
+  export type GenerationCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    articleId?: SortOrder
+    contentType?: SortOrder
+    platform?: SortOrder
+    content?: SortOrder
+    contentArray?: SortOrder
+    tokensUsed?: SortOrder
+    generatedAt?: SortOrder
+    truetoneSnapshot?: SortOrder
+  }
+
+  export type GenerationAvgOrderByAggregateInput = {
+    tokensUsed?: SortOrder
+  }
+
+  export type GenerationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    articleId?: SortOrder
+    contentType?: SortOrder
+    platform?: SortOrder
+    content?: SortOrder
+    tokensUsed?: SortOrder
+    generatedAt?: SortOrder
+  }
+
+  export type GenerationMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    articleId?: SortOrder
+    contentType?: SortOrder
+    platform?: SortOrder
+    content?: SortOrder
+    tokensUsed?: SortOrder
+    generatedAt?: SortOrder
+  }
+
+  export type GenerationSumOrderByAggregateInput = {
+    tokensUsed?: SortOrder
+  }
+
+  export type EnumGenerationContentTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.GenerationContentType | EnumGenerationContentTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.GenerationContentType[] | ListEnumGenerationContentTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.GenerationContentType[] | ListEnumGenerationContentTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumGenerationContentTypeWithAggregatesFilter<$PrismaModel> | $Enums.GenerationContentType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumGenerationContentTypeFilter<$PrismaModel>
+    _max?: NestedEnumGenerationContentTypeFilter<$PrismaModel>
+  }
+
+  export type EnumSocialPlatformNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SocialPlatform | EnumSocialPlatformFieldRefInput<$PrismaModel> | null
+    in?: $Enums.SocialPlatform[] | ListEnumSocialPlatformFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.SocialPlatform[] | ListEnumSocialPlatformFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumSocialPlatformNullableWithAggregatesFilter<$PrismaModel> | $Enums.SocialPlatform | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumSocialPlatformNullableFilter<$PrismaModel>
+    _max?: NestedEnumSocialPlatformNullableFilter<$PrismaModel>
+  }
+
   export type AnonymousAiUsageCountOrderByAggregateInput = {
     id?: SortOrder
     sessionId?: SortOrder
@@ -18606,6 +20569,13 @@ export namespace Prisma {
     connect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
   }
 
+  export type GenerationCreateNestedManyWithoutUserInput = {
+    create?: XOR<GenerationCreateWithoutUserInput, GenerationUncheckedCreateWithoutUserInput> | GenerationCreateWithoutUserInput[] | GenerationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GenerationCreateOrConnectWithoutUserInput | GenerationCreateOrConnectWithoutUserInput[]
+    createMany?: GenerationCreateManyUserInputEnvelope
+    connect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+  }
+
   export type LikeUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput> | LikeCreateWithoutUserInput[] | LikeUncheckedCreateWithoutUserInput[]
     connectOrCreate?: LikeCreateOrConnectWithoutUserInput | LikeCreateOrConnectWithoutUserInput[]
@@ -18660,6 +20630,13 @@ export namespace Prisma {
     connectOrCreate?: PersonalizedOutputCreateOrConnectWithoutUserInput | PersonalizedOutputCreateOrConnectWithoutUserInput[]
     createMany?: PersonalizedOutputCreateManyUserInputEnvelope
     connect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
+  }
+
+  export type GenerationUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<GenerationCreateWithoutUserInput, GenerationUncheckedCreateWithoutUserInput> | GenerationCreateWithoutUserInput[] | GenerationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GenerationCreateOrConnectWithoutUserInput | GenerationCreateOrConnectWithoutUserInput[]
+    createMany?: GenerationCreateManyUserInputEnvelope
+    connect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -18824,6 +20801,20 @@ export namespace Prisma {
     deleteMany?: PersonalizedOutputScalarWhereInput | PersonalizedOutputScalarWhereInput[]
   }
 
+  export type GenerationUpdateManyWithoutUserNestedInput = {
+    create?: XOR<GenerationCreateWithoutUserInput, GenerationUncheckedCreateWithoutUserInput> | GenerationCreateWithoutUserInput[] | GenerationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GenerationCreateOrConnectWithoutUserInput | GenerationCreateOrConnectWithoutUserInput[]
+    upsert?: GenerationUpsertWithWhereUniqueWithoutUserInput | GenerationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: GenerationCreateManyUserInputEnvelope
+    set?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    disconnect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    delete?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    connect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    update?: GenerationUpdateWithWhereUniqueWithoutUserInput | GenerationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: GenerationUpdateManyWithWhereWithoutUserInput | GenerationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: GenerationScalarWhereInput | GenerationScalarWhereInput[]
+  }
+
   export type LikeUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput> | LikeCreateWithoutUserInput[] | LikeUncheckedCreateWithoutUserInput[]
     connectOrCreate?: LikeCreateOrConnectWithoutUserInput | LikeCreateOrConnectWithoutUserInput[]
@@ -18934,6 +20925,20 @@ export namespace Prisma {
     update?: PersonalizedOutputUpdateWithWhereUniqueWithoutUserInput | PersonalizedOutputUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: PersonalizedOutputUpdateManyWithWhereWithoutUserInput | PersonalizedOutputUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: PersonalizedOutputScalarWhereInput | PersonalizedOutputScalarWhereInput[]
+  }
+
+  export type GenerationUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<GenerationCreateWithoutUserInput, GenerationUncheckedCreateWithoutUserInput> | GenerationCreateWithoutUserInput[] | GenerationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GenerationCreateOrConnectWithoutUserInput | GenerationCreateOrConnectWithoutUserInput[]
+    upsert?: GenerationUpsertWithWhereUniqueWithoutUserInput | GenerationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: GenerationCreateManyUserInputEnvelope
+    set?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    disconnect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    delete?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    connect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    update?: GenerationUpdateWithWhereUniqueWithoutUserInput | GenerationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: GenerationUpdateManyWithWhereWithoutUserInput | GenerationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: GenerationScalarWhereInput | GenerationScalarWhereInput[]
   }
 
   export type LikeCreateNestedManyWithoutPostInput = {
@@ -19285,11 +21290,25 @@ export namespace Prisma {
     connect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
   }
 
+  export type GenerationCreateNestedManyWithoutArticleInput = {
+    create?: XOR<GenerationCreateWithoutArticleInput, GenerationUncheckedCreateWithoutArticleInput> | GenerationCreateWithoutArticleInput[] | GenerationUncheckedCreateWithoutArticleInput[]
+    connectOrCreate?: GenerationCreateOrConnectWithoutArticleInput | GenerationCreateOrConnectWithoutArticleInput[]
+    createMany?: GenerationCreateManyArticleInputEnvelope
+    connect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+  }
+
   export type PersonalizedOutputUncheckedCreateNestedManyWithoutArticleInput = {
     create?: XOR<PersonalizedOutputCreateWithoutArticleInput, PersonalizedOutputUncheckedCreateWithoutArticleInput> | PersonalizedOutputCreateWithoutArticleInput[] | PersonalizedOutputUncheckedCreateWithoutArticleInput[]
     connectOrCreate?: PersonalizedOutputCreateOrConnectWithoutArticleInput | PersonalizedOutputCreateOrConnectWithoutArticleInput[]
     createMany?: PersonalizedOutputCreateManyArticleInputEnvelope
     connect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
+  }
+
+  export type GenerationUncheckedCreateNestedManyWithoutArticleInput = {
+    create?: XOR<GenerationCreateWithoutArticleInput, GenerationUncheckedCreateWithoutArticleInput> | GenerationCreateWithoutArticleInput[] | GenerationUncheckedCreateWithoutArticleInput[]
+    connectOrCreate?: GenerationCreateOrConnectWithoutArticleInput | GenerationCreateOrConnectWithoutArticleInput[]
+    createMany?: GenerationCreateManyArticleInputEnvelope
+    connect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
   }
 
   export type ArticleUpdatetagsInput = {
@@ -19340,6 +21359,20 @@ export namespace Prisma {
     deleteMany?: PersonalizedOutputScalarWhereInput | PersonalizedOutputScalarWhereInput[]
   }
 
+  export type GenerationUpdateManyWithoutArticleNestedInput = {
+    create?: XOR<GenerationCreateWithoutArticleInput, GenerationUncheckedCreateWithoutArticleInput> | GenerationCreateWithoutArticleInput[] | GenerationUncheckedCreateWithoutArticleInput[]
+    connectOrCreate?: GenerationCreateOrConnectWithoutArticleInput | GenerationCreateOrConnectWithoutArticleInput[]
+    upsert?: GenerationUpsertWithWhereUniqueWithoutArticleInput | GenerationUpsertWithWhereUniqueWithoutArticleInput[]
+    createMany?: GenerationCreateManyArticleInputEnvelope
+    set?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    disconnect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    delete?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    connect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    update?: GenerationUpdateWithWhereUniqueWithoutArticleInput | GenerationUpdateWithWhereUniqueWithoutArticleInput[]
+    updateMany?: GenerationUpdateManyWithWhereWithoutArticleInput | GenerationUpdateManyWithWhereWithoutArticleInput[]
+    deleteMany?: GenerationScalarWhereInput | GenerationScalarWhereInput[]
+  }
+
   export type PersonalizedOutputUncheckedUpdateManyWithoutArticleNestedInput = {
     create?: XOR<PersonalizedOutputCreateWithoutArticleInput, PersonalizedOutputUncheckedCreateWithoutArticleInput> | PersonalizedOutputCreateWithoutArticleInput[] | PersonalizedOutputUncheckedCreateWithoutArticleInput[]
     connectOrCreate?: PersonalizedOutputCreateOrConnectWithoutArticleInput | PersonalizedOutputCreateOrConnectWithoutArticleInput[]
@@ -19352,6 +21385,20 @@ export namespace Prisma {
     update?: PersonalizedOutputUpdateWithWhereUniqueWithoutArticleInput | PersonalizedOutputUpdateWithWhereUniqueWithoutArticleInput[]
     updateMany?: PersonalizedOutputUpdateManyWithWhereWithoutArticleInput | PersonalizedOutputUpdateManyWithWhereWithoutArticleInput[]
     deleteMany?: PersonalizedOutputScalarWhereInput | PersonalizedOutputScalarWhereInput[]
+  }
+
+  export type GenerationUncheckedUpdateManyWithoutArticleNestedInput = {
+    create?: XOR<GenerationCreateWithoutArticleInput, GenerationUncheckedCreateWithoutArticleInput> | GenerationCreateWithoutArticleInput[] | GenerationUncheckedCreateWithoutArticleInput[]
+    connectOrCreate?: GenerationCreateOrConnectWithoutArticleInput | GenerationCreateOrConnectWithoutArticleInput[]
+    upsert?: GenerationUpsertWithWhereUniqueWithoutArticleInput | GenerationUpsertWithWhereUniqueWithoutArticleInput[]
+    createMany?: GenerationCreateManyArticleInputEnvelope
+    set?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    disconnect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    delete?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    connect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    update?: GenerationUpdateWithWhereUniqueWithoutArticleInput | GenerationUpdateWithWhereUniqueWithoutArticleInput[]
+    updateMany?: GenerationUpdateManyWithWhereWithoutArticleInput | GenerationUpdateManyWithWhereWithoutArticleInput[]
+    deleteMany?: GenerationScalarWhereInput | GenerationScalarWhereInput[]
   }
 
   export type PersonalizedOutputCreatepersonalizedKeyInsightsInput = {
@@ -19389,6 +21436,51 @@ export namespace Prisma {
     upsert?: ArticleUpsertWithoutPersonalizationsInput
     connect?: ArticleWhereUniqueInput
     update?: XOR<XOR<ArticleUpdateToOneWithWhereWithoutPersonalizationsInput, ArticleUpdateWithoutPersonalizationsInput>, ArticleUncheckedUpdateWithoutPersonalizationsInput>
+  }
+
+  export type GenerationCreatecontentArrayInput = {
+    set: string[]
+  }
+
+  export type UserCreateNestedOneWithoutGenerationsInput = {
+    create?: XOR<UserCreateWithoutGenerationsInput, UserUncheckedCreateWithoutGenerationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGenerationsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ArticleCreateNestedOneWithoutGenerationsInput = {
+    create?: XOR<ArticleCreateWithoutGenerationsInput, ArticleUncheckedCreateWithoutGenerationsInput>
+    connectOrCreate?: ArticleCreateOrConnectWithoutGenerationsInput
+    connect?: ArticleWhereUniqueInput
+  }
+
+  export type EnumGenerationContentTypeFieldUpdateOperationsInput = {
+    set?: $Enums.GenerationContentType
+  }
+
+  export type NullableEnumSocialPlatformFieldUpdateOperationsInput = {
+    set?: $Enums.SocialPlatform | null
+  }
+
+  export type GenerationUpdatecontentArrayInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type UserUpdateOneRequiredWithoutGenerationsNestedInput = {
+    create?: XOR<UserCreateWithoutGenerationsInput, UserUncheckedCreateWithoutGenerationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGenerationsInput
+    upsert?: UserUpsertWithoutGenerationsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutGenerationsInput, UserUpdateWithoutGenerationsInput>, UserUncheckedUpdateWithoutGenerationsInput>
+  }
+
+  export type ArticleUpdateOneRequiredWithoutGenerationsNestedInput = {
+    create?: XOR<ArticleCreateWithoutGenerationsInput, ArticleUncheckedCreateWithoutGenerationsInput>
+    connectOrCreate?: ArticleCreateOrConnectWithoutGenerationsInput
+    upsert?: ArticleUpsertWithoutGenerationsInput
+    connect?: ArticleWhereUniqueInput
+    update?: XOR<XOR<ArticleUpdateToOneWithWhereWithoutGenerationsInput, ArticleUpdateWithoutGenerationsInput>, ArticleUncheckedUpdateWithoutGenerationsInput>
   }
 
   export type NestedUuidFilter<$PrismaModel = never> = {
@@ -19800,6 +21892,40 @@ export namespace Prisma {
     _max?: NestedEnumArticleStatusFilter<$PrismaModel>
   }
 
+  export type NestedEnumGenerationContentTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.GenerationContentType | EnumGenerationContentTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.GenerationContentType[] | ListEnumGenerationContentTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.GenerationContentType[] | ListEnumGenerationContentTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumGenerationContentTypeFilter<$PrismaModel> | $Enums.GenerationContentType
+  }
+
+  export type NestedEnumSocialPlatformNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.SocialPlatform | EnumSocialPlatformFieldRefInput<$PrismaModel> | null
+    in?: $Enums.SocialPlatform[] | ListEnumSocialPlatformFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.SocialPlatform[] | ListEnumSocialPlatformFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumSocialPlatformNullableFilter<$PrismaModel> | $Enums.SocialPlatform | null
+  }
+
+  export type NestedEnumGenerationContentTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.GenerationContentType | EnumGenerationContentTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.GenerationContentType[] | ListEnumGenerationContentTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.GenerationContentType[] | ListEnumGenerationContentTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumGenerationContentTypeWithAggregatesFilter<$PrismaModel> | $Enums.GenerationContentType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumGenerationContentTypeFilter<$PrismaModel>
+    _max?: NestedEnumGenerationContentTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumSocialPlatformNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SocialPlatform | EnumSocialPlatformFieldRefInput<$PrismaModel> | null
+    in?: $Enums.SocialPlatform[] | ListEnumSocialPlatformFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.SocialPlatform[] | ListEnumSocialPlatformFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumSocialPlatformNullableWithAggregatesFilter<$PrismaModel> | $Enums.SocialPlatform | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumSocialPlatformNullableFilter<$PrismaModel>
+    _max?: NestedEnumSocialPlatformNullableFilter<$PrismaModel>
+  }
+
   export type LikeCreateWithoutUserInput = {
     id?: string
     contentId: string
@@ -20019,6 +22145,7 @@ export namespace Prisma {
     reviewNotes?: string | null
     lastEditedBy?: UserCreateNestedOneWithoutEditedArticlesInput
     personalizations?: PersonalizedOutputCreateNestedManyWithoutArticleInput
+    generations?: GenerationCreateNestedManyWithoutArticleInput
   }
 
   export type ArticleUncheckedCreateWithoutCreatedByInput = {
@@ -20048,6 +22175,7 @@ export namespace Prisma {
     reviewNotes?: string | null
     lastEditedByAdminId?: string | null
     personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutArticleInput
+    generations?: GenerationUncheckedCreateNestedManyWithoutArticleInput
   }
 
   export type ArticleCreateOrConnectWithoutCreatedByInput = {
@@ -20087,6 +22215,7 @@ export namespace Prisma {
     reviewNotes?: string | null
     createdBy?: UserCreateNestedOneWithoutCreatedArticlesInput
     personalizations?: PersonalizedOutputCreateNestedManyWithoutArticleInput
+    generations?: GenerationCreateNestedManyWithoutArticleInput
   }
 
   export type ArticleUncheckedCreateWithoutLastEditedByInput = {
@@ -20116,6 +22245,7 @@ export namespace Prisma {
     reviewNotes?: string | null
     createdByAdminId?: string | null
     personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutArticleInput
+    generations?: GenerationUncheckedCreateNestedManyWithoutArticleInput
   }
 
   export type ArticleCreateOrConnectWithoutLastEditedByInput = {
@@ -20163,6 +22293,40 @@ export namespace Prisma {
 
   export type PersonalizedOutputCreateManyUserInputEnvelope = {
     data: PersonalizedOutputCreateManyUserInput | PersonalizedOutputCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type GenerationCreateWithoutUserInput = {
+    id?: string
+    contentType: $Enums.GenerationContentType
+    platform?: $Enums.SocialPlatform | null
+    content?: string | null
+    contentArray?: GenerationCreatecontentArrayInput | string[]
+    tokensUsed?: number | null
+    generatedAt?: Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    article: ArticleCreateNestedOneWithoutGenerationsInput
+  }
+
+  export type GenerationUncheckedCreateWithoutUserInput = {
+    id?: string
+    articleId: string
+    contentType: $Enums.GenerationContentType
+    platform?: $Enums.SocialPlatform | null
+    content?: string | null
+    contentArray?: GenerationCreatecontentArrayInput | string[]
+    tokensUsed?: number | null
+    generatedAt?: Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type GenerationCreateOrConnectWithoutUserInput = {
+    where: GenerationWhereUniqueInput
+    create: XOR<GenerationCreateWithoutUserInput, GenerationUncheckedCreateWithoutUserInput>
+  }
+
+  export type GenerationCreateManyUserInputEnvelope = {
+    data: GenerationCreateManyUserInput | GenerationCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -20432,6 +22596,38 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"PersonalizedOutput"> | Date | string
   }
 
+  export type GenerationUpsertWithWhereUniqueWithoutUserInput = {
+    where: GenerationWhereUniqueInput
+    update: XOR<GenerationUpdateWithoutUserInput, GenerationUncheckedUpdateWithoutUserInput>
+    create: XOR<GenerationCreateWithoutUserInput, GenerationUncheckedCreateWithoutUserInput>
+  }
+
+  export type GenerationUpdateWithWhereUniqueWithoutUserInput = {
+    where: GenerationWhereUniqueInput
+    data: XOR<GenerationUpdateWithoutUserInput, GenerationUncheckedUpdateWithoutUserInput>
+  }
+
+  export type GenerationUpdateManyWithWhereWithoutUserInput = {
+    where: GenerationScalarWhereInput
+    data: XOR<GenerationUpdateManyMutationInput, GenerationUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type GenerationScalarWhereInput = {
+    AND?: GenerationScalarWhereInput | GenerationScalarWhereInput[]
+    OR?: GenerationScalarWhereInput[]
+    NOT?: GenerationScalarWhereInput | GenerationScalarWhereInput[]
+    id?: UuidFilter<"Generation"> | string
+    userId?: UuidFilter<"Generation"> | string
+    articleId?: UuidFilter<"Generation"> | string
+    contentType?: EnumGenerationContentTypeFilter<"Generation"> | $Enums.GenerationContentType
+    platform?: EnumSocialPlatformNullableFilter<"Generation"> | $Enums.SocialPlatform | null
+    content?: StringNullableFilter<"Generation"> | string | null
+    contentArray?: StringNullableListFilter<"Generation">
+    tokensUsed?: IntNullableFilter<"Generation"> | number | null
+    generatedAt?: DateTimeFilter<"Generation"> | Date | string
+    truetoneSnapshot?: JsonNullableFilter<"Generation">
+  }
+
   export type LikeCreateWithoutPostInput = {
     id?: string
     contentId: string
@@ -20491,6 +22687,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -20511,6 +22715,7 @@ export namespace Prisma {
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
     personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
+    generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLikesInput = {
@@ -20526,6 +22731,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -20546,6 +22759,7 @@ export namespace Prisma {
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
     personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
+    generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLikesInput = {
@@ -20602,6 +22816,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -20622,6 +22844,7 @@ export namespace Prisma {
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
     personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
+    generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLikesInput = {
@@ -20637,6 +22860,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -20657,6 +22888,7 @@ export namespace Prisma {
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
     personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
+    generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PostUpsertWithoutLikesInput = {
@@ -20703,6 +22935,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -20723,6 +22963,7 @@ export namespace Prisma {
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
     personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
+    generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -20738,6 +22979,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -20758,6 +23007,7 @@ export namespace Prisma {
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
     personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
+    generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -20903,6 +23153,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -20923,6 +23181,7 @@ export namespace Prisma {
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
     personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
+    generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -20938,6 +23197,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -20958,6 +23225,7 @@ export namespace Prisma {
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
     personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
+    generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AnalyticsEventUpsertWithWhereUniqueWithoutSessionInput = {
@@ -21064,6 +23332,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -21084,6 +23360,7 @@ export namespace Prisma {
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
     personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
+    generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventsInput = {
@@ -21099,6 +23376,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -21119,6 +23404,7 @@ export namespace Prisma {
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
     personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
+    generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventsInput = {
@@ -21199,6 +23485,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -21219,6 +23513,7 @@ export namespace Prisma {
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
     personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
+    generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventsInput = {
@@ -21234,6 +23529,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -21254,6 +23557,7 @@ export namespace Prisma {
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
     personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
+    generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserSessionCreateWithoutPageViewsRelInput = {
@@ -21312,6 +23616,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -21332,6 +23644,7 @@ export namespace Prisma {
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
     personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
+    generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPageViewsInput = {
@@ -21347,6 +23660,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -21367,6 +23688,7 @@ export namespace Prisma {
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
     personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
+    generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPageViewsInput = {
@@ -21447,6 +23769,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -21467,6 +23797,7 @@ export namespace Prisma {
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
     personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
+    generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPageViewsInput = {
@@ -21482,6 +23813,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -21502,6 +23841,7 @@ export namespace Prisma {
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
     personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
+    generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserSessionCreateWithoutChatSessionsInput = {
@@ -21560,6 +23900,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -21580,6 +23928,7 @@ export namespace Prisma {
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
     personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
+    generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutChatAnalyticsInput = {
@@ -21595,6 +23944,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -21615,6 +23972,7 @@ export namespace Prisma {
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
     personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
+    generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutChatAnalyticsInput = {
@@ -21695,6 +24053,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -21715,6 +24081,7 @@ export namespace Prisma {
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
     personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
+    generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChatAnalyticsInput = {
@@ -21730,6 +24097,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -21750,6 +24125,7 @@ export namespace Prisma {
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
     personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
+    generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCreatedArticlesInput = {
@@ -21765,6 +24141,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -21785,6 +24169,7 @@ export namespace Prisma {
     chatAnalytics?: ChatAnalyticsCreateNestedManyWithoutUserInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
     personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
+    generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreatedArticlesInput = {
@@ -21800,6 +24185,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -21820,6 +24213,7 @@ export namespace Prisma {
     chatAnalytics?: ChatAnalyticsUncheckedCreateNestedManyWithoutUserInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
     personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
+    generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreatedArticlesInput = {
@@ -21840,6 +24234,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -21860,6 +24262,7 @@ export namespace Prisma {
     chatAnalytics?: ChatAnalyticsCreateNestedManyWithoutUserInput
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
     personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
+    generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEditedArticlesInput = {
@@ -21875,6 +24278,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -21895,6 +24306,7 @@ export namespace Prisma {
     chatAnalytics?: ChatAnalyticsUncheckedCreateNestedManyWithoutUserInput
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
     personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
+    generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEditedArticlesInput = {
@@ -21940,6 +24352,40 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type GenerationCreateWithoutArticleInput = {
+    id?: string
+    contentType: $Enums.GenerationContentType
+    platform?: $Enums.SocialPlatform | null
+    content?: string | null
+    contentArray?: GenerationCreatecontentArrayInput | string[]
+    tokensUsed?: number | null
+    generatedAt?: Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    user: UserCreateNestedOneWithoutGenerationsInput
+  }
+
+  export type GenerationUncheckedCreateWithoutArticleInput = {
+    id?: string
+    userId: string
+    contentType: $Enums.GenerationContentType
+    platform?: $Enums.SocialPlatform | null
+    content?: string | null
+    contentArray?: GenerationCreatecontentArrayInput | string[]
+    tokensUsed?: number | null
+    generatedAt?: Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type GenerationCreateOrConnectWithoutArticleInput = {
+    where: GenerationWhereUniqueInput
+    create: XOR<GenerationCreateWithoutArticleInput, GenerationUncheckedCreateWithoutArticleInput>
+  }
+
+  export type GenerationCreateManyArticleInputEnvelope = {
+    data: GenerationCreateManyArticleInput | GenerationCreateManyArticleInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutCreatedArticlesInput = {
     update: XOR<UserUpdateWithoutCreatedArticlesInput, UserUncheckedUpdateWithoutCreatedArticlesInput>
     create: XOR<UserCreateWithoutCreatedArticlesInput, UserUncheckedCreateWithoutCreatedArticlesInput>
@@ -21964,6 +24410,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -21984,6 +24438,7 @@ export namespace Prisma {
     chatAnalytics?: ChatAnalyticsUpdateManyWithoutUserNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
     personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
+    generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedArticlesInput = {
@@ -21999,6 +24454,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -22019,6 +24482,7 @@ export namespace Prisma {
     chatAnalytics?: ChatAnalyticsUncheckedUpdateManyWithoutUserNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
     personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
+    generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutEditedArticlesInput = {
@@ -22045,6 +24509,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -22065,6 +24537,7 @@ export namespace Prisma {
     chatAnalytics?: ChatAnalyticsUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
     personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
+    generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEditedArticlesInput = {
@@ -22080,6 +24553,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -22100,6 +24581,7 @@ export namespace Prisma {
     chatAnalytics?: ChatAnalyticsUncheckedUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
     personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
+    generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PersonalizedOutputUpsertWithWhereUniqueWithoutArticleInput = {
@@ -22118,6 +24600,22 @@ export namespace Prisma {
     data: XOR<PersonalizedOutputUpdateManyMutationInput, PersonalizedOutputUncheckedUpdateManyWithoutArticleInput>
   }
 
+  export type GenerationUpsertWithWhereUniqueWithoutArticleInput = {
+    where: GenerationWhereUniqueInput
+    update: XOR<GenerationUpdateWithoutArticleInput, GenerationUncheckedUpdateWithoutArticleInput>
+    create: XOR<GenerationCreateWithoutArticleInput, GenerationUncheckedCreateWithoutArticleInput>
+  }
+
+  export type GenerationUpdateWithWhereUniqueWithoutArticleInput = {
+    where: GenerationWhereUniqueInput
+    data: XOR<GenerationUpdateWithoutArticleInput, GenerationUncheckedUpdateWithoutArticleInput>
+  }
+
+  export type GenerationUpdateManyWithWhereWithoutArticleInput = {
+    where: GenerationScalarWhereInput
+    data: XOR<GenerationUpdateManyMutationInput, GenerationUncheckedUpdateManyWithoutArticleInput>
+  }
+
   export type UserCreateWithoutPersonalizationsInput = {
     id?: string
     name?: string
@@ -22131,6 +24629,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -22151,6 +24657,7 @@ export namespace Prisma {
     chatAnalytics?: ChatAnalyticsCreateNestedManyWithoutUserInput
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
+    generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPersonalizationsInput = {
@@ -22166,6 +24673,14 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
     subscriptionTier?: $Enums.SubscriptionTier
     subscriptionStatus?: string | null
     subscriptionExpiresAt?: Date | string | null
@@ -22186,6 +24701,7 @@ export namespace Prisma {
     chatAnalytics?: ChatAnalyticsUncheckedCreateNestedManyWithoutUserInput
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
+    generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPersonalizationsInput = {
@@ -22220,6 +24736,7 @@ export namespace Prisma {
     reviewNotes?: string | null
     createdBy?: UserCreateNestedOneWithoutCreatedArticlesInput
     lastEditedBy?: UserCreateNestedOneWithoutEditedArticlesInput
+    generations?: GenerationCreateNestedManyWithoutArticleInput
   }
 
   export type ArticleUncheckedCreateWithoutPersonalizationsInput = {
@@ -22249,6 +24766,7 @@ export namespace Prisma {
     reviewNotes?: string | null
     createdByAdminId?: string | null
     lastEditedByAdminId?: string | null
+    generations?: GenerationUncheckedCreateNestedManyWithoutArticleInput
   }
 
   export type ArticleCreateOrConnectWithoutPersonalizationsInput = {
@@ -22280,6 +24798,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -22300,6 +24826,7 @@ export namespace Prisma {
     chatAnalytics?: ChatAnalyticsUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
+    generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPersonalizationsInput = {
@@ -22315,6 +24842,14 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
     subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
     subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -22335,6 +24870,7 @@ export namespace Prisma {
     chatAnalytics?: ChatAnalyticsUncheckedUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
+    generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ArticleUpsertWithoutPersonalizationsInput = {
@@ -22375,6 +24911,7 @@ export namespace Prisma {
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: UserUpdateOneWithoutCreatedArticlesNestedInput
     lastEditedBy?: UserUpdateOneWithoutEditedArticlesNestedInput
+    generations?: GenerationUpdateManyWithoutArticleNestedInput
   }
 
   export type ArticleUncheckedUpdateWithoutPersonalizationsInput = {
@@ -22404,6 +24941,335 @@ export namespace Prisma {
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
+    generations?: GenerationUncheckedUpdateManyWithoutArticleNestedInput
+  }
+
+  export type UserCreateWithoutGenerationsInput = {
+    id?: string
+    name?: string
+    firstName?: string
+    lastName?: string
+    email: string
+    company?: string | null
+    avatar?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    kindeId?: string | null
+    categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
+    subscriptionTier?: $Enums.SubscriptionTier
+    subscriptionStatus?: string | null
+    subscriptionExpiresAt?: Date | string | null
+    subscriptionCreatedAt?: Date | string | null
+    monthlyGenerationLimit?: number
+    monthlyGenerationsUsed?: number
+    generationResetDate?: Date | string | null
+    stripeCustomerId?: string | null
+    stripeSubscriptionId?: string | null
+    stripePriceId?: string | null
+    hasCompletedOnboarding?: boolean
+    onboardingStep?: number | null
+    onboardingCompletedAt?: Date | string | null
+    likes?: LikeCreateNestedManyWithoutUserInput
+    sessions?: UserSessionCreateNestedManyWithoutUserInput
+    events?: AnalyticsEventCreateNestedManyWithoutUserInput
+    pageViews?: PageViewCreateNestedManyWithoutUserInput
+    chatAnalytics?: ChatAnalyticsCreateNestedManyWithoutUserInput
+    createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
+    editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
+    personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutGenerationsInput = {
+    id?: string
+    name?: string
+    firstName?: string
+    lastName?: string
+    email: string
+    company?: string | null
+    avatar?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    kindeId?: string | null
+    categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
+    toneOfVoice?: string | null
+    humor?: string | null
+    detailOrientation?: string | null
+    contentLength?: string | null
+    formality?: string | null
+    emotionalExpression?: string | null
+    vocabulary?: string | null
+    engagementStyle?: string | null
+    subscriptionTier?: $Enums.SubscriptionTier
+    subscriptionStatus?: string | null
+    subscriptionExpiresAt?: Date | string | null
+    subscriptionCreatedAt?: Date | string | null
+    monthlyGenerationLimit?: number
+    monthlyGenerationsUsed?: number
+    generationResetDate?: Date | string | null
+    stripeCustomerId?: string | null
+    stripeSubscriptionId?: string | null
+    stripePriceId?: string | null
+    hasCompletedOnboarding?: boolean
+    onboardingStep?: number | null
+    onboardingCompletedAt?: Date | string | null
+    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
+    sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
+    events?: AnalyticsEventUncheckedCreateNestedManyWithoutUserInput
+    pageViews?: PageViewUncheckedCreateNestedManyWithoutUserInput
+    chatAnalytics?: ChatAnalyticsUncheckedCreateNestedManyWithoutUserInput
+    createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
+    editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
+    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutGenerationsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutGenerationsInput, UserUncheckedCreateWithoutGenerationsInput>
+  }
+
+  export type ArticleCreateWithoutGenerationsInput = {
+    id?: string
+    title: string
+    summary?: string | null
+    content?: string | null
+    contentType?: string
+    articleTopic?: string | null
+    category?: string | null
+    tags?: ArticleCreatetagsInput | string[]
+    defaultKeyInsights?: ArticleCreatedefaultKeyInsightsInput | string[]
+    defaultVideoScript?: string | null
+    defaultEmailTemplate?: string | null
+    defaultSocialContent?: NullableJsonNullValueInput | InputJsonValue
+    position?: number
+    imageUrl?: string | null
+    sourceUrl?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    status?: $Enums.ArticleStatus
+    publishedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    rejectionReason?: string | null
+    reviewNotes?: string | null
+    createdBy?: UserCreateNestedOneWithoutCreatedArticlesInput
+    lastEditedBy?: UserCreateNestedOneWithoutEditedArticlesInput
+    personalizations?: PersonalizedOutputCreateNestedManyWithoutArticleInput
+  }
+
+  export type ArticleUncheckedCreateWithoutGenerationsInput = {
+    id?: string
+    title: string
+    summary?: string | null
+    content?: string | null
+    contentType?: string
+    articleTopic?: string | null
+    category?: string | null
+    tags?: ArticleCreatetagsInput | string[]
+    defaultKeyInsights?: ArticleCreatedefaultKeyInsightsInput | string[]
+    defaultVideoScript?: string | null
+    defaultEmailTemplate?: string | null
+    defaultSocialContent?: NullableJsonNullValueInput | InputJsonValue
+    position?: number
+    imageUrl?: string | null
+    sourceUrl?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    status?: $Enums.ArticleStatus
+    publishedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    submittedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    rejectionReason?: string | null
+    reviewNotes?: string | null
+    createdByAdminId?: string | null
+    lastEditedByAdminId?: string | null
+    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutArticleInput
+  }
+
+  export type ArticleCreateOrConnectWithoutGenerationsInput = {
+    where: ArticleWhereUniqueInput
+    create: XOR<ArticleCreateWithoutGenerationsInput, ArticleUncheckedCreateWithoutGenerationsInput>
+  }
+
+  export type UserUpsertWithoutGenerationsInput = {
+    update: XOR<UserUpdateWithoutGenerationsInput, UserUncheckedUpdateWithoutGenerationsInput>
+    create: XOR<UserCreateWithoutGenerationsInput, UserUncheckedCreateWithoutGenerationsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutGenerationsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutGenerationsInput, UserUncheckedUpdateWithoutGenerationsInput>
+  }
+
+  export type UserUpdateWithoutGenerationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    kindeId?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+    subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    monthlyGenerationLimit?: IntFieldUpdateOperationsInput | number
+    monthlyGenerationsUsed?: IntFieldUpdateOperationsInput | number
+    generationResetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    stripeCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripeSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePriceId?: NullableStringFieldUpdateOperationsInput | string | null
+    hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
+    onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
+    onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    likes?: LikeUpdateManyWithoutUserNestedInput
+    sessions?: UserSessionUpdateManyWithoutUserNestedInput
+    events?: AnalyticsEventUpdateManyWithoutUserNestedInput
+    pageViews?: PageViewUpdateManyWithoutUserNestedInput
+    chatAnalytics?: ChatAnalyticsUpdateManyWithoutUserNestedInput
+    createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
+    editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
+    personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutGenerationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    kindeId?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
+    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
+    humor?: NullableStringFieldUpdateOperationsInput | string | null
+    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
+    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
+    formality?: NullableStringFieldUpdateOperationsInput | string | null
+    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
+    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
+    subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    monthlyGenerationLimit?: IntFieldUpdateOperationsInput | number
+    monthlyGenerationsUsed?: IntFieldUpdateOperationsInput | number
+    generationResetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    stripeCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripeSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePriceId?: NullableStringFieldUpdateOperationsInput | string | null
+    hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
+    onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
+    onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
+    events?: AnalyticsEventUncheckedUpdateManyWithoutUserNestedInput
+    pageViews?: PageViewUncheckedUpdateManyWithoutUserNestedInput
+    chatAnalytics?: ChatAnalyticsUncheckedUpdateManyWithoutUserNestedInput
+    createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+    editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
+    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ArticleUpsertWithoutGenerationsInput = {
+    update: XOR<ArticleUpdateWithoutGenerationsInput, ArticleUncheckedUpdateWithoutGenerationsInput>
+    create: XOR<ArticleCreateWithoutGenerationsInput, ArticleUncheckedCreateWithoutGenerationsInput>
+    where?: ArticleWhereInput
+  }
+
+  export type ArticleUpdateToOneWithWhereWithoutGenerationsInput = {
+    where?: ArticleWhereInput
+    data: XOR<ArticleUpdateWithoutGenerationsInput, ArticleUncheckedUpdateWithoutGenerationsInput>
+  }
+
+  export type ArticleUpdateWithoutGenerationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentType?: StringFieldUpdateOperationsInput | string
+    articleTopic?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: ArticleUpdatetagsInput | string[]
+    defaultKeyInsights?: ArticleUpdatedefaultKeyInsightsInput | string[]
+    defaultVideoScript?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultEmailTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultSocialContent?: NullableJsonNullValueInput | InputJsonValue
+    position?: IntFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: UserUpdateOneWithoutCreatedArticlesNestedInput
+    lastEditedBy?: UserUpdateOneWithoutEditedArticlesNestedInput
+    personalizations?: PersonalizedOutputUpdateManyWithoutArticleNestedInput
+  }
+
+  export type ArticleUncheckedUpdateWithoutGenerationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentType?: StringFieldUpdateOperationsInput | string
+    articleTopic?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: ArticleUpdatetagsInput | string[]
+    defaultKeyInsights?: ArticleUpdatedefaultKeyInsightsInput | string[]
+    defaultVideoScript?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultEmailTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultSocialContent?: NullableJsonNullValueInput | InputJsonValue
+    position?: IntFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastEditedByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
+    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutArticleNestedInput
   }
 
   export type LikeCreateManyUserInput = {
@@ -22542,6 +25408,18 @@ export namespace Prisma {
     generationCount?: number
     lastGeneratedAt?: Date | string
     createdAt?: Date | string
+  }
+
+  export type GenerationCreateManyUserInput = {
+    id?: string
+    articleId: string
+    contentType: $Enums.GenerationContentType
+    platform?: $Enums.SocialPlatform | null
+    content?: string | null
+    contentArray?: GenerationCreatecontentArrayInput | string[]
+    tokensUsed?: number | null
+    generatedAt?: Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type LikeUpdateWithoutUserInput = {
@@ -22781,6 +25659,7 @@ export namespace Prisma {
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedBy?: UserUpdateOneWithoutEditedArticlesNestedInput
     personalizations?: PersonalizedOutputUpdateManyWithoutArticleNestedInput
+    generations?: GenerationUpdateManyWithoutArticleNestedInput
   }
 
   export type ArticleUncheckedUpdateWithoutCreatedByInput = {
@@ -22810,6 +25689,7 @@ export namespace Prisma {
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
     personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutArticleNestedInput
+    generations?: GenerationUncheckedUpdateManyWithoutArticleNestedInput
   }
 
   export type ArticleUncheckedUpdateManyWithoutCreatedByInput = {
@@ -22867,6 +25747,7 @@ export namespace Prisma {
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: UserUpdateOneWithoutCreatedArticlesNestedInput
     personalizations?: PersonalizedOutputUpdateManyWithoutArticleNestedInput
+    generations?: GenerationUpdateManyWithoutArticleNestedInput
   }
 
   export type ArticleUncheckedUpdateWithoutLastEditedByInput = {
@@ -22896,6 +25777,7 @@ export namespace Prisma {
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
     personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutArticleNestedInput
+    generations?: GenerationUncheckedUpdateManyWithoutArticleNestedInput
   }
 
   export type ArticleUncheckedUpdateManyWithoutLastEditedByInput = {
@@ -22966,6 +25848,42 @@ export namespace Prisma {
     generationCount?: IntFieldUpdateOperationsInput | number
     lastGeneratedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GenerationUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    contentType?: EnumGenerationContentTypeFieldUpdateOperationsInput | $Enums.GenerationContentType
+    platform?: NullableEnumSocialPlatformFieldUpdateOperationsInput | $Enums.SocialPlatform | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentArray?: GenerationUpdatecontentArrayInput | string[]
+    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
+    generatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    article?: ArticleUpdateOneRequiredWithoutGenerationsNestedInput
+  }
+
+  export type GenerationUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    articleId?: StringFieldUpdateOperationsInput | string
+    contentType?: EnumGenerationContentTypeFieldUpdateOperationsInput | $Enums.GenerationContentType
+    platform?: NullableEnumSocialPlatformFieldUpdateOperationsInput | $Enums.SocialPlatform | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentArray?: GenerationUpdatecontentArrayInput | string[]
+    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
+    generatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type GenerationUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    articleId?: StringFieldUpdateOperationsInput | string
+    contentType?: EnumGenerationContentTypeFieldUpdateOperationsInput | $Enums.GenerationContentType
+    platform?: NullableEnumSocialPlatformFieldUpdateOperationsInput | $Enums.SocialPlatform | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentArray?: GenerationUpdatecontentArrayInput | string[]
+    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
+    generatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type LikeCreateManyPostInput = {
@@ -23190,6 +26108,18 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type GenerationCreateManyArticleInput = {
+    id?: string
+    userId: string
+    contentType: $Enums.GenerationContentType
+    platform?: $Enums.SocialPlatform | null
+    content?: string | null
+    contentArray?: GenerationCreatecontentArrayInput | string[]
+    tokensUsed?: number | null
+    generatedAt?: Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+  }
+
   export type PersonalizedOutputUpdateWithoutArticleInput = {
     id?: StringFieldUpdateOperationsInput | string
     personalizedKeyInsights?: PersonalizedOutputUpdatepersonalizedKeyInsightsInput | string[]
@@ -23230,6 +26160,42 @@ export namespace Prisma {
     generationCount?: IntFieldUpdateOperationsInput | number
     lastGeneratedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GenerationUpdateWithoutArticleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    contentType?: EnumGenerationContentTypeFieldUpdateOperationsInput | $Enums.GenerationContentType
+    platform?: NullableEnumSocialPlatformFieldUpdateOperationsInput | $Enums.SocialPlatform | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentArray?: GenerationUpdatecontentArrayInput | string[]
+    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
+    generatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    user?: UserUpdateOneRequiredWithoutGenerationsNestedInput
+  }
+
+  export type GenerationUncheckedUpdateWithoutArticleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    contentType?: EnumGenerationContentTypeFieldUpdateOperationsInput | $Enums.GenerationContentType
+    platform?: NullableEnumSocialPlatformFieldUpdateOperationsInput | $Enums.SocialPlatform | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentArray?: GenerationUpdatecontentArrayInput | string[]
+    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
+    generatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type GenerationUncheckedUpdateManyWithoutArticleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    contentType?: EnumGenerationContentTypeFieldUpdateOperationsInput | $Enums.GenerationContentType
+    platform?: NullableEnumSocialPlatformFieldUpdateOperationsInput | $Enums.SocialPlatform | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentArray?: GenerationUpdatecontentArrayInput | string[]
+    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
+    generatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
   }
 
 

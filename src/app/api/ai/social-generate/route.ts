@@ -303,6 +303,60 @@ export async function POST(req: NextRequest) {
 
             const duration = Date.now() - startTime;
 
+            // Save successful generation to database (if authenticated)
+            if (isAuthenticated && user) {
+              try {
+                // Get TrueTone snapshot
+                const { data: userProfile } = await supabase
+                  .from('users')
+                  .select('tone_of_voice, formality, humor, emotional_expression, detail_orientation, vocabulary, content_length, engagement_style')
+                  .eq('id', user.id)
+                  .single();
+
+                const truetoneSnapshot = userProfile ? {
+                  tone_of_voice: userProfile.tone_of_voice,
+                  formality: userProfile.formality,
+                  humor: userProfile.humor,
+                  emotional_expression: userProfile.emotional_expression,
+                  detail_orientation: userProfile.detail_orientation,
+                  vocabulary: userProfile.vocabulary,
+                  content_length: userProfile.content_length,
+                  engagement_style: userProfile.engagement_style
+                } : null;
+
+                // Map platform to database enum
+                const platformMap: Record<SocialPlatform, string> = {
+                  'facebook': 'FACEBOOK',
+                  'instagram': 'INSTAGRAM',
+                  'twitter': 'TWITTER',
+                  'linkedin': 'LINKEDIN'
+                };
+
+                // Save to generations table
+                await supabase
+                  .from('generations')
+                  .upsert({
+                    user_id: user.id,
+                    article_id: articleId,
+                    content_type: 'SOCIAL_MEDIA',
+                    platform: platformMap[platform],
+                    content: fullContent,
+                    content_array: [],
+                    tokens_used: result.usage ? result.usage.totalTokens : 0,
+                    generated_at: new Date().toISOString(),
+                    truetone_snapshot: truetoneSnapshot
+                  }, {
+                    onConflict: 'user_id,article_id,content_type,platform',
+                    ignoreDuplicates: false
+                  });
+
+                console.log(`[SocialGenerate] Saved ${platform} generation to database`);
+              } catch (saveError) {
+                console.error(`[SocialGenerate] Failed to save ${platform} generation:`, saveError);
+                // Don't fail the whole generation if save fails
+              }
+            }
+
             // Track result
             generationResults.push({
               platform,

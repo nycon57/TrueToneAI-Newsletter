@@ -88,39 +88,48 @@ export function SubscriptionStep() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 py-8">
-      <Card className="shadow-lg">
-        <CardContent className="p-8">
-          <CardHeader className="text-center pb-6">
-            <CardTitle className="text-2xl font-heading font-bold mb-2">Choose Your Plan</CardTitle>
-            <CardDescription className="text-base">
-              Select a plan to unlock Spark&apos;s curated content and AI-powered personalization
+    <div className="w-full max-w-6xl mx-auto px-4 py-6">
+      <Card className="shadow-lg border-2 border-orchid/20">
+        <CardContent className="p-6 sm:p-8">
+          <div className="text-center mb-8">
+            <CardTitle className="text-3xl font-heading font-bold mb-2 text-gray-900">Choose Your Plan</CardTitle>
+            <CardDescription className="text-base text-gray-700">
+              Start creating personalized content today with AI-powered insights
             </CardDescription>
-          </CardHeader>
+          </div>
 
-          <div className="space-y-6">
-            {/* Free Trial Option */}
-            <div className="border rounded-lg p-6 bg-skyward/5 border-skyward/20">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-heading font-semibold">Free Trial</h3>
-                <div className="text-right">
-                  <div className="text-2xl font-heading font-bold">$0</div>
-                  <div className="text-sm text-muted-foreground">14 days, then $29/mo</div>
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            {/* Free Plan */}
+            <div className="border-2 rounded-xl p-6 bg-white border-gray-200 hover:border-gray-300 transition-all h-full flex flex-col">
+              <div className="mb-4 mt-4">
+                <h3 className="text-2xl font-heading font-bold text-gray-900 mb-1">Free</h3>
+                <div className="flex items-baseline gap-1 mb-2">
+                  <span className="text-4xl font-heading font-bold text-gray-900">$0</span>
+                  <span className="text-gray-600">/month</span>
                 </div>
+                <p className="text-sm text-gray-600">Perfect for getting started</p>
               </div>
 
-              <ul className="space-y-2 mb-6">
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-skyward" />
-                  <span className="text-sm">Basic newsletter content</span>
+              <ul className="space-y-3 mb-6 flex-grow">
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-skyward mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">Access to 3 latest articles per week</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-skyward" />
-                  <span className="text-sm">Limited content personalization</span>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-skyward mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">Read curated sales & mortgage insights</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-skyward" />
-                  <span className="text-sm">Standard support</span>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-skyward mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">Community support</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-gray-300 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-400 line-through">AI-powered content generation</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-gray-300 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-400 line-through">Full article archive access</span>
                 </li>
               </ul>
 
@@ -128,136 +137,98 @@ export function SubscriptionStep() {
                 onClick={handleCompleteFreeTrial}
                 disabled={isSubmitting || isProcessing}
                 variant="outline"
-                className="w-full border-skyward text-skyward hover:bg-skyward hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full border-2 border-gray-300 text-gray-900 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isProcessing ? (
                   <>
                     <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    Starting Trial...
+                    Getting Started...
                   </>
                 ) : (
-                  'Start Free Trial'
+                  'Get Started Free'
                 )}
               </Button>
             </div>
 
-            {/* Newsletter Pro Plan */}
-            <div className="border-2 rounded-lg p-6 bg-orchid/5 border-orchid relative">
+            {/* Spark Pro Plan */}
+            <div className="border-4 rounded-xl p-6 bg-gradient-to-br from-orchid/10 via-indigo/5 to-white border-orchid relative h-full flex flex-col shadow-xl">
               {/* Popular badge */}
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="bg-orchid text-white px-4 py-1 rounded-full text-sm font-medium">
-                  Most Popular
+              <div className="absolute -top-3.5 left-1/2 transform -translate-x-1/2 z-10">
+                <span className="bg-gradient-to-r from-orchid to-indigo text-white px-6 py-1.5 rounded-full text-xs font-bold shadow-lg uppercase tracking-wide">
+                  ⭐ Recommended
                 </span>
               </div>
 
-              <div className="flex items-center justify-between mb-4 mt-2">
-                <h3 className="text-xl font-heading font-semibold">Newsletter Pro</h3>
-                <div className="text-right">
-                  <div className="text-2xl font-heading font-bold">$29</div>
-                  <div className="text-sm text-muted-foreground">per month</div>
+              <div className="mb-4 mt-4">
+                <h3 className="text-2xl font-heading font-bold text-gray-900 mb-1">Spark Pro</h3>
+                <div className="flex items-baseline gap-1 mb-2">
+                  <span className="text-4xl font-heading font-bold bg-gradient-to-r from-orchid to-indigo bg-clip-text text-transparent">$29</span>
+                  <span className="text-gray-600">/month</span>
                 </div>
+                <p className="text-sm font-semibold text-orchid">🎁 7-day free trial included</p>
               </div>
 
-              <ul className="space-y-2 mb-6">
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-orchid" />
-                  <span className="text-sm">Personalized newsletter content</span>
+              <ul className="space-y-3 mb-6 flex-grow">
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-orchid mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700"><strong>Unlimited access</strong> to full article archive</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-orchid" />
-                  <span className="text-sm">AI-powered content recommendations</span>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-orchid mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700"><strong>AI-powered content generation</strong> for emails, videos & social</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-orchid" />
-                  <span className="text-sm">Voice-based personalization</span>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-orchid mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700"><strong>Voice analysis & personalization</strong> - content in your unique style</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-orchid" />
-                  <span className="text-sm">Easy-to-copy marketing content</span>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-orchid mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700"><strong>One-click copy</strong> to instantly use in your marketing</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-orchid" />
-                  <span className="text-sm">Priority customer support</span>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-orchid mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700"><strong>Advanced filters</strong> by content type, platform & date</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-orchid mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700"><strong>Priority support</strong> - get help when you need it</span>
                 </li>
               </ul>
 
               <Button
                 onClick={() => handleSelectPlan('newsletter_pro')}
                 disabled={isSubmitting || isProcessing}
-                className="w-full bg-orchid hover:bg-orchid/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-orchid to-indigo hover:from-orchid/90 hover:to-indigo/90 text-white font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-base py-6"
               >
-                <CreditCard className="h-4 w-4 mr-2" />
-                Choose Pro Plan
+                <CreditCard className="h-5 w-5 mr-2" />
+                Start 7-Day Free Trial
               </Button>
-            </div>
-
-            {/* Enterprise Plan */}
-            <div className="border rounded-lg p-6 bg-shadow/5 border-shadow/20">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-heading font-semibold">Enterprise</h3>
-                <div className="text-right">
-                  <div className="text-2xl font-heading font-bold">$99</div>
-                  <div className="text-sm text-muted-foreground">per month</div>
-                </div>
-              </div>
-
-              <ul className="space-y-2 mb-6">
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-shadow" />
-                  <span className="text-sm">Everything in Pro</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-shadow" />
-                  <span className="text-sm">Custom branding options</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-shadow" />
-                  <span className="text-sm">Advanced analytics</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-shadow" />
-                  <span className="text-sm">White-label solutions</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-shadow" />
-                  <span className="text-sm">Dedicated account manager</span>
-                </li>
-              </ul>
-
-              <Button
-                onClick={() => handleSelectPlan('newsletter_enterprise')}
-                disabled={isSubmitting || isProcessing}
-                variant="outline"
-                className="w-full border-shadow text-shadow hover:bg-shadow hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <CreditCard className="h-4 w-4 mr-2" />
-                Choose Enterprise
-              </Button>
-            </div>
-
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-4">
-                By continuing, you agree to our Terms of Service and Privacy Policy.
-                You can cancel anytime. Billing is securely processed by Stripe.
+              <p className="text-xs text-center text-gray-600 mt-3">
+                Cancel anytime • No credit card required for trial
               </p>
             </div>
           </div>
 
-          <div className="flex justify-between pt-6">
+          <div className="text-center border-t border-gray-200 pt-6">
+            <p className="text-sm text-gray-600 mb-2">
+              By continuing, you agree to our Terms of Service and Privacy Policy.
+            </p>
+            <p className="text-xs text-gray-500">
+              🔒 Secure payment processing by Stripe • Cancel anytime, no questions asked
+            </p>
+          </div>
+
+          <div className="flex justify-center pt-6">
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               onClick={previousStep}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
               disabled={isSubmitting || isProcessing}
             >
               <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
-
-            <div className="text-sm text-muted-foreground">
-              Choose a plan above to continue
-            </div>
           </div>
         </CardContent>
       </Card>

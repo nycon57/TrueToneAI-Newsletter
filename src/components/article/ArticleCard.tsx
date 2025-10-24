@@ -11,6 +11,7 @@ import { CopyButton } from './CopyButton';
 import { AIGenerationPanel } from '@/components/ai/AIGenerationPanel';
 import { SocialMediaGenerationPanel } from '@/components/ai/SocialMediaGenerationPanel';
 import { GenerationLimitBadge } from '@/components/ai/GenerationLimitBadge';
+import { GenerationCountBadge, ContentTypeIndicators } from './GenerationCountBadge';
 import { cn } from '@/lib/utils';
 
 interface Article {
@@ -34,6 +35,14 @@ interface Article {
   tier: string;
   is_saved?: boolean;
   published_at: string;
+  generation_stats?: {
+    total: number;
+    hasKeyInsights: boolean;
+    hasVideoScript: boolean;
+    hasEmailTemplate: boolean;
+    hasSocialMedia: boolean;
+    socialPlatforms: string[];
+  };
 }
 
 interface ArticleCardProps {
@@ -132,15 +141,17 @@ export function ArticleCard({ article, isAuthenticated, isPaid, userGenerationSt
           </div>
         </div>
 
-        {/* AI Generation Panel */}
-        <AIGenerationPanel
-          articleId={article.id}
-          contentType="key_insights"
-          userTier={isPaid ? 'paid' : 'free'}
-          remainingGenerations={generationStats.remaining}
-          initialContent={cachedGenerations['key_insights']}
-          onContentGenerated={(content) => handleGenerationSave('key_insights', content)}
-        />
+        {/* AI Generation Panel - Only show for authenticated users */}
+        {isAuthenticated && (
+          <AIGenerationPanel
+            articleId={article.id}
+            contentType="key_insights"
+            userTier={isPaid ? 'paid' : 'free'}
+            remainingGenerations={generationStats.remaining}
+            initialContent={cachedGenerations['key_insights']}
+            onContentGenerated={(content) => handleGenerationSave('key_insights', content)}
+          />
+        )}
       </motion.div>
     );
   };
@@ -177,15 +188,17 @@ export function ArticleCard({ article, isAuthenticated, isPaid, userGenerationSt
         </div>
       </div>
 
-      {/* AI Generation Panel */}
-      <AIGenerationPanel
-        articleId={article.id}
-        contentType="video_script"
-        userTier={isPaid ? 'paid' : 'free'}
-        remainingGenerations={generationStats.remaining}
-        initialContent={cachedGenerations['video_script']}
-        onContentGenerated={(content) => handleGenerationSave('video_script', content)}
-      />
+      {/* AI Generation Panel - Only show for authenticated users */}
+      {isAuthenticated && (
+        <AIGenerationPanel
+          articleId={article.id}
+          contentType="video_script"
+          userTier={isPaid ? 'paid' : 'free'}
+          remainingGenerations={generationStats.remaining}
+          initialContent={cachedGenerations['video_script']}
+          onContentGenerated={(content) => handleGenerationSave('video_script', content)}
+        />
+      )}
     </motion.div>
   );
 
@@ -220,15 +233,17 @@ export function ArticleCard({ article, isAuthenticated, isPaid, userGenerationSt
         </div>
       </div>
 
-      {/* AI Generation Panel */}
-      <AIGenerationPanel
-        articleId={article.id}
-        contentType="email_template"
-        userTier={isPaid ? 'paid' : 'free'}
-        remainingGenerations={generationStats.remaining}
-        initialContent={cachedGenerations['email_template']}
-        onContentGenerated={(content) => handleGenerationSave('email_template', content)}
-      />
+      {/* AI Generation Panel - Only show for authenticated users */}
+      {isAuthenticated && (
+        <AIGenerationPanel
+          articleId={article.id}
+          contentType="email_template"
+          userTier={isPaid ? 'paid' : 'free'}
+          remainingGenerations={generationStats.remaining}
+          initialContent={cachedGenerations['email_template']}
+          onContentGenerated={(content) => handleGenerationSave('email_template', content)}
+        />
+      )}
     </motion.div>
   );
 
@@ -291,20 +306,22 @@ export function ArticleCard({ article, isAuthenticated, isPaid, userGenerationSt
           </div>
         )}
 
-        {/* New Platform-Specific AI Generation Panel */}
-        <SocialMediaGenerationPanel
-          articleId={article.id}
-          userTier={isPaid ? 'paid' : 'free'}
-          remainingGenerations={generationStats.remaining}
-          initialResults={
-            cachedGenerations['social_platforms']
-              ? (typeof cachedGenerations['social_platforms'] === 'string'
-                  ? JSON.parse(cachedGenerations['social_platforms'])
-                  : cachedGenerations['social_platforms'])
-              : undefined
-          }
-          onContentGenerated={(results) => handleGenerationSave('social_platforms', JSON.stringify(results))}
-        />
+        {/* New Platform-Specific AI Generation Panel - Only show for authenticated users */}
+        {isAuthenticated && (
+          <SocialMediaGenerationPanel
+            articleId={article.id}
+            userTier={isPaid ? 'paid' : 'free'}
+            remainingGenerations={generationStats.remaining}
+            initialResults={
+              cachedGenerations['social_platforms']
+                ? (typeof cachedGenerations['social_platforms'] === 'string'
+                    ? JSON.parse(cachedGenerations['social_platforms'])
+                    : cachedGenerations['social_platforms'])
+                : undefined
+            }
+            onContentGenerated={(results) => handleGenerationSave('social_platforms', JSON.stringify(results))}
+          />
+        )}
       </motion.div>
     );
   };
@@ -339,6 +356,14 @@ export function ArticleCard({ article, isAuthenticated, isPaid, userGenerationSt
                 </Badge>
               )}
 
+              {/* Generation Count Badge - Show total generations */}
+              {isPaid && article.generation_stats && article.generation_stats.total > 0 && (
+                <GenerationCountBadge
+                  count={article.generation_stats.total}
+                  className="ml-auto"
+                />
+              )}
+
               {/* Generation Limit Badge */}
               {isAuthenticated && (
                 <GenerationLimitBadge
@@ -349,6 +374,18 @@ export function ArticleCard({ article, isAuthenticated, isPaid, userGenerationSt
                 />
               )}
             </div>
+
+            {/* Content Type Indicators - Show which types have been generated */}
+            {isPaid && article.generation_stats && article.generation_stats.total > 0 && (
+              <ContentTypeIndicators
+                hasKeyInsights={article.generation_stats.hasKeyInsights}
+                hasVideoScript={article.generation_stats.hasVideoScript}
+                hasEmailTemplate={article.generation_stats.hasEmailTemplate}
+                hasSocialMedia={article.generation_stats.hasSocialMedia}
+                socialPlatformCount={article.generation_stats.socialPlatforms?.length || 0}
+                className="mt-2"
+              />
+            )}
           </div>
           {isPaid && (
             <SaveButton

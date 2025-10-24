@@ -35,6 +35,16 @@ model User {
   categoryPreferences String[] @default([]) @map("category_preferences") /// User's preferred content categories
   savedArticleIds     String[] @default([]) @map("saved_article_ids") /// IDs of articles saved by the user
 
+  // TrueTone characteristics
+  toneOfVoice         String? @default("Friendly") @map("tone_of_voice") /// TrueTone: Tone of Voice characteristic
+  humor               String? @default("Dry") @map("humor") /// TrueTone: Humor characteristic
+  detailOrientation   String? @default("Comprehensive") @map("detail_orientation") /// TrueTone: Detail Orientation characteristic
+  contentLength       String? @default("Thorough") @map("content_length") /// TrueTone: Content Length characteristic
+  formality           String? @default("Professional") @map("formality") /// TrueTone: Formality characteristic
+  emotionalExpression String? @default("Reserved") @map("emotional_expression") /// TrueTone: Emotional Expression characteristic
+  vocabulary          String? @default("Sophisticated") @map("vocabulary") /// TrueTone: Vocabulary characteristic
+  engagementStyle     String? @default("Interactive") @map("engagement_style") /// TrueTone: Engagement Style characteristic
+
   // Subscription fields
   subscriptionTier       SubscriptionTier @default(FREE) @map("subscription_tier") /// User's subscription level
   subscriptionStatus     String?          @map("subscription_status") /// Current subscription status (active, trialing, canceled, etc.)
@@ -63,6 +73,7 @@ model User {
   createdArticles  Article[]            @relation("ArticleCreator") /// Articles created by this admin user
   editedArticles   Article[]            @relation("ArticleEditor") /// Articles last edited by this admin user
   personalizations PersonalizedOutput[] /// User's personalized content outputs
+  generations      Generation[] /// User's AI-generated content
 
   // Indexes for performance
   @@index([kindeId])
@@ -124,6 +135,22 @@ enum ArticleStatus {
   DRAFT /// Article is in draft mode
   PUBLISHED /// Article is published and visible
   ARCHIVED /// Article is archived
+}
+
+/// Enum defining generation content types
+enum GenerationContentType {
+  KEY_INSIGHTS /// Key insights content
+  VIDEO_SCRIPT /// Video script content
+  EMAIL_TEMPLATE /// Email template content
+  SOCIAL_MEDIA /// Social media content
+}
+
+/// Enum defining social media platforms
+enum SocialPlatform {
+  FACEBOOK /// Facebook platform
+  INSTAGRAM /// Instagram platform
+  TWITTER /// Twitter/X platform
+  LINKEDIN /// LinkedIn platform
 }
 
 /// Like model represents user engagement with content
@@ -315,6 +342,7 @@ model Article {
 
   // Relations
   personalizations PersonalizedOutput[] /// User personalizations of this article
+  generations      Generation[] /// AI-generated content for this article
 
   // Indexes for performance
   @@index([status, publishedAt]) /// Published articles lookup
@@ -356,6 +384,42 @@ model PersonalizedOutput {
   @@index([articleId]) /// Article personalizations lookup
   @@index([lastGeneratedAt]) /// Recent generations lookup
   @@map("personalized_outputs")
+}
+
+/// Generation model represents individual AI-generated content pieces
+/// Each generation is a separate record for better querying and filtering
+/// Maps to "generations" table in the database
+model Generation {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid /// Unique identifier for the generation
+  userId    String @db.Uuid /// User who owns this generation
+  articleId String @db.Uuid /// Article this generation is based on
+
+  // Content identification
+  contentType GenerationContentType /// Type of content generated
+  platform    SocialPlatform? /// Social media platform (only for SOCIAL_MEDIA type)
+
+  // The generated content
+  content      String? /// Text content (for scripts, emails, social posts)
+  contentArray String[] @default([]) /// Array content (for key insights)
+
+  // Metadata
+  tokensUsed  Int? /// AI tokens consumed for this generation
+  generatedAt DateTime @default(now()) /// When this generation was created
+
+  // TrueTone snapshot at generation time
+  truetoneSnapshot Json? @db.JsonB /// TrueTone settings used for generation
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  // Performance indexes for filtering
+  @@index([userId, generatedAt(sort: Desc)]) /// User's generations sorted by date
+  @@index([userId, contentType]) /// Filter by user and content type
+  @@index([userId, contentType, platform]) /// Filter by user, type, and platform
+  @@index([userId, articleId]) /// User's generations for specific article
+  @@index([articleId, contentType, platform]) /// Article's generations by type and platform
+  @@map("generations")
 }
 
 /// AnonymousAiUsage model tracks AI generation usage for non-authenticated users

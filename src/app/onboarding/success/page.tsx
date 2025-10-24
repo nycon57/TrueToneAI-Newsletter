@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ import { motion } from 'motion/react';
 
 type VerificationStatus = 'loading' | 'success' | 'error' | 'pending';
 
-export default function OnboardingSuccessPage() {
+function OnboardingSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<VerificationStatus>('loading');
@@ -356,5 +356,26 @@ export default function OnboardingSuccessPage() {
         </Card>
       </motion.div>
     </div>
+  );
+}
+
+export default function OnboardingSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="max-w-md mx-auto text-center">
+          <Card className="p-8">
+            <CardContent className="space-y-4">
+              <Loader2 className="h-12 w-12 animate-spin mx-auto text-orchid" />
+              <h2 className="text-xl font-heading font-semibold text-foreground">
+                Loading...
+              </h2>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    }>
+      <OnboardingSuccessContent />
+    </Suspense>
   );
 }

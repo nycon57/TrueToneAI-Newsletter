@@ -16,6 +16,12 @@ export type { SupportNotificationEmailProps } from './support-notification';
 export { WelcomeEmail } from './welcome';
 export type { WelcomeEmailProps } from './welcome';
 
+export { OnboardingCompleteEmail } from './onboarding-complete';
+export type { OnboardingCompleteEmailProps } from './onboarding-complete';
+
+export { TrialExpiringEmail } from './trial-expiring';
+export type { TrialExpiringEmailProps } from './trial-expiring';
+
 // Subscription Templates
 export { SubscriptionCreatedEmail } from './subscription-created';
 export type { SubscriptionCreatedEmailProps } from './subscription-created';
