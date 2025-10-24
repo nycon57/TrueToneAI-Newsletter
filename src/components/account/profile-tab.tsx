@@ -25,24 +25,17 @@ import { toast } from 'sonner';
 import type { ApiUser } from '@/lib/api/auth-cached';
 import { motion, AnimatePresence } from 'motion/react';
 import { AvatarCropModal } from './avatar-crop-modal';
+import { ContentPreferencesSection } from './content-preferences-section';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
   company: z.string().optional(),
   categoryPreferences: z.array(z.string()).min(1, 'Select at least one category'),
+  tagPreferences: z.array(z.string()),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
-
-const contentCategories = [
-  { id: 'rate_alert', label: 'Rate Alerts', description: 'Federal Reserve updates and rate changes' },
-  { id: 'program_update', label: 'Program Updates', description: 'FHA, VA, and loan program changes' },
-  { id: 'credit_update', label: 'Credit Updates', description: 'Credit scoring and qualification news' },
-  { id: 'market_trends', label: 'Market Trends', description: 'Housing market insights and forecasts' },
-  { id: 'compliance', label: 'Compliance', description: 'Regulatory updates and compliance news' },
-  { id: 'technology', label: 'Technology', description: 'Fintech and mortgage technology updates' },
-];
 
 interface ProfileTabProps {
   user: ApiUser;
@@ -74,18 +67,20 @@ export function ProfileTab({ user }: ProfileTabProps) {
       email: user.email || '',
       company: user.company || '',
       categoryPreferences: user.category_preferences || [],
+      tagPreferences: user.tag_preferences || [],
     },
   });
 
   const categoryPreferences = watch('categoryPreferences') || [];
+  const tagPreferences = watch('tagPreferences') || [];
 
-  const handleCategoryToggle = useCallback((categoryId: string) => {
-    const current = categoryPreferences || [];
-    const newPreferences = current.includes(categoryId)
-      ? current.filter((id) => id !== categoryId)
-      : [...current, categoryId];
-    setValue('categoryPreferences', newPreferences, { shouldDirty: true });
-  }, [categoryPreferences, setValue]);
+  const handleCategoryChange = useCallback((categories: string[]) => {
+    setValue('categoryPreferences', categories, { shouldDirty: true });
+  }, [setValue]);
+
+  const handleTagChange = useCallback((tags: string[]) => {
+    setValue('tagPreferences', tags, { shouldDirty: true });
+  }, [setValue]);
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
@@ -170,6 +165,7 @@ export function ProfileTab({ user }: ProfileTabProps) {
       formData.append('email', data.email);
       if (data.company) formData.append('company', data.company);
       formData.append('categoryPreferences', JSON.stringify(data.categoryPreferences));
+      formData.append('tagPreferences', JSON.stringify(data.tagPreferences));
 
       if (avatarBlob) {
         formData.append('avatar', avatarBlob, 'avatar.jpg');
@@ -358,54 +354,26 @@ export function ProfileTab({ user }: ProfileTabProps) {
               </div>
             </div>
 
-            {/* Category Preferences */}
+            {/* Content Preferences */}
             <div className="space-y-4 pt-6 border-t border-border">
               <div>
                 <h3 className="text-lg font-heading font-semibold mb-1">
                   Content Preferences
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Choose the topics you'd like to receive
+                  Choose categories and optionally refine with specific tags
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {contentCategories.map((category) => {
-                  const isChecked = categoryPreferences?.includes(category.id) || false;
-
-                  return (
-                    <div
-                      key={category.id}
-                      className={`flex items-start space-x-3 p-4 border rounded-lg transition-all ${
-                        isChecked
-                          ? 'bg-orchid/5 border-orchid/30'
-                          : 'hover:bg-muted/50 border-border'
-                      }`}
-                    >
-                      <Checkbox
-                        id={category.id}
-                        checked={isChecked}
-                        onCheckedChange={() => handleCategoryToggle(category.id)}
-                        className="mt-1"
-                      />
-                      <label
-                        htmlFor={category.id}
-                        className="flex-1 cursor-pointer"
-                      >
-                        <div className="font-medium">
-                          {category.label}
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-0.5">
-                          {category.description}
-                        </p>
-                      </label>
-                    </div>
-                  );
-                })}
-              </div>
+              <ContentPreferencesSection
+                selectedCategories={categoryPreferences}
+                selectedTags={tagPreferences}
+                onCategoryChange={handleCategoryChange}
+                onTagChange={handleTagChange}
+              />
 
               {errors.categoryPreferences && (
-                <p className="text-sm text-destructive">
+                <p className="text-sm text-destructive mt-2">
                   {errors.categoryPreferences.message}
                 </p>
               )}

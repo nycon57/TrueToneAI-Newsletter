@@ -2221,6 +2221,7 @@ export namespace Prisma {
     updatedAt: number
     kindeId: number
     categoryPreferences: number
+    tagPreferences: number
     savedArticleIds: number
     toneOfVoice: number
     humor: number
@@ -2339,6 +2340,7 @@ export namespace Prisma {
     updatedAt?: true
     kindeId?: true
     categoryPreferences?: true
+    tagPreferences?: true
     savedArticleIds?: true
     toneOfVoice?: true
     humor?: true
@@ -2462,6 +2464,7 @@ export namespace Prisma {
     updatedAt: Date
     kindeId: string | null
     categoryPreferences: string[]
+    tagPreferences: string[]
     savedArticleIds: string[]
     toneOfVoice: string | null
     humor: string | null
@@ -2517,6 +2520,7 @@ export namespace Prisma {
     updatedAt?: boolean
     kindeId?: boolean
     categoryPreferences?: boolean
+    tagPreferences?: boolean
     savedArticleIds?: boolean
     toneOfVoice?: boolean
     humor?: boolean
@@ -2563,6 +2567,7 @@ export namespace Prisma {
     updatedAt?: boolean
     kindeId?: boolean
     categoryPreferences?: boolean
+    tagPreferences?: boolean
     savedArticleIds?: boolean
     toneOfVoice?: boolean
     humor?: boolean
@@ -2599,6 +2604,7 @@ export namespace Prisma {
     updatedAt?: boolean
     kindeId?: boolean
     categoryPreferences?: boolean
+    tagPreferences?: boolean
     savedArticleIds?: boolean
     toneOfVoice?: boolean
     humor?: boolean
@@ -2635,6 +2641,7 @@ export namespace Prisma {
     updatedAt?: boolean
     kindeId?: boolean
     categoryPreferences?: boolean
+    tagPreferences?: boolean
     savedArticleIds?: boolean
     toneOfVoice?: boolean
     humor?: boolean
@@ -2659,7 +2666,7 @@ export namespace Prisma {
     onboardingCompletedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "firstName" | "lastName" | "email" | "company" | "avatar" | "createdAt" | "updatedAt" | "kindeId" | "categoryPreferences" | "savedArticleIds" | "toneOfVoice" | "humor" | "detailOrientation" | "contentLength" | "formality" | "emotionalExpression" | "vocabulary" | "engagementStyle" | "subscriptionTier" | "subscriptionStatus" | "subscriptionExpiresAt" | "subscriptionCreatedAt" | "monthlyGenerationLimit" | "monthlyGenerationsUsed" | "generationResetDate" | "stripeCustomerId" | "stripeSubscriptionId" | "stripePriceId" | "hasCompletedOnboarding" | "onboardingStep" | "onboardingCompletedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "firstName" | "lastName" | "email" | "company" | "avatar" | "createdAt" | "updatedAt" | "kindeId" | "categoryPreferences" | "tagPreferences" | "savedArticleIds" | "toneOfVoice" | "humor" | "detailOrientation" | "contentLength" | "formality" | "emotionalExpression" | "vocabulary" | "engagementStyle" | "subscriptionTier" | "subscriptionStatus" | "subscriptionExpiresAt" | "subscriptionCreatedAt" | "monthlyGenerationLimit" | "monthlyGenerationsUsed" | "generationResetDate" | "stripeCustomerId" | "stripeSubscriptionId" | "stripePriceId" | "hasCompletedOnboarding" | "onboardingStep" | "onboardingCompletedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     likes?: boolean | User$likesArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
@@ -2760,6 +2767,10 @@ export namespace Prisma {
        * User's preferred content categories
        */
       categoryPreferences: string[]
+      /**
+       * User's preferred content tags for refinement
+       */
+      tagPreferences: string[]
       /**
        * IDs of articles saved by the user
        */
@@ -3291,6 +3302,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly kindeId: FieldRef<"User", 'String'>
     readonly categoryPreferences: FieldRef<"User", 'String[]'>
+    readonly tagPreferences: FieldRef<"User", 'String[]'>
     readonly savedArticleIds: FieldRef<"User", 'String[]'>
     readonly toneOfVoice: FieldRef<"User", 'String'>
     readonly humor: FieldRef<"User", 'String'>
@@ -16319,6 +16331,7 @@ export namespace Prisma {
     updatedAt: 'updatedAt',
     kindeId: 'kindeId',
     categoryPreferences: 'categoryPreferences',
+    tagPreferences: 'tagPreferences',
     savedArticleIds: 'savedArticleIds',
     toneOfVoice: 'toneOfVoice',
     humor: 'humor',
@@ -16785,6 +16798,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     kindeId?: StringNullableFilter<"User"> | string | null
     categoryPreferences?: StringNullableListFilter<"User">
+    tagPreferences?: StringNullableListFilter<"User">
     savedArticleIds?: StringNullableListFilter<"User">
     toneOfVoice?: StringNullableFilter<"User"> | string | null
     humor?: StringNullableFilter<"User"> | string | null
@@ -16830,6 +16844,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     kindeId?: SortOrderInput | SortOrder
     categoryPreferences?: SortOrder
+    tagPreferences?: SortOrder
     savedArticleIds?: SortOrder
     toneOfVoice?: SortOrderInput | SortOrder
     humor?: SortOrderInput | SortOrder
@@ -16880,6 +16895,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     categoryPreferences?: StringNullableListFilter<"User">
+    tagPreferences?: StringNullableListFilter<"User">
     savedArticleIds?: StringNullableListFilter<"User">
     toneOfVoice?: StringNullableFilter<"User"> | string | null
     humor?: StringNullableFilter<"User"> | string | null
@@ -16923,6 +16939,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     kindeId?: SortOrderInput | SortOrder
     categoryPreferences?: SortOrder
+    tagPreferences?: SortOrder
     savedArticleIds?: SortOrder
     toneOfVoice?: SortOrderInput | SortOrder
     humor?: SortOrderInput | SortOrder
@@ -16967,6 +16984,7 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     kindeId?: StringNullableWithAggregatesFilter<"User"> | string | null
     categoryPreferences?: StringNullableListFilter<"User">
+    tagPreferences?: StringNullableListFilter<"User">
     savedArticleIds?: StringNullableListFilter<"User">
     toneOfVoice?: StringNullableWithAggregatesFilter<"User"> | string | null
     humor?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -17949,6 +17967,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -17994,6 +18013,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -18039,6 +18059,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18084,6 +18105,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18129,6 +18151,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -18165,6 +18188,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18201,6 +18225,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19480,6 +19505,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     kindeId?: SortOrder
     categoryPreferences?: SortOrder
+    tagPreferences?: SortOrder
     savedArticleIds?: SortOrder
     toneOfVoice?: SortOrder
     humor?: SortOrder
@@ -20509,6 +20535,10 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type UserCreatetagPreferencesInput = {
+    set: string[]
+  }
+
   export type UserCreatesavedArticleIdsInput = {
     set: string[]
   }
@@ -20652,6 +20682,11 @@ export namespace Prisma {
   }
 
   export type UserUpdatecategoryPreferencesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type UserUpdatetagPreferencesInput = {
     set?: string[]
     push?: string | string[]
   }
@@ -22686,6 +22721,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -22730,6 +22766,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -22815,6 +22852,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22859,6 +22897,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22934,6 +22973,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -22978,6 +23018,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -23152,6 +23193,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23196,6 +23238,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23331,6 +23374,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -23375,6 +23419,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -23484,6 +23529,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23528,6 +23574,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23615,6 +23662,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -23659,6 +23707,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -23768,6 +23817,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23812,6 +23862,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23899,6 +23950,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -23943,6 +23995,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -24052,6 +24105,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24096,6 +24150,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24140,6 +24195,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -24184,6 +24240,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -24233,6 +24290,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -24277,6 +24335,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -24409,6 +24468,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24453,6 +24513,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24508,6 +24569,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24552,6 +24614,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24628,6 +24691,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -24672,6 +24736,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -24797,6 +24862,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24841,6 +24907,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24956,6 +25023,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -25000,6 +25068,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
+    tagPreferences?: UserCreatetagPreferencesInput | string[]
     savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
@@ -25125,6 +25194,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25169,6 +25239,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
+    tagPreferences?: UserUpdatetagPreferencesInput | string[]
     savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
