@@ -132,6 +132,7 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt',
   kindeId: 'kindeId',
   categoryPreferences: 'categoryPreferences',
+  tagPreferences: 'tagPreferences',
   savedArticleIds: 'savedArticleIds',
   toneOfVoice: 'toneOfVoice',
   humor: 'humor',

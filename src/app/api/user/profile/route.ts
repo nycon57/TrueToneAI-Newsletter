@@ -21,6 +21,7 @@ export async function PUT(req: NextRequest) {
     const name = formData.get('name') as string;
     const company = formData.get('company') as string | null;
     const categoryPreferencesStr = formData.get('categoryPreferences') as string;
+    const tagPreferencesStr = formData.get('tagPreferences') as string;
     const avatarFile = formData.get('avatar') as File | null;
 
     // Validate required fields
@@ -49,17 +50,37 @@ export async function PUT(req: NextRequest) {
       );
     }
 
+    // Parse tag preferences
+    let tagPreferences: string[] = [];
+    try {
+      tagPreferences = JSON.parse(tagPreferencesStr || '[]');
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid tag preferences format' },
+        { status: 400 }
+      );
+    }
+
+    if (!Array.isArray(tagPreferences)) {
+      return NextResponse.json(
+        { error: 'Tag preferences must be an array' },
+        { status: 400 }
+      );
+    }
+
     // Prepare update data
     const updateData: {
       name: string;
       company?: string | null;
       category_preferences: string[];
+      tag_preferences: string[];
       updatedAt: string;
       avatar?: string;
     } = {
       name: name.trim(),
       company: company?.trim() || null,
       category_preferences: categoryPreferences,
+      tag_preferences: tagPreferences,
       updatedAt: new Date().toISOString(),
     };
 

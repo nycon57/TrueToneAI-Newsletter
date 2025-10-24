@@ -33,6 +33,7 @@ model User {
 
   // User preferences
   categoryPreferences String[] @default([]) @map("category_preferences") /// User's preferred content categories
+  tagPreferences      String[] @default([]) @map("tag_preferences") /// User's preferred content tags for refinement
   savedArticleIds     String[] @default([]) @map("saved_article_ids") /// IDs of articles saved by the user
 
   // TrueTone characteristics
