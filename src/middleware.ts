@@ -30,7 +30,7 @@ export async function middleware(req: NextRequest) {
       const supabase = await createClient();
       const { data: user, error } = await supabase
         .from('users')
-        .select('has_completed_onboarding, role')
+        .select('role')
         .eq('kinde_id', kindeUser.id)
         .single();
 
@@ -87,21 +87,12 @@ export async function middleware(req: NextRequest) {
         return NextResponse.next();
       }
 
-      // Onboarding/Dashboard route protection
+      // Onboarding/Dashboard route protection - removed has_completed_onboarding check
+      // Users can access both onboarding and dashboard freely
+      // TODO: Re-add onboarding flow protection once has_completed_onboarding column is added to DB
       if (pathname.startsWith('/onboarding') || pathname.startsWith('/dashboard')) {
-        const hasCompletedOnboarding = user.has_completed_onboarding;
-
-        // If trying to access onboarding but already completed, redirect to dashboard
-        if (pathname.startsWith('/onboarding') && hasCompletedOnboarding) {
-          console.log('[Middleware] User completed onboarding, redirecting to dashboard');
-          return NextResponse.redirect(new URL('/dashboard', req.url));
-        }
-
-        // If trying to access dashboard but haven't completed onboarding, redirect to onboarding
-        if (pathname.startsWith('/dashboard') && !hasCompletedOnboarding) {
-          console.log('[Middleware] User has not completed onboarding, redirecting to onboarding');
-          return NextResponse.redirect(new URL('/onboarding', req.url));
-        }
+        // Allow access to both routes for now
+        return NextResponse.next();
       }
     } catch (error) {
       console.error('[Middleware] Unexpected error checking user data:', {
