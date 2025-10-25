@@ -133,7 +133,6 @@ exports.Prisma.UserScalarFieldEnum = {
   kindeId: 'kindeId',
   categoryPreferences: 'categoryPreferences',
   tagPreferences: 'tagPreferences',
-  savedArticleIds: 'savedArticleIds',
   toneOfVoice: 'toneOfVoice',
   humor: 'humor',
   detailOrientation: 'detailOrientation',
@@ -165,17 +164,6 @@ exports.Prisma.PostScalarFieldEnum = {
   publishedAt: 'publishedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
-};
-
-exports.Prisma.LikeScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  postId: 'postId',
-  contentId: 'contentId',
-  contentType: 'contentType',
-  contentTitle: 'contentTitle',
-  deviceType: 'deviceType',
-  timestamp: 'timestamp'
 };
 
 exports.Prisma.UserSessionScalarFieldEnum = {
@@ -269,21 +257,6 @@ exports.Prisma.ArticleScalarFieldEnum = {
   lastEditedByAdminId: 'lastEditedByAdminId'
 };
 
-exports.Prisma.PersonalizedOutputScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  articleId: 'articleId',
-  personalizedKeyInsights: 'personalizedKeyInsights',
-  personalizedVideoScript: 'personalizedVideoScript',
-  personalizedEmailTemplate: 'personalizedEmailTemplate',
-  personalizedSocialContent: 'personalizedSocialContent',
-  truetoneSettings: 'truetoneSettings',
-  tokensUsed: 'tokensUsed',
-  generationCount: 'generationCount',
-  lastGeneratedAt: 'lastGeneratedAt',
-  createdAt: 'createdAt'
-};
-
 exports.Prisma.GenerationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -347,14 +320,6 @@ exports.PublishedStatus = exports.$Enums.PublishedStatus = {
   ARCHIVED: 'ARCHIVED'
 };
 
-exports.ContentType = exports.$Enums.ContentType = {
-  ARTICLE: 'ARTICLE',
-  KEY_INSIGHTS: 'KEY_INSIGHTS',
-  VIDEO_SCRIPT: 'VIDEO_SCRIPT',
-  EMAIL_TEMPLATE: 'EMAIL_TEMPLATE',
-  SOCIAL_CONTENT: 'SOCIAL_CONTENT'
-};
-
 exports.Device = exports.$Enums.Device = {
   MOBILE: 'MOBILE',
   TABLET: 'TABLET',
@@ -385,13 +350,11 @@ exports.SocialPlatform = exports.$Enums.SocialPlatform = {
 exports.Prisma.ModelName = {
   User: 'User',
   Post: 'Post',
-  Like: 'Like',
   UserSession: 'UserSession',
   AnalyticsEvent: 'AnalyticsEvent',
   PageView: 'PageView',
   ChatAnalytics: 'ChatAnalytics',
   Article: 'Article',
-  PersonalizedOutput: 'PersonalizedOutput',
   Generation: 'Generation',
   AnonymousAiUsage: 'AnonymousAiUsage'
 };

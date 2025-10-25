@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { UIMessage } from "ai";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { type ComponentProps, type HTMLAttributes, type ReactElement } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 type BranchContextType = {
   currentBranch: number;
@@ -90,19 +90,24 @@ export const Branch = ({
 export type BranchMessagesProps = HTMLAttributes<HTMLDivElement>;
 
 export const BranchMessages = ({ children, ...props }: BranchMessagesProps) => {
-  const { currentBranch, setBranches, branches } = useBranch();
+  const { currentBranch, setBranches } = useBranch();
 
-  // Use useEffect to update branches when children change
+  // Convert children to array once
+  const childArray = React.Children.toArray(children) as ReactElement[];
+
+  // Memoize branches based on child keys to detect content changes
+  const childKeys = useMemo(
+    () => childArray.map((c) => c.key),
+    [childArray]
+  );
+  const memoizedBranches = useMemo(() => childArray, [JSON.stringify(childKeys)]);
+
+  // Update branches state only when memoized value changes
   useEffect(() => {
-    const childrenArray = Array.isArray(children) ? children : [children];
-    if (branches.length !== childrenArray.length) {
-      setBranches(childrenArray);
-    }
-  }, [children, branches, setBranches]);
+    setBranches(memoizedBranches);
+  }, [memoizedBranches, setBranches]);
 
-  const childrenArray = Array.isArray(children) ? children : [children];
-
-  return childrenArray.map((branch, index) => (
+  return memoizedBranches.map((branch, index) => (
     <div
       className={cn(
         "grid gap-2 overflow-hidden [&>div]:pb-0",

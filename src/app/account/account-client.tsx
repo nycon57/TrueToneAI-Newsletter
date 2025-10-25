@@ -5,7 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProfileTab } from '@/components/account/profile-tab';
 import { BillingTab } from '@/components/account/billing-tab';
 import { SupportTab } from '@/components/account/support-tab';
-import { UserCircle, CreditCard, MessageCircle, Sparkles, ArrowLeft } from 'lucide-react';
+import { TrueToneTab } from '@/components/account/truetone-tab';
+import { UserCircle, CreditCard, MessageCircle, Sparkles, ArrowLeft, Wand2 } from 'lucide-react';
 import { useQueryState } from 'nuqs';
 import type { ApiUser } from '@/lib/api/auth-cached';
 import Link from 'next/link';
@@ -69,13 +70,20 @@ export default function AccountClient({ user }: AccountClientProps) {
             onValueChange={setActiveTab}
             className="w-full"
           >
-            <TabsList className="grid w-full grid-cols-3 mb-8 h-auto p-1">
+            <TabsList className="grid w-full grid-cols-4 mb-8 h-auto p-1">
               <TabsTrigger
                 value="profile"
                 className="flex items-center gap-2 py-3 data-[state=active]:bg-background"
               >
                 <UserCircle className="w-4 h-4" />
                 <span className="hidden sm:inline">Profile</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="truetone"
+                className="flex items-center gap-2 py-3 data-[state=active]:bg-background"
+              >
+                <Wand2 className="w-4 h-4" />
+                <span className="hidden sm:inline">TrueTone</span>
               </TabsTrigger>
               <TabsTrigger
                 value="billing"
@@ -104,6 +112,20 @@ export default function AccountClient({ user }: AccountClientProps) {
                 >
                   <TabsContent value="profile" className="mt-0">
                     <ProfileTab user={user} />
+                  </TabsContent>
+                </motion.div>
+              )}
+
+              {activeTab === 'truetone' && (
+                <motion.div
+                  key="truetone"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <TabsContent value="truetone" className="mt-0">
+                    <TrueToneTab user={user} />
                   </TabsContent>
                 </motion.div>
               )}
