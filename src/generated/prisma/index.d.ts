@@ -27,13 +27,6 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  */
 export type Post = $Result.DefaultSelection<Prisma.$PostPayload>
 /**
- * Model Like
- * Like model represents user engagement with content
- * Tracks likes on articles and specific content sections
- * Maps to "likes" table in the database
- */
-export type Like = $Result.DefaultSelection<Prisma.$LikePayload>
-/**
  * Model UserSession
  * User session tracking for analytics and user journey insights
  * Maps to "user_sessions" table in the database
@@ -64,12 +57,6 @@ export type ChatAnalytics = $Result.DefaultSelection<Prisma.$ChatAnalyticsPayloa
  */
 export type Article = $Result.DefaultSelection<Prisma.$ArticlePayload>
 /**
- * Model PersonalizedOutput
- * PersonalizedOutput model represents AI-generated personalized versions of article content for paid users
- * Maps to "personalized_outputs" table in the database
- */
-export type PersonalizedOutput = $Result.DefaultSelection<Prisma.$PersonalizedOutputPayload>
-/**
  * Model Generation
  * Generation model represents individual AI-generated content pieces
  * Each generation is a separate record for better querying and filtering
@@ -95,17 +82,6 @@ export namespace $Enums {
 };
 
 export type PublishedStatus = (typeof PublishedStatus)[keyof typeof PublishedStatus]
-
-
-export const ContentType: {
-  ARTICLE: 'ARTICLE',
-  KEY_INSIGHTS: 'KEY_INSIGHTS',
-  VIDEO_SCRIPT: 'VIDEO_SCRIPT',
-  EMAIL_TEMPLATE: 'EMAIL_TEMPLATE',
-  SOCIAL_CONTENT: 'SOCIAL_CONTENT'
-};
-
-export type ContentType = (typeof ContentType)[keyof typeof ContentType]
 
 
 export const Device: {
@@ -160,10 +136,6 @@ export type SocialPlatform = (typeof SocialPlatform)[keyof typeof SocialPlatform
 export type PublishedStatus = $Enums.PublishedStatus
 
 export const PublishedStatus: typeof $Enums.PublishedStatus
-
-export type ContentType = $Enums.ContentType
-
-export const ContentType: typeof $Enums.ContentType
 
 export type Device = $Enums.Device
 
@@ -331,16 +303,6 @@ export class PrismaClient<
   get post(): Prisma.PostDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.like`: Exposes CRUD operations for the **Like** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Likes
-    * const likes = await prisma.like.findMany()
-    * ```
-    */
-  get like(): Prisma.LikeDelegate<ExtArgs, ClientOptions>;
-
-  /**
    * `prisma.userSession`: Exposes CRUD operations for the **UserSession** model.
     * Example usage:
     * ```ts
@@ -389,16 +351,6 @@ export class PrismaClient<
     * ```
     */
   get article(): Prisma.ArticleDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.personalizedOutput`: Exposes CRUD operations for the **PersonalizedOutput** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more PersonalizedOutputs
-    * const personalizedOutputs = await prisma.personalizedOutput.findMany()
-    * ```
-    */
-  get personalizedOutput(): Prisma.PersonalizedOutputDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.generation`: Exposes CRUD operations for the **Generation** model.
@@ -861,13 +813,11 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     Post: 'Post',
-    Like: 'Like',
     UserSession: 'UserSession',
     AnalyticsEvent: 'AnalyticsEvent',
     PageView: 'PageView',
     ChatAnalytics: 'ChatAnalytics',
     Article: 'Article',
-    PersonalizedOutput: 'PersonalizedOutput',
     Generation: 'Generation',
     AnonymousAiUsage: 'AnonymousAiUsage'
   };
@@ -888,7 +838,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "post" | "like" | "userSession" | "analyticsEvent" | "pageView" | "chatAnalytics" | "article" | "personalizedOutput" | "generation" | "anonymousAiUsage"
+      modelProps: "user" | "post" | "userSession" | "analyticsEvent" | "pageView" | "chatAnalytics" | "article" | "generation" | "anonymousAiUsage"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1037,80 +987,6 @@ export namespace Prisma {
           count: {
             args: Prisma.PostCountArgs<ExtArgs>
             result: $Utils.Optional<PostCountAggregateOutputType> | number
-          }
-        }
-      }
-      Like: {
-        payload: Prisma.$LikePayload<ExtArgs>
-        fields: Prisma.LikeFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.LikeFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$LikePayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.LikeFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$LikePayload>
-          }
-          findFirst: {
-            args: Prisma.LikeFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$LikePayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.LikeFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$LikePayload>
-          }
-          findMany: {
-            args: Prisma.LikeFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$LikePayload>[]
-          }
-          create: {
-            args: Prisma.LikeCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$LikePayload>
-          }
-          createMany: {
-            args: Prisma.LikeCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.LikeCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$LikePayload>[]
-          }
-          delete: {
-            args: Prisma.LikeDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$LikePayload>
-          }
-          update: {
-            args: Prisma.LikeUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$LikePayload>
-          }
-          deleteMany: {
-            args: Prisma.LikeDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.LikeUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.LikeUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$LikePayload>[]
-          }
-          upsert: {
-            args: Prisma.LikeUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$LikePayload>
-          }
-          aggregate: {
-            args: Prisma.LikeAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateLike>
-          }
-          groupBy: {
-            args: Prisma.LikeGroupByArgs<ExtArgs>
-            result: $Utils.Optional<LikeGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.LikeCountArgs<ExtArgs>
-            result: $Utils.Optional<LikeCountAggregateOutputType> | number
           }
         }
       }
@@ -1484,80 +1360,6 @@ export namespace Prisma {
           }
         }
       }
-      PersonalizedOutput: {
-        payload: Prisma.$PersonalizedOutputPayload<ExtArgs>
-        fields: Prisma.PersonalizedOutputFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.PersonalizedOutputFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PersonalizedOutputPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.PersonalizedOutputFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PersonalizedOutputPayload>
-          }
-          findFirst: {
-            args: Prisma.PersonalizedOutputFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PersonalizedOutputPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.PersonalizedOutputFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PersonalizedOutputPayload>
-          }
-          findMany: {
-            args: Prisma.PersonalizedOutputFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PersonalizedOutputPayload>[]
-          }
-          create: {
-            args: Prisma.PersonalizedOutputCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PersonalizedOutputPayload>
-          }
-          createMany: {
-            args: Prisma.PersonalizedOutputCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.PersonalizedOutputCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PersonalizedOutputPayload>[]
-          }
-          delete: {
-            args: Prisma.PersonalizedOutputDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PersonalizedOutputPayload>
-          }
-          update: {
-            args: Prisma.PersonalizedOutputUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PersonalizedOutputPayload>
-          }
-          deleteMany: {
-            args: Prisma.PersonalizedOutputDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.PersonalizedOutputUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.PersonalizedOutputUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PersonalizedOutputPayload>[]
-          }
-          upsert: {
-            args: Prisma.PersonalizedOutputUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PersonalizedOutputPayload>
-          }
-          aggregate: {
-            args: Prisma.PersonalizedOutputAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregatePersonalizedOutput>
-          }
-          groupBy: {
-            args: Prisma.PersonalizedOutputGroupByArgs<ExtArgs>
-            result: $Utils.Optional<PersonalizedOutputGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.PersonalizedOutputCountArgs<ExtArgs>
-            result: $Utils.Optional<PersonalizedOutputCountAggregateOutputType> | number
-          }
-        }
-      }
       Generation: {
         payload: Prisma.$GenerationPayload<ExtArgs>
         fields: Prisma.GenerationFieldRefs
@@ -1792,13 +1594,11 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     user?: UserOmit
     post?: PostOmit
-    like?: LikeOmit
     userSession?: UserSessionOmit
     analyticsEvent?: AnalyticsEventOmit
     pageView?: PageViewOmit
     chatAnalytics?: ChatAnalyticsOmit
     article?: ArticleOmit
-    personalizedOutput?: PersonalizedOutputOmit
     generation?: GenerationOmit
     anonymousAiUsage?: AnonymousAiUsageOmit
   }
@@ -1895,26 +1695,22 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
-    likes: number
     sessions: number
     events: number
     pageViews: number
     chatAnalytics: number
     createdArticles: number
     editedArticles: number
-    personalizations: number
     generations: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    likes?: boolean | UserCountOutputTypeCountLikesArgs
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
     events?: boolean | UserCountOutputTypeCountEventsArgs
     pageViews?: boolean | UserCountOutputTypeCountPageViewsArgs
     chatAnalytics?: boolean | UserCountOutputTypeCountChatAnalyticsArgs
     createdArticles?: boolean | UserCountOutputTypeCountCreatedArticlesArgs
     editedArticles?: boolean | UserCountOutputTypeCountEditedArticlesArgs
-    personalizations?: boolean | UserCountOutputTypeCountPersonalizationsArgs
     generations?: boolean | UserCountOutputTypeCountGenerationsArgs
   }
 
@@ -1927,13 +1723,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the UserCountOutputType
      */
     select?: UserCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
-  export type UserCountOutputTypeCountLikesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: LikeWhereInput
   }
 
   /**
@@ -1981,46 +1770,8 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountPersonalizationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PersonalizedOutputWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
   export type UserCountOutputTypeCountGenerationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: GenerationWhereInput
-  }
-
-
-  /**
-   * Count Type PostCountOutputType
-   */
-
-  export type PostCountOutputType = {
-    likes: number
-  }
-
-  export type PostCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    likes?: boolean | PostCountOutputTypeCountLikesArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * PostCountOutputType without action
-   */
-  export type PostCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PostCountOutputType
-     */
-    select?: PostCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * PostCountOutputType without action
-   */
-  export type PostCountOutputTypeCountLikesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: LikeWhereInput
   }
 
 
@@ -2078,12 +1829,10 @@ export namespace Prisma {
    */
 
   export type ArticleCountOutputType = {
-    personalizations: number
     generations: number
   }
 
   export type ArticleCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    personalizations?: boolean | ArticleCountOutputTypeCountPersonalizationsArgs
     generations?: boolean | ArticleCountOutputTypeCountGenerationsArgs
   }
 
@@ -2096,13 +1845,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the ArticleCountOutputType
      */
     select?: ArticleCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * ArticleCountOutputType without action
-   */
-  export type ArticleCountOutputTypeCountPersonalizationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PersonalizedOutputWhereInput
   }
 
   /**
@@ -2222,7 +1964,6 @@ export namespace Prisma {
     kindeId: number
     categoryPreferences: number
     tagPreferences: number
-    savedArticleIds: number
     toneOfVoice: number
     humor: number
     detailOrientation: number
@@ -2341,7 +2082,6 @@ export namespace Prisma {
     kindeId?: true
     categoryPreferences?: true
     tagPreferences?: true
-    savedArticleIds?: true
     toneOfVoice?: true
     humor?: true
     detailOrientation?: true
@@ -2465,7 +2205,6 @@ export namespace Prisma {
     kindeId: string | null
     categoryPreferences: string[]
     tagPreferences: string[]
-    savedArticleIds: string[]
     toneOfVoice: string | null
     humor: string | null
     detailOrientation: string | null
@@ -2521,7 +2260,6 @@ export namespace Prisma {
     kindeId?: boolean
     categoryPreferences?: boolean
     tagPreferences?: boolean
-    savedArticleIds?: boolean
     toneOfVoice?: boolean
     humor?: boolean
     detailOrientation?: boolean
@@ -2543,14 +2281,12 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: boolean
     onboardingCompletedAt?: boolean
-    likes?: boolean | User$likesArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     events?: boolean | User$eventsArgs<ExtArgs>
     pageViews?: boolean | User$pageViewsArgs<ExtArgs>
     chatAnalytics?: boolean | User$chatAnalyticsArgs<ExtArgs>
     createdArticles?: boolean | User$createdArticlesArgs<ExtArgs>
     editedArticles?: boolean | User$editedArticlesArgs<ExtArgs>
-    personalizations?: boolean | User$personalizationsArgs<ExtArgs>
     generations?: boolean | User$generationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -2568,7 +2304,6 @@ export namespace Prisma {
     kindeId?: boolean
     categoryPreferences?: boolean
     tagPreferences?: boolean
-    savedArticleIds?: boolean
     toneOfVoice?: boolean
     humor?: boolean
     detailOrientation?: boolean
@@ -2605,7 +2340,6 @@ export namespace Prisma {
     kindeId?: boolean
     categoryPreferences?: boolean
     tagPreferences?: boolean
-    savedArticleIds?: boolean
     toneOfVoice?: boolean
     humor?: boolean
     detailOrientation?: boolean
@@ -2642,7 +2376,6 @@ export namespace Prisma {
     kindeId?: boolean
     categoryPreferences?: boolean
     tagPreferences?: boolean
-    savedArticleIds?: boolean
     toneOfVoice?: boolean
     humor?: boolean
     detailOrientation?: boolean
@@ -2666,16 +2399,14 @@ export namespace Prisma {
     onboardingCompletedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "firstName" | "lastName" | "email" | "company" | "avatar" | "createdAt" | "updatedAt" | "kindeId" | "categoryPreferences" | "tagPreferences" | "savedArticleIds" | "toneOfVoice" | "humor" | "detailOrientation" | "contentLength" | "formality" | "emotionalExpression" | "vocabulary" | "engagementStyle" | "subscriptionTier" | "subscriptionStatus" | "subscriptionExpiresAt" | "subscriptionCreatedAt" | "monthlyGenerationLimit" | "monthlyGenerationsUsed" | "generationResetDate" | "stripeCustomerId" | "stripeSubscriptionId" | "stripePriceId" | "hasCompletedOnboarding" | "onboardingStep" | "onboardingCompletedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "firstName" | "lastName" | "email" | "company" | "avatar" | "createdAt" | "updatedAt" | "kindeId" | "categoryPreferences" | "tagPreferences" | "toneOfVoice" | "humor" | "detailOrientation" | "contentLength" | "formality" | "emotionalExpression" | "vocabulary" | "engagementStyle" | "subscriptionTier" | "subscriptionStatus" | "subscriptionExpiresAt" | "subscriptionCreatedAt" | "monthlyGenerationLimit" | "monthlyGenerationsUsed" | "generationResetDate" | "stripeCustomerId" | "stripeSubscriptionId" | "stripePriceId" | "hasCompletedOnboarding" | "onboardingStep" | "onboardingCompletedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    likes?: boolean | User$likesArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     events?: boolean | User$eventsArgs<ExtArgs>
     pageViews?: boolean | User$pageViewsArgs<ExtArgs>
     chatAnalytics?: boolean | User$chatAnalyticsArgs<ExtArgs>
     createdArticles?: boolean | User$createdArticlesArgs<ExtArgs>
     editedArticles?: boolean | User$editedArticlesArgs<ExtArgs>
-    personalizations?: boolean | User$personalizationsArgs<ExtArgs>
     generations?: boolean | User$generationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -2685,10 +2416,6 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
-      /**
-       * User's likes on various content
-       */
-      likes: Prisma.$LikePayload<ExtArgs>[]
       /**
        * User's analytics sessions
        */
@@ -2713,10 +2440,6 @@ export namespace Prisma {
        * Articles last edited by this admin user
        */
       editedArticles: Prisma.$ArticlePayload<ExtArgs>[]
-      /**
-       * User's personalized content outputs
-       */
-      personalizations: Prisma.$PersonalizedOutputPayload<ExtArgs>[]
       /**
        * User's AI-generated content
        */
@@ -2771,10 +2494,6 @@ export namespace Prisma {
        * User's preferred content tags for refinement
        */
       tagPreferences: string[]
-      /**
-       * IDs of articles saved by the user
-       */
-      savedArticleIds: string[]
       /**
        * TrueTone: Tone of Voice characteristic
        */
@@ -3253,14 +2972,12 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    likes<T extends User$likesArgs<ExtArgs> = {}>(args?: Subset<T, User$likesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     events<T extends User$eventsArgs<ExtArgs> = {}>(args?: Subset<T, User$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnalyticsEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     pageViews<T extends User$pageViewsArgs<ExtArgs> = {}>(args?: Subset<T, User$pageViewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PageViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     chatAnalytics<T extends User$chatAnalyticsArgs<ExtArgs> = {}>(args?: Subset<T, User$chatAnalyticsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatAnalyticsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     createdArticles<T extends User$createdArticlesArgs<ExtArgs> = {}>(args?: Subset<T, User$createdArticlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     editedArticles<T extends User$editedArticlesArgs<ExtArgs> = {}>(args?: Subset<T, User$editedArticlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    personalizations<T extends User$personalizationsArgs<ExtArgs> = {}>(args?: Subset<T, User$personalizationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     generations<T extends User$generationsArgs<ExtArgs> = {}>(args?: Subset<T, User$generationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3303,7 +3020,6 @@ export namespace Prisma {
     readonly kindeId: FieldRef<"User", 'String'>
     readonly categoryPreferences: FieldRef<"User", 'String[]'>
     readonly tagPreferences: FieldRef<"User", 'String[]'>
-    readonly savedArticleIds: FieldRef<"User", 'String[]'>
     readonly toneOfVoice: FieldRef<"User", 'String'>
     readonly humor: FieldRef<"User", 'String'>
     readonly detailOrientation: FieldRef<"User", 'String'>
@@ -3713,30 +3429,6 @@ export namespace Prisma {
   }
 
   /**
-   * User.likes
-   */
-  export type User$likesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeInclude<ExtArgs> | null
-    where?: LikeWhereInput
-    orderBy?: LikeOrderByWithRelationInput | LikeOrderByWithRelationInput[]
-    cursor?: LikeWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: LikeScalarFieldEnum | LikeScalarFieldEnum[]
-  }
-
-  /**
    * User.sessions
    */
   export type User$sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3878,30 +3570,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ArticleScalarFieldEnum | ArticleScalarFieldEnum[]
-  }
-
-  /**
-   * User.personalizations
-   */
-  export type User$personalizationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PersonalizedOutput
-     */
-    select?: PersonalizedOutputSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PersonalizedOutput
-     */
-    omit?: PersonalizedOutputOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PersonalizedOutputInclude<ExtArgs> | null
-    where?: PersonalizedOutputWhereInput
-    orderBy?: PersonalizedOutputOrderByWithRelationInput | PersonalizedOutputOrderByWithRelationInput[]
-    cursor?: PersonalizedOutputWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: PersonalizedOutputScalarFieldEnum | PersonalizedOutputScalarFieldEnum[]
   }
 
   /**
@@ -4123,8 +3791,6 @@ export namespace Prisma {
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    likes?: boolean | Post$likesArgs<ExtArgs>
-    _count?: boolean | PostCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["post"]>
 
   export type PostSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4158,21 +3824,10 @@ export namespace Prisma {
   }
 
   export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "content" | "publishedStatus" | "publishedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
-  export type PostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    likes?: boolean | Post$likesArgs<ExtArgs>
-    _count?: boolean | PostCountOutputTypeDefaultArgs<ExtArgs>
-  }
-  export type PostIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type PostIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $PostPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Post"
-    objects: {
-      /**
-       * Likes on this post and its content
-       */
-      likes: Prisma.$LikePayload<ExtArgs>[]
-    }
+    objects: {}
     scalars: $Extensions.GetPayloadResult<{
       /**
        * Unique identifier for the post - auto-generated UUID
@@ -4596,7 +4251,6 @@ export namespace Prisma {
    */
   export interface Prisma__PostClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    likes<T extends Post$likesArgs<ExtArgs> = {}>(args?: Subset<T, Post$likesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4650,10 +4304,6 @@ export namespace Prisma {
      */
     omit?: PostOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
      * Filter, which Post to fetch.
      */
     where: PostWhereUniqueInput
@@ -4672,10 +4322,6 @@ export namespace Prisma {
      */
     omit?: PostOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
      * Filter, which Post to fetch.
      */
     where: PostWhereUniqueInput
@@ -4693,10 +4339,6 @@ export namespace Prisma {
      * Omit specific fields from the Post
      */
     omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
     /**
      * Filter, which Post to fetch.
      */
@@ -4746,10 +4388,6 @@ export namespace Prisma {
      */
     omit?: PostOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
      * Filter, which Post to fetch.
      */
     where?: PostWhereInput
@@ -4798,10 +4436,6 @@ export namespace Prisma {
      */
     omit?: PostOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
      * Filter, which Posts to fetch.
      */
     where?: PostWhereInput
@@ -4844,10 +4478,6 @@ export namespace Prisma {
      * Omit specific fields from the Post
      */
     omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
     /**
      * The data needed to create a Post.
      */
@@ -4896,10 +4526,6 @@ export namespace Prisma {
      * Omit specific fields from the Post
      */
     omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
     /**
      * The data needed to update a Post.
      */
@@ -4967,10 +4593,6 @@ export namespace Prisma {
      */
     omit?: PostOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
      * The filter to search for the Post to update in case it exists.
      */
     where: PostWhereUniqueInput
@@ -4997,10 +4619,6 @@ export namespace Prisma {
      */
     omit?: PostOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
      * Filter which Post to delete.
      */
     where: PostWhereUniqueInput
@@ -5021,30 +4639,6 @@ export namespace Prisma {
   }
 
   /**
-   * Post.likes
-   */
-  export type Post$likesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeInclude<ExtArgs> | null
-    where?: LikeWhereInput
-    orderBy?: LikeOrderByWithRelationInput | LikeOrderByWithRelationInput[]
-    cursor?: LikeWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: LikeScalarFieldEnum | LikeScalarFieldEnum[]
-  }
-
-  /**
    * Post without action
    */
   export type PostDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5056,1139 +4650,6 @@ export namespace Prisma {
      * Omit specific fields from the Post
      */
     omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model Like
-   */
-
-  export type AggregateLike = {
-    _count: LikeCountAggregateOutputType | null
-    _min: LikeMinAggregateOutputType | null
-    _max: LikeMaxAggregateOutputType | null
-  }
-
-  export type LikeMinAggregateOutputType = {
-    id: string | null
-    userId: string | null
-    postId: string | null
-    contentId: string | null
-    contentType: $Enums.ContentType | null
-    contentTitle: string | null
-    deviceType: $Enums.Device | null
-    timestamp: Date | null
-  }
-
-  export type LikeMaxAggregateOutputType = {
-    id: string | null
-    userId: string | null
-    postId: string | null
-    contentId: string | null
-    contentType: $Enums.ContentType | null
-    contentTitle: string | null
-    deviceType: $Enums.Device | null
-    timestamp: Date | null
-  }
-
-  export type LikeCountAggregateOutputType = {
-    id: number
-    userId: number
-    postId: number
-    contentId: number
-    contentType: number
-    contentTitle: number
-    deviceType: number
-    timestamp: number
-    _all: number
-  }
-
-
-  export type LikeMinAggregateInputType = {
-    id?: true
-    userId?: true
-    postId?: true
-    contentId?: true
-    contentType?: true
-    contentTitle?: true
-    deviceType?: true
-    timestamp?: true
-  }
-
-  export type LikeMaxAggregateInputType = {
-    id?: true
-    userId?: true
-    postId?: true
-    contentId?: true
-    contentType?: true
-    contentTitle?: true
-    deviceType?: true
-    timestamp?: true
-  }
-
-  export type LikeCountAggregateInputType = {
-    id?: true
-    userId?: true
-    postId?: true
-    contentId?: true
-    contentType?: true
-    contentTitle?: true
-    deviceType?: true
-    timestamp?: true
-    _all?: true
-  }
-
-  export type LikeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Like to aggregate.
-     */
-    where?: LikeWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Likes to fetch.
-     */
-    orderBy?: LikeOrderByWithRelationInput | LikeOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: LikeWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Likes from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Likes.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Likes
-    **/
-    _count?: true | LikeCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: LikeMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: LikeMaxAggregateInputType
-  }
-
-  export type GetLikeAggregateType<T extends LikeAggregateArgs> = {
-        [P in keyof T & keyof AggregateLike]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateLike[P]>
-      : GetScalarType<T[P], AggregateLike[P]>
-  }
-
-
-
-
-  export type LikeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: LikeWhereInput
-    orderBy?: LikeOrderByWithAggregationInput | LikeOrderByWithAggregationInput[]
-    by: LikeScalarFieldEnum[] | LikeScalarFieldEnum
-    having?: LikeScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: LikeCountAggregateInputType | true
-    _min?: LikeMinAggregateInputType
-    _max?: LikeMaxAggregateInputType
-  }
-
-  export type LikeGroupByOutputType = {
-    id: string
-    userId: string
-    postId: string
-    contentId: string
-    contentType: $Enums.ContentType
-    contentTitle: string
-    deviceType: $Enums.Device
-    timestamp: Date
-    _count: LikeCountAggregateOutputType | null
-    _min: LikeMinAggregateOutputType | null
-    _max: LikeMaxAggregateOutputType | null
-  }
-
-  type GetLikeGroupByPayload<T extends LikeGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<LikeGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof LikeGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], LikeGroupByOutputType[P]>
-            : GetScalarType<T[P], LikeGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type LikeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    userId?: boolean
-    postId?: boolean
-    contentId?: boolean
-    contentType?: boolean
-    contentTitle?: boolean
-    deviceType?: boolean
-    timestamp?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    post?: boolean | PostDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["like"]>
-
-  export type LikeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    userId?: boolean
-    postId?: boolean
-    contentId?: boolean
-    contentType?: boolean
-    contentTitle?: boolean
-    deviceType?: boolean
-    timestamp?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    post?: boolean | PostDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["like"]>
-
-  export type LikeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    userId?: boolean
-    postId?: boolean
-    contentId?: boolean
-    contentType?: boolean
-    contentTitle?: boolean
-    deviceType?: boolean
-    timestamp?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    post?: boolean | PostDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["like"]>
-
-  export type LikeSelectScalar = {
-    id?: boolean
-    userId?: boolean
-    postId?: boolean
-    contentId?: boolean
-    contentType?: boolean
-    contentTitle?: boolean
-    deviceType?: boolean
-    timestamp?: boolean
-  }
-
-  export type LikeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "postId" | "contentId" | "contentType" | "contentTitle" | "deviceType" | "timestamp", ExtArgs["result"]["like"]>
-  export type LikeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    post?: boolean | PostDefaultArgs<ExtArgs>
-  }
-  export type LikeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    post?: boolean | PostDefaultArgs<ExtArgs>
-  }
-  export type LikeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    post?: boolean | PostDefaultArgs<ExtArgs>
-  }
-
-  export type $LikePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Like"
-    objects: {
-      user: Prisma.$UserPayload<ExtArgs>
-      post: Prisma.$PostPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      /**
-       * Unique identifier for the like
-       */
-      id: string
-      /**
-       * ID of the user who liked
-       */
-      userId: string
-      /**
-       * ID of the post containing the content
-       */
-      postId: string
-      /**
-       * Stable contentID from the JSONB content
-       */
-      contentId: string
-      /**
-       * Type of content being liked
-       */
-      contentType: $Enums.ContentType
-      /**
-       * Human-readable title of the liked content
-       */
-      contentTitle: string
-      /**
-       * Device type used when liking
-       */
-      deviceType: $Enums.Device
-      /**
-       * When the like was created
-       */
-      timestamp: Date
-    }, ExtArgs["result"]["like"]>
-    composites: {}
-  }
-
-  type LikeGetPayload<S extends boolean | null | undefined | LikeDefaultArgs> = $Result.GetResult<Prisma.$LikePayload, S>
-
-  type LikeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<LikeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: LikeCountAggregateInputType | true
-    }
-
-  export interface LikeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Like'], meta: { name: 'Like' } }
-    /**
-     * Find zero or one Like that matches the filter.
-     * @param {LikeFindUniqueArgs} args - Arguments to find a Like
-     * @example
-     * // Get one Like
-     * const like = await prisma.like.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends LikeFindUniqueArgs>(args: SelectSubset<T, LikeFindUniqueArgs<ExtArgs>>): Prisma__LikeClient<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one Like that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {LikeFindUniqueOrThrowArgs} args - Arguments to find a Like
-     * @example
-     * // Get one Like
-     * const like = await prisma.like.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends LikeFindUniqueOrThrowArgs>(args: SelectSubset<T, LikeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__LikeClient<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Like that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {LikeFindFirstArgs} args - Arguments to find a Like
-     * @example
-     * // Get one Like
-     * const like = await prisma.like.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends LikeFindFirstArgs>(args?: SelectSubset<T, LikeFindFirstArgs<ExtArgs>>): Prisma__LikeClient<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Like that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {LikeFindFirstOrThrowArgs} args - Arguments to find a Like
-     * @example
-     * // Get one Like
-     * const like = await prisma.like.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends LikeFindFirstOrThrowArgs>(args?: SelectSubset<T, LikeFindFirstOrThrowArgs<ExtArgs>>): Prisma__LikeClient<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more Likes that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {LikeFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Likes
-     * const likes = await prisma.like.findMany()
-     * 
-     * // Get first 10 Likes
-     * const likes = await prisma.like.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const likeWithIdOnly = await prisma.like.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends LikeFindManyArgs>(args?: SelectSubset<T, LikeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a Like.
-     * @param {LikeCreateArgs} args - Arguments to create a Like.
-     * @example
-     * // Create one Like
-     * const Like = await prisma.like.create({
-     *   data: {
-     *     // ... data to create a Like
-     *   }
-     * })
-     * 
-     */
-    create<T extends LikeCreateArgs>(args: SelectSubset<T, LikeCreateArgs<ExtArgs>>): Prisma__LikeClient<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many Likes.
-     * @param {LikeCreateManyArgs} args - Arguments to create many Likes.
-     * @example
-     * // Create many Likes
-     * const like = await prisma.like.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends LikeCreateManyArgs>(args?: SelectSubset<T, LikeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many Likes and returns the data saved in the database.
-     * @param {LikeCreateManyAndReturnArgs} args - Arguments to create many Likes.
-     * @example
-     * // Create many Likes
-     * const like = await prisma.like.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many Likes and only return the `id`
-     * const likeWithIdOnly = await prisma.like.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends LikeCreateManyAndReturnArgs>(args?: SelectSubset<T, LikeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a Like.
-     * @param {LikeDeleteArgs} args - Arguments to delete one Like.
-     * @example
-     * // Delete one Like
-     * const Like = await prisma.like.delete({
-     *   where: {
-     *     // ... filter to delete one Like
-     *   }
-     * })
-     * 
-     */
-    delete<T extends LikeDeleteArgs>(args: SelectSubset<T, LikeDeleteArgs<ExtArgs>>): Prisma__LikeClient<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one Like.
-     * @param {LikeUpdateArgs} args - Arguments to update one Like.
-     * @example
-     * // Update one Like
-     * const like = await prisma.like.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends LikeUpdateArgs>(args: SelectSubset<T, LikeUpdateArgs<ExtArgs>>): Prisma__LikeClient<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more Likes.
-     * @param {LikeDeleteManyArgs} args - Arguments to filter Likes to delete.
-     * @example
-     * // Delete a few Likes
-     * const { count } = await prisma.like.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends LikeDeleteManyArgs>(args?: SelectSubset<T, LikeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Likes.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {LikeUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Likes
-     * const like = await prisma.like.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends LikeUpdateManyArgs>(args: SelectSubset<T, LikeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Likes and returns the data updated in the database.
-     * @param {LikeUpdateManyAndReturnArgs} args - Arguments to update many Likes.
-     * @example
-     * // Update many Likes
-     * const like = await prisma.like.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Likes and only return the `id`
-     * const likeWithIdOnly = await prisma.like.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends LikeUpdateManyAndReturnArgs>(args: SelectSubset<T, LikeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one Like.
-     * @param {LikeUpsertArgs} args - Arguments to update or create a Like.
-     * @example
-     * // Update or create a Like
-     * const like = await prisma.like.upsert({
-     *   create: {
-     *     // ... data to create a Like
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Like we want to update
-     *   }
-     * })
-     */
-    upsert<T extends LikeUpsertArgs>(args: SelectSubset<T, LikeUpsertArgs<ExtArgs>>): Prisma__LikeClient<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of Likes.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {LikeCountArgs} args - Arguments to filter Likes to count.
-     * @example
-     * // Count the number of Likes
-     * const count = await prisma.like.count({
-     *   where: {
-     *     // ... the filter for the Likes we want to count
-     *   }
-     * })
-    **/
-    count<T extends LikeCountArgs>(
-      args?: Subset<T, LikeCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], LikeCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Like.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {LikeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends LikeAggregateArgs>(args: Subset<T, LikeAggregateArgs>): Prisma.PrismaPromise<GetLikeAggregateType<T>>
-
-    /**
-     * Group by Like.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {LikeGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends LikeGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: LikeGroupByArgs['orderBy'] }
-        : { orderBy?: LikeGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, LikeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLikeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Like model
-   */
-  readonly fields: LikeFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Like.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__LikeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    post<T extends PostDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PostDefaultArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the Like model
-   */
-  interface LikeFieldRefs {
-    readonly id: FieldRef<"Like", 'String'>
-    readonly userId: FieldRef<"Like", 'String'>
-    readonly postId: FieldRef<"Like", 'String'>
-    readonly contentId: FieldRef<"Like", 'String'>
-    readonly contentType: FieldRef<"Like", 'ContentType'>
-    readonly contentTitle: FieldRef<"Like", 'String'>
-    readonly deviceType: FieldRef<"Like", 'Device'>
-    readonly timestamp: FieldRef<"Like", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * Like findUnique
-   */
-  export type LikeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeInclude<ExtArgs> | null
-    /**
-     * Filter, which Like to fetch.
-     */
-    where: LikeWhereUniqueInput
-  }
-
-  /**
-   * Like findUniqueOrThrow
-   */
-  export type LikeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeInclude<ExtArgs> | null
-    /**
-     * Filter, which Like to fetch.
-     */
-    where: LikeWhereUniqueInput
-  }
-
-  /**
-   * Like findFirst
-   */
-  export type LikeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeInclude<ExtArgs> | null
-    /**
-     * Filter, which Like to fetch.
-     */
-    where?: LikeWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Likes to fetch.
-     */
-    orderBy?: LikeOrderByWithRelationInput | LikeOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Likes.
-     */
-    cursor?: LikeWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Likes from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Likes.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Likes.
-     */
-    distinct?: LikeScalarFieldEnum | LikeScalarFieldEnum[]
-  }
-
-  /**
-   * Like findFirstOrThrow
-   */
-  export type LikeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeInclude<ExtArgs> | null
-    /**
-     * Filter, which Like to fetch.
-     */
-    where?: LikeWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Likes to fetch.
-     */
-    orderBy?: LikeOrderByWithRelationInput | LikeOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Likes.
-     */
-    cursor?: LikeWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Likes from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Likes.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Likes.
-     */
-    distinct?: LikeScalarFieldEnum | LikeScalarFieldEnum[]
-  }
-
-  /**
-   * Like findMany
-   */
-  export type LikeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeInclude<ExtArgs> | null
-    /**
-     * Filter, which Likes to fetch.
-     */
-    where?: LikeWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Likes to fetch.
-     */
-    orderBy?: LikeOrderByWithRelationInput | LikeOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Likes.
-     */
-    cursor?: LikeWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Likes from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Likes.
-     */
-    skip?: number
-    distinct?: LikeScalarFieldEnum | LikeScalarFieldEnum[]
-  }
-
-  /**
-   * Like create
-   */
-  export type LikeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeInclude<ExtArgs> | null
-    /**
-     * The data needed to create a Like.
-     */
-    data: XOR<LikeCreateInput, LikeUncheckedCreateInput>
-  }
-
-  /**
-   * Like createMany
-   */
-  export type LikeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many Likes.
-     */
-    data: LikeCreateManyInput | LikeCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * Like createManyAndReturn
-   */
-  export type LikeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * The data used to create many Likes.
-     */
-    data: LikeCreateManyInput | LikeCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * Like update
-   */
-  export type LikeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeInclude<ExtArgs> | null
-    /**
-     * The data needed to update a Like.
-     */
-    data: XOR<LikeUpdateInput, LikeUncheckedUpdateInput>
-    /**
-     * Choose, which Like to update.
-     */
-    where: LikeWhereUniqueInput
-  }
-
-  /**
-   * Like updateMany
-   */
-  export type LikeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update Likes.
-     */
-    data: XOR<LikeUpdateManyMutationInput, LikeUncheckedUpdateManyInput>
-    /**
-     * Filter which Likes to update
-     */
-    where?: LikeWhereInput
-    /**
-     * Limit how many Likes to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * Like updateManyAndReturn
-   */
-  export type LikeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * The data used to update Likes.
-     */
-    data: XOR<LikeUpdateManyMutationInput, LikeUncheckedUpdateManyInput>
-    /**
-     * Filter which Likes to update
-     */
-    where?: LikeWhereInput
-    /**
-     * Limit how many Likes to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * Like upsert
-   */
-  export type LikeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeInclude<ExtArgs> | null
-    /**
-     * The filter to search for the Like to update in case it exists.
-     */
-    where: LikeWhereUniqueInput
-    /**
-     * In case the Like found by the `where` argument doesn't exist, create a new Like with this data.
-     */
-    create: XOR<LikeCreateInput, LikeUncheckedCreateInput>
-    /**
-     * In case the Like was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<LikeUpdateInput, LikeUncheckedUpdateInput>
-  }
-
-  /**
-   * Like delete
-   */
-  export type LikeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeInclude<ExtArgs> | null
-    /**
-     * Filter which Like to delete.
-     */
-    where: LikeWhereUniqueInput
-  }
-
-  /**
-   * Like deleteMany
-   */
-  export type LikeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Likes to delete
-     */
-    where?: LikeWhereInput
-    /**
-     * Limit how many Likes to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * Like without action
-   */
-  export type LikeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Like
-     */
-    select?: LikeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Like
-     */
-    omit?: LikeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: LikeInclude<ExtArgs> | null
   }
 
 
@@ -11654,7 +10115,6 @@ export namespace Prisma {
     lastEditedByAdminId?: boolean
     createdBy?: boolean | Article$createdByArgs<ExtArgs>
     lastEditedBy?: boolean | Article$lastEditedByArgs<ExtArgs>
-    personalizations?: boolean | Article$personalizationsArgs<ExtArgs>
     generations?: boolean | Article$generationsArgs<ExtArgs>
     _count?: boolean | ArticleCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["article"]>
@@ -11754,7 +10214,6 @@ export namespace Prisma {
   export type ArticleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     createdBy?: boolean | Article$createdByArgs<ExtArgs>
     lastEditedBy?: boolean | Article$lastEditedByArgs<ExtArgs>
-    personalizations?: boolean | Article$personalizationsArgs<ExtArgs>
     generations?: boolean | Article$generationsArgs<ExtArgs>
     _count?: boolean | ArticleCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -11772,10 +10231,6 @@ export namespace Prisma {
     objects: {
       createdBy: Prisma.$UserPayload<ExtArgs> | null
       lastEditedBy: Prisma.$UserPayload<ExtArgs> | null
-      /**
-       * User personalizations of this article
-       */
-      personalizations: Prisma.$PersonalizedOutputPayload<ExtArgs>[]
       /**
        * AI-generated content for this article
        */
@@ -12282,7 +10737,6 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     createdBy<T extends Article$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Article$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     lastEditedBy<T extends Article$lastEditedByArgs<ExtArgs> = {}>(args?: Subset<T, Article$lastEditedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    personalizations<T extends Article$personalizationsArgs<ExtArgs> = {}>(args?: Subset<T, Article$personalizationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     generations<T extends Article$generationsArgs<ExtArgs> = {}>(args?: Subset<T, Article$generationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -12773,30 +11227,6 @@ export namespace Prisma {
   }
 
   /**
-   * Article.personalizations
-   */
-  export type Article$personalizationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PersonalizedOutput
-     */
-    select?: PersonalizedOutputSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PersonalizedOutput
-     */
-    omit?: PersonalizedOutputOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PersonalizedOutputInclude<ExtArgs> | null
-    where?: PersonalizedOutputWhereInput
-    orderBy?: PersonalizedOutputOrderByWithRelationInput | PersonalizedOutputOrderByWithRelationInput[]
-    cursor?: PersonalizedOutputWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: PersonalizedOutputScalarFieldEnum | PersonalizedOutputScalarFieldEnum[]
-  }
-
-  /**
    * Article.generations
    */
   export type Article$generationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12836,1225 +11266,6 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ArticleInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model PersonalizedOutput
-   */
-
-  export type AggregatePersonalizedOutput = {
-    _count: PersonalizedOutputCountAggregateOutputType | null
-    _avg: PersonalizedOutputAvgAggregateOutputType | null
-    _sum: PersonalizedOutputSumAggregateOutputType | null
-    _min: PersonalizedOutputMinAggregateOutputType | null
-    _max: PersonalizedOutputMaxAggregateOutputType | null
-  }
-
-  export type PersonalizedOutputAvgAggregateOutputType = {
-    tokensUsed: number | null
-    generationCount: number | null
-  }
-
-  export type PersonalizedOutputSumAggregateOutputType = {
-    tokensUsed: number | null
-    generationCount: number | null
-  }
-
-  export type PersonalizedOutputMinAggregateOutputType = {
-    id: string | null
-    userId: string | null
-    articleId: string | null
-    personalizedVideoScript: string | null
-    personalizedEmailTemplate: string | null
-    tokensUsed: number | null
-    generationCount: number | null
-    lastGeneratedAt: Date | null
-    createdAt: Date | null
-  }
-
-  export type PersonalizedOutputMaxAggregateOutputType = {
-    id: string | null
-    userId: string | null
-    articleId: string | null
-    personalizedVideoScript: string | null
-    personalizedEmailTemplate: string | null
-    tokensUsed: number | null
-    generationCount: number | null
-    lastGeneratedAt: Date | null
-    createdAt: Date | null
-  }
-
-  export type PersonalizedOutputCountAggregateOutputType = {
-    id: number
-    userId: number
-    articleId: number
-    personalizedKeyInsights: number
-    personalizedVideoScript: number
-    personalizedEmailTemplate: number
-    personalizedSocialContent: number
-    truetoneSettings: number
-    tokensUsed: number
-    generationCount: number
-    lastGeneratedAt: number
-    createdAt: number
-    _all: number
-  }
-
-
-  export type PersonalizedOutputAvgAggregateInputType = {
-    tokensUsed?: true
-    generationCount?: true
-  }
-
-  export type PersonalizedOutputSumAggregateInputType = {
-    tokensUsed?: true
-    generationCount?: true
-  }
-
-  export type PersonalizedOutputMinAggregateInputType = {
-    id?: true
-    userId?: true
-    articleId?: true
-    personalizedVideoScript?: true
-    personalizedEmailTemplate?: true
-    tokensUsed?: true
-    generationCount?: true
-    lastGeneratedAt?: true
-    createdAt?: true
-  }
-
-  export type PersonalizedOutputMaxAggregateInputType = {
-    id?: true
-    userId?: true
-    articleId?: true
-    personalizedVideoScript?: true
-    personalizedEmailTemplate?: true
-    tokensUsed?: true
-    generationCount?: true
-    lastGeneratedAt?: true
-    createdAt?: true
-  }
-
-  export type PersonalizedOutputCountAggregateInputType = {
-    id?: true
-    userId?: true
-    articleId?: true
-    personalizedKeyInsights?: true
-    personalizedVideoScript?: true
-    personalizedEmailTemplate?: true
-    personalizedSocialContent?: true
-    truetoneSettings?: true
-    tokensUsed?: true
-    generationCount?: true
-    lastGeneratedAt?: true
-    createdAt?: true
-    _all?: true
-  }
-
-  export type PersonalizedOutputAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which PersonalizedOutput to aggregate.
-     */
-    where?: PersonalizedOutputWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of PersonalizedOutputs to fetch.
-     */
-    orderBy?: PersonalizedOutputOrderByWithRelationInput | PersonalizedOutputOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: PersonalizedOutputWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` PersonalizedOutputs from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` PersonalizedOutputs.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned PersonalizedOutputs
-    **/
-    _count?: true | PersonalizedOutputCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: PersonalizedOutputAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: PersonalizedOutputSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: PersonalizedOutputMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: PersonalizedOutputMaxAggregateInputType
-  }
-
-  export type GetPersonalizedOutputAggregateType<T extends PersonalizedOutputAggregateArgs> = {
-        [P in keyof T & keyof AggregatePersonalizedOutput]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregatePersonalizedOutput[P]>
-      : GetScalarType<T[P], AggregatePersonalizedOutput[P]>
-  }
-
-
-
-
-  export type PersonalizedOutputGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PersonalizedOutputWhereInput
-    orderBy?: PersonalizedOutputOrderByWithAggregationInput | PersonalizedOutputOrderByWithAggregationInput[]
-    by: PersonalizedOutputScalarFieldEnum[] | PersonalizedOutputScalarFieldEnum
-    having?: PersonalizedOutputScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: PersonalizedOutputCountAggregateInputType | true
-    _avg?: PersonalizedOutputAvgAggregateInputType
-    _sum?: PersonalizedOutputSumAggregateInputType
-    _min?: PersonalizedOutputMinAggregateInputType
-    _max?: PersonalizedOutputMaxAggregateInputType
-  }
-
-  export type PersonalizedOutputGroupByOutputType = {
-    id: string
-    userId: string
-    articleId: string
-    personalizedKeyInsights: string[]
-    personalizedVideoScript: string | null
-    personalizedEmailTemplate: string | null
-    personalizedSocialContent: JsonValue | null
-    truetoneSettings: JsonValue | null
-    tokensUsed: number | null
-    generationCount: number
-    lastGeneratedAt: Date
-    createdAt: Date
-    _count: PersonalizedOutputCountAggregateOutputType | null
-    _avg: PersonalizedOutputAvgAggregateOutputType | null
-    _sum: PersonalizedOutputSumAggregateOutputType | null
-    _min: PersonalizedOutputMinAggregateOutputType | null
-    _max: PersonalizedOutputMaxAggregateOutputType | null
-  }
-
-  type GetPersonalizedOutputGroupByPayload<T extends PersonalizedOutputGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<PersonalizedOutputGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof PersonalizedOutputGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], PersonalizedOutputGroupByOutputType[P]>
-            : GetScalarType<T[P], PersonalizedOutputGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type PersonalizedOutputSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    userId?: boolean
-    articleId?: boolean
-    personalizedKeyInsights?: boolean
-    personalizedVideoScript?: boolean
-    personalizedEmailTemplate?: boolean
-    personalizedSocialContent?: boolean
-    truetoneSettings?: boolean
-    tokensUsed?: boolean
-    generationCount?: boolean
-    lastGeneratedAt?: boolean
-    createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    article?: boolean | ArticleDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["personalizedOutput"]>
-
-  export type PersonalizedOutputSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    userId?: boolean
-    articleId?: boolean
-    personalizedKeyInsights?: boolean
-    personalizedVideoScript?: boolean
-    personalizedEmailTemplate?: boolean
-    personalizedSocialContent?: boolean
-    truetoneSettings?: boolean
-    tokensUsed?: boolean
-    generationCount?: boolean
-    lastGeneratedAt?: boolean
-    createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    article?: boolean | ArticleDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["personalizedOutput"]>
-
-  export type PersonalizedOutputSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    userId?: boolean
-    articleId?: boolean
-    personalizedKeyInsights?: boolean
-    personalizedVideoScript?: boolean
-    personalizedEmailTemplate?: boolean
-    personalizedSocialContent?: boolean
-    truetoneSettings?: boolean
-    tokensUsed?: boolean
-    generationCount?: boolean
-    lastGeneratedAt?: boolean
-    createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    article?: boolean | ArticleDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["personalizedOutput"]>
-
-  export type PersonalizedOutputSelectScalar = {
-    id?: boolean
-    userId?: boolean
-    articleId?: boolean
-    personalizedKeyInsights?: boolean
-    personalizedVideoScript?: boolean
-    personalizedEmailTemplate?: boolean
-    personalizedSocialContent?: boolean
-    truetoneSettings?: boolean
-    tokensUsed?: boolean
-    generationCount?: boolean
-    lastGeneratedAt?: boolean
-    createdAt?: boolean
-  }
-
-  export type PersonalizedOutputOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "articleId" | "personalizedKeyInsights" | "personalizedVideoScript" | "personalizedEmailTemplate" | "personalizedSocialContent" | "truetoneSettings" | "tokensUsed" | "generationCount" | "lastGeneratedAt" | "createdAt", ExtArgs["result"]["personalizedOutput"]>
-  export type PersonalizedOutputInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    article?: boolean | ArticleDefaultArgs<ExtArgs>
-  }
-  export type PersonalizedOutputIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    article?: boolean | ArticleDefaultArgs<ExtArgs>
-  }
-  export type PersonalizedOutputIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    article?: boolean | ArticleDefaultArgs<ExtArgs>
-  }
-
-  export type $PersonalizedOutputPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "PersonalizedOutput"
-    objects: {
-      user: Prisma.$UserPayload<ExtArgs>
-      article: Prisma.$ArticlePayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      /**
-       * Unique identifier for the personalization
-       */
-      id: string
-      /**
-       * User who owns this personalization
-       */
-      userId: string
-      /**
-       * Article being personalized
-       */
-      articleId: string
-      /**
-       * Personalized key insights
-       */
-      personalizedKeyInsights: string[]
-      /**
-       * Personalized video script
-       */
-      personalizedVideoScript: string | null
-      /**
-       * Personalized email template
-       */
-      personalizedEmailTemplate: string | null
-      /**
-       * Personalized social media content
-       */
-      personalizedSocialContent: Prisma.JsonValue | null
-      /**
-       * TrueTone settings used for generation
-       */
-      truetoneSettings: Prisma.JsonValue | null
-      /**
-       * AI tokens consumed for generation
-       */
-      tokensUsed: number | null
-      /**
-       * Number of times regenerated
-       */
-      generationCount: number
-      /**
-       * Last generation timestamp
-       */
-      lastGeneratedAt: Date
-      /**
-       * First creation timestamp
-       */
-      createdAt: Date
-    }, ExtArgs["result"]["personalizedOutput"]>
-    composites: {}
-  }
-
-  type PersonalizedOutputGetPayload<S extends boolean | null | undefined | PersonalizedOutputDefaultArgs> = $Result.GetResult<Prisma.$PersonalizedOutputPayload, S>
-
-  type PersonalizedOutputCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<PersonalizedOutputFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: PersonalizedOutputCountAggregateInputType | true
-    }
-
-  export interface PersonalizedOutputDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PersonalizedOutput'], meta: { name: 'PersonalizedOutput' } }
-    /**
-     * Find zero or one PersonalizedOutput that matches the filter.
-     * @param {PersonalizedOutputFindUniqueArgs} args - Arguments to find a PersonalizedOutput
-     * @example
-     * // Get one PersonalizedOutput
-     * const personalizedOutput = await prisma.personalizedOutput.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends PersonalizedOutputFindUniqueArgs>(args: SelectSubset<T, PersonalizedOutputFindUniqueArgs<ExtArgs>>): Prisma__PersonalizedOutputClient<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one PersonalizedOutput that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {PersonalizedOutputFindUniqueOrThrowArgs} args - Arguments to find a PersonalizedOutput
-     * @example
-     * // Get one PersonalizedOutput
-     * const personalizedOutput = await prisma.personalizedOutput.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends PersonalizedOutputFindUniqueOrThrowArgs>(args: SelectSubset<T, PersonalizedOutputFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PersonalizedOutputClient<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first PersonalizedOutput that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PersonalizedOutputFindFirstArgs} args - Arguments to find a PersonalizedOutput
-     * @example
-     * // Get one PersonalizedOutput
-     * const personalizedOutput = await prisma.personalizedOutput.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends PersonalizedOutputFindFirstArgs>(args?: SelectSubset<T, PersonalizedOutputFindFirstArgs<ExtArgs>>): Prisma__PersonalizedOutputClient<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first PersonalizedOutput that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PersonalizedOutputFindFirstOrThrowArgs} args - Arguments to find a PersonalizedOutput
-     * @example
-     * // Get one PersonalizedOutput
-     * const personalizedOutput = await prisma.personalizedOutput.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends PersonalizedOutputFindFirstOrThrowArgs>(args?: SelectSubset<T, PersonalizedOutputFindFirstOrThrowArgs<ExtArgs>>): Prisma__PersonalizedOutputClient<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more PersonalizedOutputs that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PersonalizedOutputFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all PersonalizedOutputs
-     * const personalizedOutputs = await prisma.personalizedOutput.findMany()
-     * 
-     * // Get first 10 PersonalizedOutputs
-     * const personalizedOutputs = await prisma.personalizedOutput.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const personalizedOutputWithIdOnly = await prisma.personalizedOutput.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends PersonalizedOutputFindManyArgs>(args?: SelectSubset<T, PersonalizedOutputFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a PersonalizedOutput.
-     * @param {PersonalizedOutputCreateArgs} args - Arguments to create a PersonalizedOutput.
-     * @example
-     * // Create one PersonalizedOutput
-     * const PersonalizedOutput = await prisma.personalizedOutput.create({
-     *   data: {
-     *     // ... data to create a PersonalizedOutput
-     *   }
-     * })
-     * 
-     */
-    create<T extends PersonalizedOutputCreateArgs>(args: SelectSubset<T, PersonalizedOutputCreateArgs<ExtArgs>>): Prisma__PersonalizedOutputClient<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many PersonalizedOutputs.
-     * @param {PersonalizedOutputCreateManyArgs} args - Arguments to create many PersonalizedOutputs.
-     * @example
-     * // Create many PersonalizedOutputs
-     * const personalizedOutput = await prisma.personalizedOutput.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends PersonalizedOutputCreateManyArgs>(args?: SelectSubset<T, PersonalizedOutputCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many PersonalizedOutputs and returns the data saved in the database.
-     * @param {PersonalizedOutputCreateManyAndReturnArgs} args - Arguments to create many PersonalizedOutputs.
-     * @example
-     * // Create many PersonalizedOutputs
-     * const personalizedOutput = await prisma.personalizedOutput.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many PersonalizedOutputs and only return the `id`
-     * const personalizedOutputWithIdOnly = await prisma.personalizedOutput.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends PersonalizedOutputCreateManyAndReturnArgs>(args?: SelectSubset<T, PersonalizedOutputCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a PersonalizedOutput.
-     * @param {PersonalizedOutputDeleteArgs} args - Arguments to delete one PersonalizedOutput.
-     * @example
-     * // Delete one PersonalizedOutput
-     * const PersonalizedOutput = await prisma.personalizedOutput.delete({
-     *   where: {
-     *     // ... filter to delete one PersonalizedOutput
-     *   }
-     * })
-     * 
-     */
-    delete<T extends PersonalizedOutputDeleteArgs>(args: SelectSubset<T, PersonalizedOutputDeleteArgs<ExtArgs>>): Prisma__PersonalizedOutputClient<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one PersonalizedOutput.
-     * @param {PersonalizedOutputUpdateArgs} args - Arguments to update one PersonalizedOutput.
-     * @example
-     * // Update one PersonalizedOutput
-     * const personalizedOutput = await prisma.personalizedOutput.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends PersonalizedOutputUpdateArgs>(args: SelectSubset<T, PersonalizedOutputUpdateArgs<ExtArgs>>): Prisma__PersonalizedOutputClient<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more PersonalizedOutputs.
-     * @param {PersonalizedOutputDeleteManyArgs} args - Arguments to filter PersonalizedOutputs to delete.
-     * @example
-     * // Delete a few PersonalizedOutputs
-     * const { count } = await prisma.personalizedOutput.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends PersonalizedOutputDeleteManyArgs>(args?: SelectSubset<T, PersonalizedOutputDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more PersonalizedOutputs.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PersonalizedOutputUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many PersonalizedOutputs
-     * const personalizedOutput = await prisma.personalizedOutput.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends PersonalizedOutputUpdateManyArgs>(args: SelectSubset<T, PersonalizedOutputUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more PersonalizedOutputs and returns the data updated in the database.
-     * @param {PersonalizedOutputUpdateManyAndReturnArgs} args - Arguments to update many PersonalizedOutputs.
-     * @example
-     * // Update many PersonalizedOutputs
-     * const personalizedOutput = await prisma.personalizedOutput.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more PersonalizedOutputs and only return the `id`
-     * const personalizedOutputWithIdOnly = await prisma.personalizedOutput.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends PersonalizedOutputUpdateManyAndReturnArgs>(args: SelectSubset<T, PersonalizedOutputUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one PersonalizedOutput.
-     * @param {PersonalizedOutputUpsertArgs} args - Arguments to update or create a PersonalizedOutput.
-     * @example
-     * // Update or create a PersonalizedOutput
-     * const personalizedOutput = await prisma.personalizedOutput.upsert({
-     *   create: {
-     *     // ... data to create a PersonalizedOutput
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the PersonalizedOutput we want to update
-     *   }
-     * })
-     */
-    upsert<T extends PersonalizedOutputUpsertArgs>(args: SelectSubset<T, PersonalizedOutputUpsertArgs<ExtArgs>>): Prisma__PersonalizedOutputClient<$Result.GetResult<Prisma.$PersonalizedOutputPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of PersonalizedOutputs.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PersonalizedOutputCountArgs} args - Arguments to filter PersonalizedOutputs to count.
-     * @example
-     * // Count the number of PersonalizedOutputs
-     * const count = await prisma.personalizedOutput.count({
-     *   where: {
-     *     // ... the filter for the PersonalizedOutputs we want to count
-     *   }
-     * })
-    **/
-    count<T extends PersonalizedOutputCountArgs>(
-      args?: Subset<T, PersonalizedOutputCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], PersonalizedOutputCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a PersonalizedOutput.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PersonalizedOutputAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends PersonalizedOutputAggregateArgs>(args: Subset<T, PersonalizedOutputAggregateArgs>): Prisma.PrismaPromise<GetPersonalizedOutputAggregateType<T>>
-
-    /**
-     * Group by PersonalizedOutput.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PersonalizedOutputGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends PersonalizedOutputGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: PersonalizedOutputGroupByArgs['orderBy'] }
-        : { orderBy?: PersonalizedOutputGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, PersonalizedOutputGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPersonalizedOutputGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the PersonalizedOutput model
-   */
-  readonly fields: PersonalizedOutputFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for PersonalizedOutput.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__PersonalizedOutputClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    article<T extends ArticleDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ArticleDefaultArgs<ExtArgs>>): Prisma__ArticleClient<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the PersonalizedOutput model
-   */
-  interface PersonalizedOutputFieldRefs {
-    readonly id: FieldRef<"PersonalizedOutput", 'String'>
-    readonly userId: FieldRef<"PersonalizedOutput", 'String'>
-    readonly articleId: FieldRef<"PersonalizedOutput", 'String'>
-    readonly personalizedKeyInsights: FieldRef<"PersonalizedOutput", 'String[]'>
-    readonly personalizedVideoScript: FieldRef<"PersonalizedOutput", 'String'>
-    readonly personalizedEmailTemplate: FieldRef<"PersonalizedOutput", 'String'>
-    readonly personalizedSocialContent: FieldRef<"PersonalizedOutput", 'Json'>
-    readonly truetoneSettings: FieldRef<"PersonalizedOutput", 'Json'>
-    readonly tokensUsed: FieldRef<"PersonalizedOutput", 'Int'>
-    readonly generationCount: FieldRef<"PersonalizedOutput", 'Int'>
-    readonly lastGeneratedAt: FieldRef<"PersonalizedOutput", 'DateTime'>
-    readonly createdAt: FieldRef<"PersonalizedOutput", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * PersonalizedOutput findUnique
-   */
-  export type PersonalizedOutputFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PersonalizedOutput
-     */
-    select?: PersonalizedOutputSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PersonalizedOutput
-     */
-    omit?: PersonalizedOutputOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PersonalizedOutputInclude<ExtArgs> | null
-    /**
-     * Filter, which PersonalizedOutput to fetch.
-     */
-    where: PersonalizedOutputWhereUniqueInput
-  }
-
-  /**
-   * PersonalizedOutput findUniqueOrThrow
-   */
-  export type PersonalizedOutputFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PersonalizedOutput
-     */
-    select?: PersonalizedOutputSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PersonalizedOutput
-     */
-    omit?: PersonalizedOutputOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PersonalizedOutputInclude<ExtArgs> | null
-    /**
-     * Filter, which PersonalizedOutput to fetch.
-     */
-    where: PersonalizedOutputWhereUniqueInput
-  }
-
-  /**
-   * PersonalizedOutput findFirst
-   */
-  export type PersonalizedOutputFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PersonalizedOutput
-     */
-    select?: PersonalizedOutputSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PersonalizedOutput
-     */
-    omit?: PersonalizedOutputOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PersonalizedOutputInclude<ExtArgs> | null
-    /**
-     * Filter, which PersonalizedOutput to fetch.
-     */
-    where?: PersonalizedOutputWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of PersonalizedOutputs to fetch.
-     */
-    orderBy?: PersonalizedOutputOrderByWithRelationInput | PersonalizedOutputOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for PersonalizedOutputs.
-     */
-    cursor?: PersonalizedOutputWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` PersonalizedOutputs from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` PersonalizedOutputs.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of PersonalizedOutputs.
-     */
-    distinct?: PersonalizedOutputScalarFieldEnum | PersonalizedOutputScalarFieldEnum[]
-  }
-
-  /**
-   * PersonalizedOutput findFirstOrThrow
-   */
-  export type PersonalizedOutputFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PersonalizedOutput
-     */
-    select?: PersonalizedOutputSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PersonalizedOutput
-     */
-    omit?: PersonalizedOutputOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PersonalizedOutputInclude<ExtArgs> | null
-    /**
-     * Filter, which PersonalizedOutput to fetch.
-     */
-    where?: PersonalizedOutputWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of PersonalizedOutputs to fetch.
-     */
-    orderBy?: PersonalizedOutputOrderByWithRelationInput | PersonalizedOutputOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for PersonalizedOutputs.
-     */
-    cursor?: PersonalizedOutputWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` PersonalizedOutputs from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` PersonalizedOutputs.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of PersonalizedOutputs.
-     */
-    distinct?: PersonalizedOutputScalarFieldEnum | PersonalizedOutputScalarFieldEnum[]
-  }
-
-  /**
-   * PersonalizedOutput findMany
-   */
-  export type PersonalizedOutputFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PersonalizedOutput
-     */
-    select?: PersonalizedOutputSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PersonalizedOutput
-     */
-    omit?: PersonalizedOutputOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PersonalizedOutputInclude<ExtArgs> | null
-    /**
-     * Filter, which PersonalizedOutputs to fetch.
-     */
-    where?: PersonalizedOutputWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of PersonalizedOutputs to fetch.
-     */
-    orderBy?: PersonalizedOutputOrderByWithRelationInput | PersonalizedOutputOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing PersonalizedOutputs.
-     */
-    cursor?: PersonalizedOutputWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` PersonalizedOutputs from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` PersonalizedOutputs.
-     */
-    skip?: number
-    distinct?: PersonalizedOutputScalarFieldEnum | PersonalizedOutputScalarFieldEnum[]
-  }
-
-  /**
-   * PersonalizedOutput create
-   */
-  export type PersonalizedOutputCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PersonalizedOutput
-     */
-    select?: PersonalizedOutputSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PersonalizedOutput
-     */
-    omit?: PersonalizedOutputOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PersonalizedOutputInclude<ExtArgs> | null
-    /**
-     * The data needed to create a PersonalizedOutput.
-     */
-    data: XOR<PersonalizedOutputCreateInput, PersonalizedOutputUncheckedCreateInput>
-  }
-
-  /**
-   * PersonalizedOutput createMany
-   */
-  export type PersonalizedOutputCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many PersonalizedOutputs.
-     */
-    data: PersonalizedOutputCreateManyInput | PersonalizedOutputCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * PersonalizedOutput createManyAndReturn
-   */
-  export type PersonalizedOutputCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PersonalizedOutput
-     */
-    select?: PersonalizedOutputSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the PersonalizedOutput
-     */
-    omit?: PersonalizedOutputOmit<ExtArgs> | null
-    /**
-     * The data used to create many PersonalizedOutputs.
-     */
-    data: PersonalizedOutputCreateManyInput | PersonalizedOutputCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PersonalizedOutputIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * PersonalizedOutput update
-   */
-  export type PersonalizedOutputUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PersonalizedOutput
-     */
-    select?: PersonalizedOutputSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PersonalizedOutput
-     */
-    omit?: PersonalizedOutputOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PersonalizedOutputInclude<ExtArgs> | null
-    /**
-     * The data needed to update a PersonalizedOutput.
-     */
-    data: XOR<PersonalizedOutputUpdateInput, PersonalizedOutputUncheckedUpdateInput>
-    /**
-     * Choose, which PersonalizedOutput to update.
-     */
-    where: PersonalizedOutputWhereUniqueInput
-  }
-
-  /**
-   * PersonalizedOutput updateMany
-   */
-  export type PersonalizedOutputUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update PersonalizedOutputs.
-     */
-    data: XOR<PersonalizedOutputUpdateManyMutationInput, PersonalizedOutputUncheckedUpdateManyInput>
-    /**
-     * Filter which PersonalizedOutputs to update
-     */
-    where?: PersonalizedOutputWhereInput
-    /**
-     * Limit how many PersonalizedOutputs to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * PersonalizedOutput updateManyAndReturn
-   */
-  export type PersonalizedOutputUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PersonalizedOutput
-     */
-    select?: PersonalizedOutputSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the PersonalizedOutput
-     */
-    omit?: PersonalizedOutputOmit<ExtArgs> | null
-    /**
-     * The data used to update PersonalizedOutputs.
-     */
-    data: XOR<PersonalizedOutputUpdateManyMutationInput, PersonalizedOutputUncheckedUpdateManyInput>
-    /**
-     * Filter which PersonalizedOutputs to update
-     */
-    where?: PersonalizedOutputWhereInput
-    /**
-     * Limit how many PersonalizedOutputs to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PersonalizedOutputIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * PersonalizedOutput upsert
-   */
-  export type PersonalizedOutputUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PersonalizedOutput
-     */
-    select?: PersonalizedOutputSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PersonalizedOutput
-     */
-    omit?: PersonalizedOutputOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PersonalizedOutputInclude<ExtArgs> | null
-    /**
-     * The filter to search for the PersonalizedOutput to update in case it exists.
-     */
-    where: PersonalizedOutputWhereUniqueInput
-    /**
-     * In case the PersonalizedOutput found by the `where` argument doesn't exist, create a new PersonalizedOutput with this data.
-     */
-    create: XOR<PersonalizedOutputCreateInput, PersonalizedOutputUncheckedCreateInput>
-    /**
-     * In case the PersonalizedOutput was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<PersonalizedOutputUpdateInput, PersonalizedOutputUncheckedUpdateInput>
-  }
-
-  /**
-   * PersonalizedOutput delete
-   */
-  export type PersonalizedOutputDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PersonalizedOutput
-     */
-    select?: PersonalizedOutputSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PersonalizedOutput
-     */
-    omit?: PersonalizedOutputOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PersonalizedOutputInclude<ExtArgs> | null
-    /**
-     * Filter which PersonalizedOutput to delete.
-     */
-    where: PersonalizedOutputWhereUniqueInput
-  }
-
-  /**
-   * PersonalizedOutput deleteMany
-   */
-  export type PersonalizedOutputDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which PersonalizedOutputs to delete
-     */
-    where?: PersonalizedOutputWhereInput
-    /**
-     * Limit how many PersonalizedOutputs to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * PersonalizedOutput without action
-   */
-  export type PersonalizedOutputDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PersonalizedOutput
-     */
-    select?: PersonalizedOutputSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the PersonalizedOutput
-     */
-    omit?: PersonalizedOutputOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PersonalizedOutputInclude<ExtArgs> | null
   }
 
 
@@ -16332,7 +13543,6 @@ export namespace Prisma {
     kindeId: 'kindeId',
     categoryPreferences: 'categoryPreferences',
     tagPreferences: 'tagPreferences',
-    savedArticleIds: 'savedArticleIds',
     toneOfVoice: 'toneOfVoice',
     humor: 'humor',
     detailOrientation: 'detailOrientation',
@@ -16370,20 +13580,6 @@ export namespace Prisma {
   };
 
   export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
-
-
-  export const LikeScalarFieldEnum: {
-    id: 'id',
-    userId: 'userId',
-    postId: 'postId',
-    contentId: 'contentId',
-    contentType: 'contentType',
-    contentTitle: 'contentTitle',
-    deviceType: 'deviceType',
-    timestamp: 'timestamp'
-  };
-
-  export type LikeScalarFieldEnum = (typeof LikeScalarFieldEnum)[keyof typeof LikeScalarFieldEnum]
 
 
   export const UserSessionScalarFieldEnum: {
@@ -16490,24 +13686,6 @@ export namespace Prisma {
   };
 
   export type ArticleScalarFieldEnum = (typeof ArticleScalarFieldEnum)[keyof typeof ArticleScalarFieldEnum]
-
-
-  export const PersonalizedOutputScalarFieldEnum: {
-    id: 'id',
-    userId: 'userId',
-    articleId: 'articleId',
-    personalizedKeyInsights: 'personalizedKeyInsights',
-    personalizedVideoScript: 'personalizedVideoScript',
-    personalizedEmailTemplate: 'personalizedEmailTemplate',
-    personalizedSocialContent: 'personalizedSocialContent',
-    truetoneSettings: 'truetoneSettings',
-    tokensUsed: 'tokensUsed',
-    generationCount: 'generationCount',
-    lastGeneratedAt: 'lastGeneratedAt',
-    createdAt: 'createdAt'
-  };
-
-  export type PersonalizedOutputScalarFieldEnum = (typeof PersonalizedOutputScalarFieldEnum)[keyof typeof PersonalizedOutputScalarFieldEnum]
 
 
   export const GenerationScalarFieldEnum: {
@@ -16683,20 +13861,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'ContentType'
-   */
-  export type EnumContentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContentType'>
-    
-
-
-  /**
-   * Reference to a field of type 'ContentType[]'
-   */
-  export type ListEnumContentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContentType[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Device'
    */
   export type EnumDeviceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Device'>
@@ -16799,7 +13963,6 @@ export namespace Prisma {
     kindeId?: StringNullableFilter<"User"> | string | null
     categoryPreferences?: StringNullableListFilter<"User">
     tagPreferences?: StringNullableListFilter<"User">
-    savedArticleIds?: StringNullableListFilter<"User">
     toneOfVoice?: StringNullableFilter<"User"> | string | null
     humor?: StringNullableFilter<"User"> | string | null
     detailOrientation?: StringNullableFilter<"User"> | string | null
@@ -16821,14 +13984,12 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFilter<"User"> | boolean
     onboardingStep?: IntNullableFilter<"User"> | number | null
     onboardingCompletedAt?: DateTimeNullableFilter<"User"> | Date | string | null
-    likes?: LikeListRelationFilter
     sessions?: UserSessionListRelationFilter
     events?: AnalyticsEventListRelationFilter
     pageViews?: PageViewListRelationFilter
     chatAnalytics?: ChatAnalyticsListRelationFilter
     createdArticles?: ArticleListRelationFilter
     editedArticles?: ArticleListRelationFilter
-    personalizations?: PersonalizedOutputListRelationFilter
     generations?: GenerationListRelationFilter
   }
 
@@ -16845,7 +14006,6 @@ export namespace Prisma {
     kindeId?: SortOrderInput | SortOrder
     categoryPreferences?: SortOrder
     tagPreferences?: SortOrder
-    savedArticleIds?: SortOrder
     toneOfVoice?: SortOrderInput | SortOrder
     humor?: SortOrderInput | SortOrder
     detailOrientation?: SortOrderInput | SortOrder
@@ -16867,14 +14027,12 @@ export namespace Prisma {
     hasCompletedOnboarding?: SortOrder
     onboardingStep?: SortOrderInput | SortOrder
     onboardingCompletedAt?: SortOrderInput | SortOrder
-    likes?: LikeOrderByRelationAggregateInput
     sessions?: UserSessionOrderByRelationAggregateInput
     events?: AnalyticsEventOrderByRelationAggregateInput
     pageViews?: PageViewOrderByRelationAggregateInput
     chatAnalytics?: ChatAnalyticsOrderByRelationAggregateInput
     createdArticles?: ArticleOrderByRelationAggregateInput
     editedArticles?: ArticleOrderByRelationAggregateInput
-    personalizations?: PersonalizedOutputOrderByRelationAggregateInput
     generations?: GenerationOrderByRelationAggregateInput
   }
 
@@ -16896,7 +14054,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     categoryPreferences?: StringNullableListFilter<"User">
     tagPreferences?: StringNullableListFilter<"User">
-    savedArticleIds?: StringNullableListFilter<"User">
     toneOfVoice?: StringNullableFilter<"User"> | string | null
     humor?: StringNullableFilter<"User"> | string | null
     detailOrientation?: StringNullableFilter<"User"> | string | null
@@ -16916,14 +14073,12 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFilter<"User"> | boolean
     onboardingStep?: IntNullableFilter<"User"> | number | null
     onboardingCompletedAt?: DateTimeNullableFilter<"User"> | Date | string | null
-    likes?: LikeListRelationFilter
     sessions?: UserSessionListRelationFilter
     events?: AnalyticsEventListRelationFilter
     pageViews?: PageViewListRelationFilter
     chatAnalytics?: ChatAnalyticsListRelationFilter
     createdArticles?: ArticleListRelationFilter
     editedArticles?: ArticleListRelationFilter
-    personalizations?: PersonalizedOutputListRelationFilter
     generations?: GenerationListRelationFilter
   }, "id" | "email" | "kindeId" | "stripeCustomerId" | "stripeSubscriptionId">
 
@@ -16940,7 +14095,6 @@ export namespace Prisma {
     kindeId?: SortOrderInput | SortOrder
     categoryPreferences?: SortOrder
     tagPreferences?: SortOrder
-    savedArticleIds?: SortOrder
     toneOfVoice?: SortOrderInput | SortOrder
     humor?: SortOrderInput | SortOrder
     detailOrientation?: SortOrderInput | SortOrder
@@ -16985,7 +14139,6 @@ export namespace Prisma {
     kindeId?: StringNullableWithAggregatesFilter<"User"> | string | null
     categoryPreferences?: StringNullableListFilter<"User">
     tagPreferences?: StringNullableListFilter<"User">
-    savedArticleIds?: StringNullableListFilter<"User">
     toneOfVoice?: StringNullableWithAggregatesFilter<"User"> | string | null
     humor?: StringNullableWithAggregatesFilter<"User"> | string | null
     detailOrientation?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -17020,7 +14173,6 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableFilter<"Post"> | Date | string | null
     createdAt?: DateTimeFilter<"Post"> | Date | string
     updatedAt?: DateTimeFilter<"Post"> | Date | string
-    likes?: LikeListRelationFilter
   }
 
   export type PostOrderByWithRelationInput = {
@@ -17031,7 +14183,6 @@ export namespace Prisma {
     publishedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    likes?: LikeOrderByRelationAggregateInput
   }
 
   export type PostWhereUniqueInput = Prisma.AtLeast<{
@@ -17045,7 +14196,6 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableFilter<"Post"> | Date | string | null
     createdAt?: DateTimeFilter<"Post"> | Date | string
     updatedAt?: DateTimeFilter<"Post"> | Date | string
-    likes?: LikeListRelationFilter
   }, "id">
 
   export type PostOrderByWithAggregationInput = {
@@ -17072,80 +14222,6 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
-  }
-
-  export type LikeWhereInput = {
-    AND?: LikeWhereInput | LikeWhereInput[]
-    OR?: LikeWhereInput[]
-    NOT?: LikeWhereInput | LikeWhereInput[]
-    id?: UuidFilter<"Like"> | string
-    userId?: UuidFilter<"Like"> | string
-    postId?: UuidFilter<"Like"> | string
-    contentId?: StringFilter<"Like"> | string
-    contentType?: EnumContentTypeFilter<"Like"> | $Enums.ContentType
-    contentTitle?: StringFilter<"Like"> | string
-    deviceType?: EnumDeviceFilter<"Like"> | $Enums.Device
-    timestamp?: DateTimeFilter<"Like"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    post?: XOR<PostScalarRelationFilter, PostWhereInput>
-  }
-
-  export type LikeOrderByWithRelationInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    postId?: SortOrder
-    contentId?: SortOrder
-    contentType?: SortOrder
-    contentTitle?: SortOrder
-    deviceType?: SortOrder
-    timestamp?: SortOrder
-    user?: UserOrderByWithRelationInput
-    post?: PostOrderByWithRelationInput
-  }
-
-  export type LikeWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    userId_postId_contentId_contentType?: LikeUserIdPostIdContentIdContentTypeCompoundUniqueInput
-    AND?: LikeWhereInput | LikeWhereInput[]
-    OR?: LikeWhereInput[]
-    NOT?: LikeWhereInput | LikeWhereInput[]
-    userId?: UuidFilter<"Like"> | string
-    postId?: UuidFilter<"Like"> | string
-    contentId?: StringFilter<"Like"> | string
-    contentType?: EnumContentTypeFilter<"Like"> | $Enums.ContentType
-    contentTitle?: StringFilter<"Like"> | string
-    deviceType?: EnumDeviceFilter<"Like"> | $Enums.Device
-    timestamp?: DateTimeFilter<"Like"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    post?: XOR<PostScalarRelationFilter, PostWhereInput>
-  }, "id" | "userId_postId_contentId_contentType">
-
-  export type LikeOrderByWithAggregationInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    postId?: SortOrder
-    contentId?: SortOrder
-    contentType?: SortOrder
-    contentTitle?: SortOrder
-    deviceType?: SortOrder
-    timestamp?: SortOrder
-    _count?: LikeCountOrderByAggregateInput
-    _max?: LikeMaxOrderByAggregateInput
-    _min?: LikeMinOrderByAggregateInput
-  }
-
-  export type LikeScalarWhereWithAggregatesInput = {
-    AND?: LikeScalarWhereWithAggregatesInput | LikeScalarWhereWithAggregatesInput[]
-    OR?: LikeScalarWhereWithAggregatesInput[]
-    NOT?: LikeScalarWhereWithAggregatesInput | LikeScalarWhereWithAggregatesInput[]
-    id?: UuidWithAggregatesFilter<"Like"> | string
-    userId?: UuidWithAggregatesFilter<"Like"> | string
-    postId?: UuidWithAggregatesFilter<"Like"> | string
-    contentId?: StringWithAggregatesFilter<"Like"> | string
-    contentType?: EnumContentTypeWithAggregatesFilter<"Like"> | $Enums.ContentType
-    contentTitle?: StringWithAggregatesFilter<"Like"> | string
-    deviceType?: EnumDeviceWithAggregatesFilter<"Like"> | $Enums.Device
-    timestamp?: DateTimeWithAggregatesFilter<"Like"> | Date | string
   }
 
   export type UserSessionWhereInput = {
@@ -17576,7 +14652,6 @@ export namespace Prisma {
     lastEditedByAdminId?: UuidNullableFilter<"Article"> | string | null
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     lastEditedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
-    personalizations?: PersonalizedOutputListRelationFilter
     generations?: GenerationListRelationFilter
   }
 
@@ -17609,7 +14684,6 @@ export namespace Prisma {
     lastEditedByAdminId?: SortOrderInput | SortOrder
     createdBy?: UserOrderByWithRelationInput
     lastEditedBy?: UserOrderByWithRelationInput
-    personalizations?: PersonalizedOutputOrderByRelationAggregateInput
     generations?: GenerationOrderByRelationAggregateInput
   }
 
@@ -17645,7 +14719,6 @@ export namespace Prisma {
     lastEditedByAdminId?: UuidNullableFilter<"Article"> | string | null
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     lastEditedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
-    personalizations?: PersonalizedOutputListRelationFilter
     generations?: GenerationListRelationFilter
   }, "id">
 
@@ -17713,102 +14786,6 @@ export namespace Prisma {
     reviewNotes?: StringNullableWithAggregatesFilter<"Article"> | string | null
     createdByAdminId?: UuidNullableWithAggregatesFilter<"Article"> | string | null
     lastEditedByAdminId?: UuidNullableWithAggregatesFilter<"Article"> | string | null
-  }
-
-  export type PersonalizedOutputWhereInput = {
-    AND?: PersonalizedOutputWhereInput | PersonalizedOutputWhereInput[]
-    OR?: PersonalizedOutputWhereInput[]
-    NOT?: PersonalizedOutputWhereInput | PersonalizedOutputWhereInput[]
-    id?: UuidFilter<"PersonalizedOutput"> | string
-    userId?: UuidFilter<"PersonalizedOutput"> | string
-    articleId?: UuidFilter<"PersonalizedOutput"> | string
-    personalizedKeyInsights?: StringNullableListFilter<"PersonalizedOutput">
-    personalizedVideoScript?: StringNullableFilter<"PersonalizedOutput"> | string | null
-    personalizedEmailTemplate?: StringNullableFilter<"PersonalizedOutput"> | string | null
-    personalizedSocialContent?: JsonNullableFilter<"PersonalizedOutput">
-    truetoneSettings?: JsonNullableFilter<"PersonalizedOutput">
-    tokensUsed?: IntNullableFilter<"PersonalizedOutput"> | number | null
-    generationCount?: IntFilter<"PersonalizedOutput"> | number
-    lastGeneratedAt?: DateTimeFilter<"PersonalizedOutput"> | Date | string
-    createdAt?: DateTimeFilter<"PersonalizedOutput"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    article?: XOR<ArticleScalarRelationFilter, ArticleWhereInput>
-  }
-
-  export type PersonalizedOutputOrderByWithRelationInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    articleId?: SortOrder
-    personalizedKeyInsights?: SortOrder
-    personalizedVideoScript?: SortOrderInput | SortOrder
-    personalizedEmailTemplate?: SortOrderInput | SortOrder
-    personalizedSocialContent?: SortOrderInput | SortOrder
-    truetoneSettings?: SortOrderInput | SortOrder
-    tokensUsed?: SortOrderInput | SortOrder
-    generationCount?: SortOrder
-    lastGeneratedAt?: SortOrder
-    createdAt?: SortOrder
-    user?: UserOrderByWithRelationInput
-    article?: ArticleOrderByWithRelationInput
-  }
-
-  export type PersonalizedOutputWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    userId_articleId?: PersonalizedOutputUserIdArticleIdCompoundUniqueInput
-    AND?: PersonalizedOutputWhereInput | PersonalizedOutputWhereInput[]
-    OR?: PersonalizedOutputWhereInput[]
-    NOT?: PersonalizedOutputWhereInput | PersonalizedOutputWhereInput[]
-    userId?: UuidFilter<"PersonalizedOutput"> | string
-    articleId?: UuidFilter<"PersonalizedOutput"> | string
-    personalizedKeyInsights?: StringNullableListFilter<"PersonalizedOutput">
-    personalizedVideoScript?: StringNullableFilter<"PersonalizedOutput"> | string | null
-    personalizedEmailTemplate?: StringNullableFilter<"PersonalizedOutput"> | string | null
-    personalizedSocialContent?: JsonNullableFilter<"PersonalizedOutput">
-    truetoneSettings?: JsonNullableFilter<"PersonalizedOutput">
-    tokensUsed?: IntNullableFilter<"PersonalizedOutput"> | number | null
-    generationCount?: IntFilter<"PersonalizedOutput"> | number
-    lastGeneratedAt?: DateTimeFilter<"PersonalizedOutput"> | Date | string
-    createdAt?: DateTimeFilter<"PersonalizedOutput"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    article?: XOR<ArticleScalarRelationFilter, ArticleWhereInput>
-  }, "id" | "userId_articleId">
-
-  export type PersonalizedOutputOrderByWithAggregationInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    articleId?: SortOrder
-    personalizedKeyInsights?: SortOrder
-    personalizedVideoScript?: SortOrderInput | SortOrder
-    personalizedEmailTemplate?: SortOrderInput | SortOrder
-    personalizedSocialContent?: SortOrderInput | SortOrder
-    truetoneSettings?: SortOrderInput | SortOrder
-    tokensUsed?: SortOrderInput | SortOrder
-    generationCount?: SortOrder
-    lastGeneratedAt?: SortOrder
-    createdAt?: SortOrder
-    _count?: PersonalizedOutputCountOrderByAggregateInput
-    _avg?: PersonalizedOutputAvgOrderByAggregateInput
-    _max?: PersonalizedOutputMaxOrderByAggregateInput
-    _min?: PersonalizedOutputMinOrderByAggregateInput
-    _sum?: PersonalizedOutputSumOrderByAggregateInput
-  }
-
-  export type PersonalizedOutputScalarWhereWithAggregatesInput = {
-    AND?: PersonalizedOutputScalarWhereWithAggregatesInput | PersonalizedOutputScalarWhereWithAggregatesInput[]
-    OR?: PersonalizedOutputScalarWhereWithAggregatesInput[]
-    NOT?: PersonalizedOutputScalarWhereWithAggregatesInput | PersonalizedOutputScalarWhereWithAggregatesInput[]
-    id?: UuidWithAggregatesFilter<"PersonalizedOutput"> | string
-    userId?: UuidWithAggregatesFilter<"PersonalizedOutput"> | string
-    articleId?: UuidWithAggregatesFilter<"PersonalizedOutput"> | string
-    personalizedKeyInsights?: StringNullableListFilter<"PersonalizedOutput">
-    personalizedVideoScript?: StringNullableWithAggregatesFilter<"PersonalizedOutput"> | string | null
-    personalizedEmailTemplate?: StringNullableWithAggregatesFilter<"PersonalizedOutput"> | string | null
-    personalizedSocialContent?: JsonNullableWithAggregatesFilter<"PersonalizedOutput">
-    truetoneSettings?: JsonNullableWithAggregatesFilter<"PersonalizedOutput">
-    tokensUsed?: IntNullableWithAggregatesFilter<"PersonalizedOutput"> | number | null
-    generationCount?: IntWithAggregatesFilter<"PersonalizedOutput"> | number
-    lastGeneratedAt?: DateTimeWithAggregatesFilter<"PersonalizedOutput"> | Date | string
-    createdAt?: DateTimeWithAggregatesFilter<"PersonalizedOutput"> | Date | string
   }
 
   export type GenerationWhereInput = {
@@ -17968,7 +14945,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -17990,14 +14966,12 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeCreateNestedManyWithoutUserInput
     sessions?: UserSessionCreateNestedManyWithoutUserInput
     events?: AnalyticsEventCreateNestedManyWithoutUserInput
     pageViews?: PageViewCreateNestedManyWithoutUserInput
     chatAnalytics?: ChatAnalyticsCreateNestedManyWithoutUserInput
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
     generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
@@ -18014,7 +14988,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -18036,14 +15009,12 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
     sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
     events?: AnalyticsEventUncheckedCreateNestedManyWithoutUserInput
     pageViews?: PageViewUncheckedCreateNestedManyWithoutUserInput
     chatAnalytics?: ChatAnalyticsUncheckedCreateNestedManyWithoutUserInput
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
     generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -18060,7 +15031,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18082,14 +15052,12 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUpdateManyWithoutUserNestedInput
     events?: AnalyticsEventUpdateManyWithoutUserNestedInput
     pageViews?: PageViewUpdateManyWithoutUserNestedInput
     chatAnalytics?: ChatAnalyticsUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
     generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
@@ -18106,7 +15074,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18128,14 +15095,12 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
     events?: AnalyticsEventUncheckedUpdateManyWithoutUserNestedInput
     pageViews?: PageViewUncheckedUpdateManyWithoutUserNestedInput
     chatAnalytics?: ChatAnalyticsUncheckedUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
     generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -18152,7 +15117,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -18189,7 +15153,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18226,7 +15189,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18258,7 +15220,6 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    likes?: LikeCreateNestedManyWithoutPostInput
   }
 
   export type PostUncheckedCreateInput = {
@@ -18269,7 +15230,6 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    likes?: LikeUncheckedCreateNestedManyWithoutPostInput
   }
 
   export type PostUpdateInput = {
@@ -18280,7 +15240,6 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    likes?: LikeUpdateManyWithoutPostNestedInput
   }
 
   export type PostUncheckedUpdateInput = {
@@ -18291,7 +15250,6 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    likes?: LikeUncheckedUpdateManyWithoutPostNestedInput
   }
 
   export type PostCreateManyInput = {
@@ -18322,81 +15280,6 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type LikeCreateInput = {
-    id?: string
-    contentId: string
-    contentType: $Enums.ContentType
-    contentTitle: string
-    deviceType?: $Enums.Device
-    timestamp?: Date | string
-    user: UserCreateNestedOneWithoutLikesInput
-    post: PostCreateNestedOneWithoutLikesInput
-  }
-
-  export type LikeUncheckedCreateInput = {
-    id?: string
-    userId: string
-    postId: string
-    contentId: string
-    contentType: $Enums.ContentType
-    contentTitle: string
-    deviceType?: $Enums.Device
-    timestamp?: Date | string
-  }
-
-  export type LikeUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    contentId?: StringFieldUpdateOperationsInput | string
-    contentType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
-    contentTitle?: StringFieldUpdateOperationsInput | string
-    deviceType?: EnumDeviceFieldUpdateOperationsInput | $Enums.Device
-    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutLikesNestedInput
-    post?: PostUpdateOneRequiredWithoutLikesNestedInput
-  }
-
-  export type LikeUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    postId?: StringFieldUpdateOperationsInput | string
-    contentId?: StringFieldUpdateOperationsInput | string
-    contentType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
-    contentTitle?: StringFieldUpdateOperationsInput | string
-    deviceType?: EnumDeviceFieldUpdateOperationsInput | $Enums.Device
-    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type LikeCreateManyInput = {
-    id?: string
-    userId: string
-    postId: string
-    contentId: string
-    contentType: $Enums.ContentType
-    contentTitle: string
-    deviceType?: $Enums.Device
-    timestamp?: Date | string
-  }
-
-  export type LikeUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    contentId?: StringFieldUpdateOperationsInput | string
-    contentType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
-    contentTitle?: StringFieldUpdateOperationsInput | string
-    deviceType?: EnumDeviceFieldUpdateOperationsInput | $Enums.Device
-    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type LikeUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    postId?: StringFieldUpdateOperationsInput | string
-    contentId?: StringFieldUpdateOperationsInput | string
-    contentType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
-    contentTitle?: StringFieldUpdateOperationsInput | string
-    deviceType?: EnumDeviceFieldUpdateOperationsInput | $Enums.Device
-    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserSessionCreateInput = {
@@ -18865,7 +15748,6 @@ export namespace Prisma {
     reviewNotes?: string | null
     createdBy?: UserCreateNestedOneWithoutCreatedArticlesInput
     lastEditedBy?: UserCreateNestedOneWithoutEditedArticlesInput
-    personalizations?: PersonalizedOutputCreateNestedManyWithoutArticleInput
     generations?: GenerationCreateNestedManyWithoutArticleInput
   }
 
@@ -18896,7 +15778,6 @@ export namespace Prisma {
     reviewNotes?: string | null
     createdByAdminId?: string | null
     lastEditedByAdminId?: string | null
-    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutArticleInput
     generations?: GenerationUncheckedCreateNestedManyWithoutArticleInput
   }
 
@@ -18927,7 +15808,6 @@ export namespace Prisma {
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: UserUpdateOneWithoutCreatedArticlesNestedInput
     lastEditedBy?: UserUpdateOneWithoutEditedArticlesNestedInput
-    personalizations?: PersonalizedOutputUpdateManyWithoutArticleNestedInput
     generations?: GenerationUpdateManyWithoutArticleNestedInput
   }
 
@@ -18958,7 +15838,6 @@ export namespace Prisma {
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutArticleNestedInput
     generations?: GenerationUncheckedUpdateManyWithoutArticleNestedInput
   }
 
@@ -19045,109 +15924,6 @@ export namespace Prisma {
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type PersonalizedOutputCreateInput = {
-    id?: string
-    personalizedKeyInsights?: PersonalizedOutputCreatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: string | null
-    personalizedEmailTemplate?: string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: number | null
-    generationCount?: number
-    lastGeneratedAt?: Date | string
-    createdAt?: Date | string
-    user: UserCreateNestedOneWithoutPersonalizationsInput
-    article: ArticleCreateNestedOneWithoutPersonalizationsInput
-  }
-
-  export type PersonalizedOutputUncheckedCreateInput = {
-    id?: string
-    userId: string
-    articleId: string
-    personalizedKeyInsights?: PersonalizedOutputCreatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: string | null
-    personalizedEmailTemplate?: string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: number | null
-    generationCount?: number
-    lastGeneratedAt?: Date | string
-    createdAt?: Date | string
-  }
-
-  export type PersonalizedOutputUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    personalizedKeyInsights?: PersonalizedOutputUpdatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedEmailTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
-    generationCount?: IntFieldUpdateOperationsInput | number
-    lastGeneratedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutPersonalizationsNestedInput
-    article?: ArticleUpdateOneRequiredWithoutPersonalizationsNestedInput
-  }
-
-  export type PersonalizedOutputUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    articleId?: StringFieldUpdateOperationsInput | string
-    personalizedKeyInsights?: PersonalizedOutputUpdatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedEmailTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
-    generationCount?: IntFieldUpdateOperationsInput | number
-    lastGeneratedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type PersonalizedOutputCreateManyInput = {
-    id?: string
-    userId: string
-    articleId: string
-    personalizedKeyInsights?: PersonalizedOutputCreatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: string | null
-    personalizedEmailTemplate?: string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: number | null
-    generationCount?: number
-    lastGeneratedAt?: Date | string
-    createdAt?: Date | string
-  }
-
-  export type PersonalizedOutputUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    personalizedKeyInsights?: PersonalizedOutputUpdatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedEmailTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
-    generationCount?: IntFieldUpdateOperationsInput | number
-    lastGeneratedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type PersonalizedOutputUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    articleId?: StringFieldUpdateOperationsInput | string
-    personalizedKeyInsights?: PersonalizedOutputUpdatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedEmailTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
-    generationCount?: IntFieldUpdateOperationsInput | number
-    lastGeneratedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type GenerationCreateInput = {
@@ -19408,12 +16184,6 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type LikeListRelationFilter = {
-    every?: LikeWhereInput
-    some?: LikeWhereInput
-    none?: LikeWhereInput
-  }
-
   export type UserSessionListRelationFilter = {
     every?: UserSessionWhereInput
     some?: UserSessionWhereInput
@@ -19444,12 +16214,6 @@ export namespace Prisma {
     none?: ArticleWhereInput
   }
 
-  export type PersonalizedOutputListRelationFilter = {
-    every?: PersonalizedOutputWhereInput
-    some?: PersonalizedOutputWhereInput
-    none?: PersonalizedOutputWhereInput
-  }
-
   export type GenerationListRelationFilter = {
     every?: GenerationWhereInput
     some?: GenerationWhereInput
@@ -19459,10 +16223,6 @@ export namespace Prisma {
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
-  }
-
-  export type LikeOrderByRelationAggregateInput = {
-    _count?: SortOrder
   }
 
   export type UserSessionOrderByRelationAggregateInput = {
@@ -19485,10 +16245,6 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type PersonalizedOutputOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type GenerationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -19506,7 +16262,6 @@ export namespace Prisma {
     kindeId?: SortOrder
     categoryPreferences?: SortOrder
     tagPreferences?: SortOrder
-    savedArticleIds?: SortOrder
     toneOfVoice?: SortOrder
     humor?: SortOrder
     detailOrientation?: SortOrder
@@ -19833,90 +16588,6 @@ export namespace Prisma {
     _max?: NestedEnumPublishedStatusFilter<$PrismaModel>
   }
 
-  export type EnumContentTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.ContentType | EnumContentTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.ContentType[] | ListEnumContentTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ContentType[] | ListEnumContentTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumContentTypeFilter<$PrismaModel> | $Enums.ContentType
-  }
-
-  export type EnumDeviceFilter<$PrismaModel = never> = {
-    equals?: $Enums.Device | EnumDeviceFieldRefInput<$PrismaModel>
-    in?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
-    not?: NestedEnumDeviceFilter<$PrismaModel> | $Enums.Device
-  }
-
-  export type UserScalarRelationFilter = {
-    is?: UserWhereInput
-    isNot?: UserWhereInput
-  }
-
-  export type PostScalarRelationFilter = {
-    is?: PostWhereInput
-    isNot?: PostWhereInput
-  }
-
-  export type LikeUserIdPostIdContentIdContentTypeCompoundUniqueInput = {
-    userId: string
-    postId: string
-    contentId: string
-    contentType: $Enums.ContentType
-  }
-
-  export type LikeCountOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    postId?: SortOrder
-    contentId?: SortOrder
-    contentType?: SortOrder
-    contentTitle?: SortOrder
-    deviceType?: SortOrder
-    timestamp?: SortOrder
-  }
-
-  export type LikeMaxOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    postId?: SortOrder
-    contentId?: SortOrder
-    contentType?: SortOrder
-    contentTitle?: SortOrder
-    deviceType?: SortOrder
-    timestamp?: SortOrder
-  }
-
-  export type LikeMinOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    postId?: SortOrder
-    contentId?: SortOrder
-    contentType?: SortOrder
-    contentTitle?: SortOrder
-    deviceType?: SortOrder
-    timestamp?: SortOrder
-  }
-
-  export type EnumContentTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ContentType | EnumContentTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.ContentType[] | ListEnumContentTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ContentType[] | ListEnumContentTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumContentTypeWithAggregatesFilter<$PrismaModel> | $Enums.ContentType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumContentTypeFilter<$PrismaModel>
-    _max?: NestedEnumContentTypeFilter<$PrismaModel>
-  }
-
-  export type EnumDeviceWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.Device | EnumDeviceFieldRefInput<$PrismaModel>
-    in?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
-    not?: NestedEnumDeviceWithAggregatesFilter<$PrismaModel> | $Enums.Device
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumDeviceFilter<$PrismaModel>
-    _max?: NestedEnumDeviceFilter<$PrismaModel>
-  }
-
   export type UuidNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -19927,6 +16598,13 @@ export namespace Prisma {
     gte?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
     not?: NestedUuidNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type EnumDeviceFilter<$PrismaModel = never> = {
+    equals?: $Enums.Device | EnumDeviceFieldRefInput<$PrismaModel>
+    in?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
+    not?: NestedEnumDeviceFilter<$PrismaModel> | $Enums.Device
   }
 
   export type UserNullableScalarRelationFilter = {
@@ -20008,6 +16686,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type EnumDeviceWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Device | EnumDeviceFieldRefInput<$PrismaModel>
+    in?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
+    not?: NestedEnumDeviceWithAggregatesFilter<$PrismaModel> | $Enums.Device
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumDeviceFilter<$PrismaModel>
+    _max?: NestedEnumDeviceFilter<$PrismaModel>
   }
 
   export type DecimalNullableFilter<$PrismaModel = never> = {
@@ -20360,65 +17048,6 @@ export namespace Prisma {
     _max?: NestedEnumArticleStatusFilter<$PrismaModel>
   }
 
-  export type ArticleScalarRelationFilter = {
-    is?: ArticleWhereInput
-    isNot?: ArticleWhereInput
-  }
-
-  export type PersonalizedOutputUserIdArticleIdCompoundUniqueInput = {
-    userId: string
-    articleId: string
-  }
-
-  export type PersonalizedOutputCountOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    articleId?: SortOrder
-    personalizedKeyInsights?: SortOrder
-    personalizedVideoScript?: SortOrder
-    personalizedEmailTemplate?: SortOrder
-    personalizedSocialContent?: SortOrder
-    truetoneSettings?: SortOrder
-    tokensUsed?: SortOrder
-    generationCount?: SortOrder
-    lastGeneratedAt?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type PersonalizedOutputAvgOrderByAggregateInput = {
-    tokensUsed?: SortOrder
-    generationCount?: SortOrder
-  }
-
-  export type PersonalizedOutputMaxOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    articleId?: SortOrder
-    personalizedVideoScript?: SortOrder
-    personalizedEmailTemplate?: SortOrder
-    tokensUsed?: SortOrder
-    generationCount?: SortOrder
-    lastGeneratedAt?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type PersonalizedOutputMinOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    articleId?: SortOrder
-    personalizedVideoScript?: SortOrder
-    personalizedEmailTemplate?: SortOrder
-    tokensUsed?: SortOrder
-    generationCount?: SortOrder
-    lastGeneratedAt?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type PersonalizedOutputSumOrderByAggregateInput = {
-    tokensUsed?: SortOrder
-    generationCount?: SortOrder
-  }
-
   export type EnumGenerationContentTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.GenerationContentType | EnumGenerationContentTypeFieldRefInput<$PrismaModel>
     in?: $Enums.GenerationContentType[] | ListEnumGenerationContentTypeFieldRefInput<$PrismaModel>
@@ -20431,6 +17060,16 @@ export namespace Prisma {
     in?: $Enums.SocialPlatform[] | ListEnumSocialPlatformFieldRefInput<$PrismaModel> | null
     notIn?: $Enums.SocialPlatform[] | ListEnumSocialPlatformFieldRefInput<$PrismaModel> | null
     not?: NestedEnumSocialPlatformNullableFilter<$PrismaModel> | $Enums.SocialPlatform | null
+  }
+
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type ArticleScalarRelationFilter = {
+    is?: ArticleWhereInput
+    isNot?: ArticleWhereInput
   }
 
   export type GenerationCountOrderByAggregateInput = {
@@ -20539,17 +17178,6 @@ export namespace Prisma {
     set: string[]
   }
 
-  export type UserCreatesavedArticleIdsInput = {
-    set: string[]
-  }
-
-  export type LikeCreateNestedManyWithoutUserInput = {
-    create?: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput> | LikeCreateWithoutUserInput[] | LikeUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: LikeCreateOrConnectWithoutUserInput | LikeCreateOrConnectWithoutUserInput[]
-    createMany?: LikeCreateManyUserInputEnvelope
-    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-  }
-
   export type UserSessionCreateNestedManyWithoutUserInput = {
     create?: XOR<UserSessionCreateWithoutUserInput, UserSessionUncheckedCreateWithoutUserInput> | UserSessionCreateWithoutUserInput[] | UserSessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserSessionCreateOrConnectWithoutUserInput | UserSessionCreateOrConnectWithoutUserInput[]
@@ -20592,25 +17220,11 @@ export namespace Prisma {
     connect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
   }
 
-  export type PersonalizedOutputCreateNestedManyWithoutUserInput = {
-    create?: XOR<PersonalizedOutputCreateWithoutUserInput, PersonalizedOutputUncheckedCreateWithoutUserInput> | PersonalizedOutputCreateWithoutUserInput[] | PersonalizedOutputUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: PersonalizedOutputCreateOrConnectWithoutUserInput | PersonalizedOutputCreateOrConnectWithoutUserInput[]
-    createMany?: PersonalizedOutputCreateManyUserInputEnvelope
-    connect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-  }
-
   export type GenerationCreateNestedManyWithoutUserInput = {
     create?: XOR<GenerationCreateWithoutUserInput, GenerationUncheckedCreateWithoutUserInput> | GenerationCreateWithoutUserInput[] | GenerationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: GenerationCreateOrConnectWithoutUserInput | GenerationCreateOrConnectWithoutUserInput[]
     createMany?: GenerationCreateManyUserInputEnvelope
     connect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
-  }
-
-  export type LikeUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput> | LikeCreateWithoutUserInput[] | LikeUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: LikeCreateOrConnectWithoutUserInput | LikeCreateOrConnectWithoutUserInput[]
-    createMany?: LikeCreateManyUserInputEnvelope
-    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
   }
 
   export type UserSessionUncheckedCreateNestedManyWithoutUserInput = {
@@ -20655,13 +17269,6 @@ export namespace Prisma {
     connect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
   }
 
-  export type PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<PersonalizedOutputCreateWithoutUserInput, PersonalizedOutputUncheckedCreateWithoutUserInput> | PersonalizedOutputCreateWithoutUserInput[] | PersonalizedOutputUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: PersonalizedOutputCreateOrConnectWithoutUserInput | PersonalizedOutputCreateOrConnectWithoutUserInput[]
-    createMany?: PersonalizedOutputCreateManyUserInputEnvelope
-    connect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-  }
-
   export type GenerationUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<GenerationCreateWithoutUserInput, GenerationUncheckedCreateWithoutUserInput> | GenerationCreateWithoutUserInput[] | GenerationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: GenerationCreateOrConnectWithoutUserInput | GenerationCreateOrConnectWithoutUserInput[]
@@ -20687,11 +17294,6 @@ export namespace Prisma {
   }
 
   export type UserUpdatetagPreferencesInput = {
-    set?: string[]
-    push?: string | string[]
-  }
-
-  export type UserUpdatesavedArticleIdsInput = {
     set?: string[]
     push?: string | string[]
   }
@@ -20722,20 +17324,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type LikeUpdateManyWithoutUserNestedInput = {
-    create?: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput> | LikeCreateWithoutUserInput[] | LikeUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: LikeCreateOrConnectWithoutUserInput | LikeCreateOrConnectWithoutUserInput[]
-    upsert?: LikeUpsertWithWhereUniqueWithoutUserInput | LikeUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: LikeCreateManyUserInputEnvelope
-    set?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    disconnect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    delete?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    update?: LikeUpdateWithWhereUniqueWithoutUserInput | LikeUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: LikeUpdateManyWithWhereWithoutUserInput | LikeUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: LikeScalarWhereInput | LikeScalarWhereInput[]
   }
 
   export type UserSessionUpdateManyWithoutUserNestedInput = {
@@ -20822,20 +17410,6 @@ export namespace Prisma {
     deleteMany?: ArticleScalarWhereInput | ArticleScalarWhereInput[]
   }
 
-  export type PersonalizedOutputUpdateManyWithoutUserNestedInput = {
-    create?: XOR<PersonalizedOutputCreateWithoutUserInput, PersonalizedOutputUncheckedCreateWithoutUserInput> | PersonalizedOutputCreateWithoutUserInput[] | PersonalizedOutputUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: PersonalizedOutputCreateOrConnectWithoutUserInput | PersonalizedOutputCreateOrConnectWithoutUserInput[]
-    upsert?: PersonalizedOutputUpsertWithWhereUniqueWithoutUserInput | PersonalizedOutputUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: PersonalizedOutputCreateManyUserInputEnvelope
-    set?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    disconnect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    delete?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    connect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    update?: PersonalizedOutputUpdateWithWhereUniqueWithoutUserInput | PersonalizedOutputUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: PersonalizedOutputUpdateManyWithWhereWithoutUserInput | PersonalizedOutputUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: PersonalizedOutputScalarWhereInput | PersonalizedOutputScalarWhereInput[]
-  }
-
   export type GenerationUpdateManyWithoutUserNestedInput = {
     create?: XOR<GenerationCreateWithoutUserInput, GenerationUncheckedCreateWithoutUserInput> | GenerationCreateWithoutUserInput[] | GenerationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: GenerationCreateOrConnectWithoutUserInput | GenerationCreateOrConnectWithoutUserInput[]
@@ -20848,20 +17422,6 @@ export namespace Prisma {
     update?: GenerationUpdateWithWhereUniqueWithoutUserInput | GenerationUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: GenerationUpdateManyWithWhereWithoutUserInput | GenerationUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: GenerationScalarWhereInput | GenerationScalarWhereInput[]
-  }
-
-  export type LikeUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput> | LikeCreateWithoutUserInput[] | LikeUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: LikeCreateOrConnectWithoutUserInput | LikeCreateOrConnectWithoutUserInput[]
-    upsert?: LikeUpsertWithWhereUniqueWithoutUserInput | LikeUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: LikeCreateManyUserInputEnvelope
-    set?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    disconnect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    delete?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    update?: LikeUpdateWithWhereUniqueWithoutUserInput | LikeUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: LikeUpdateManyWithWhereWithoutUserInput | LikeUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: LikeScalarWhereInput | LikeScalarWhereInput[]
   }
 
   export type UserSessionUncheckedUpdateManyWithoutUserNestedInput = {
@@ -20948,20 +17508,6 @@ export namespace Prisma {
     deleteMany?: ArticleScalarWhereInput | ArticleScalarWhereInput[]
   }
 
-  export type PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<PersonalizedOutputCreateWithoutUserInput, PersonalizedOutputUncheckedCreateWithoutUserInput> | PersonalizedOutputCreateWithoutUserInput[] | PersonalizedOutputUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: PersonalizedOutputCreateOrConnectWithoutUserInput | PersonalizedOutputCreateOrConnectWithoutUserInput[]
-    upsert?: PersonalizedOutputUpsertWithWhereUniqueWithoutUserInput | PersonalizedOutputUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: PersonalizedOutputCreateManyUserInputEnvelope
-    set?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    disconnect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    delete?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    connect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    update?: PersonalizedOutputUpdateWithWhereUniqueWithoutUserInput | PersonalizedOutputUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: PersonalizedOutputUpdateManyWithWhereWithoutUserInput | PersonalizedOutputUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: PersonalizedOutputScalarWhereInput | PersonalizedOutputScalarWhereInput[]
-  }
-
   export type GenerationUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<GenerationCreateWithoutUserInput, GenerationUncheckedCreateWithoutUserInput> | GenerationCreateWithoutUserInput[] | GenerationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: GenerationCreateOrConnectWithoutUserInput | GenerationCreateOrConnectWithoutUserInput[]
@@ -20976,86 +17522,8 @@ export namespace Prisma {
     deleteMany?: GenerationScalarWhereInput | GenerationScalarWhereInput[]
   }
 
-  export type LikeCreateNestedManyWithoutPostInput = {
-    create?: XOR<LikeCreateWithoutPostInput, LikeUncheckedCreateWithoutPostInput> | LikeCreateWithoutPostInput[] | LikeUncheckedCreateWithoutPostInput[]
-    connectOrCreate?: LikeCreateOrConnectWithoutPostInput | LikeCreateOrConnectWithoutPostInput[]
-    createMany?: LikeCreateManyPostInputEnvelope
-    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-  }
-
-  export type LikeUncheckedCreateNestedManyWithoutPostInput = {
-    create?: XOR<LikeCreateWithoutPostInput, LikeUncheckedCreateWithoutPostInput> | LikeCreateWithoutPostInput[] | LikeUncheckedCreateWithoutPostInput[]
-    connectOrCreate?: LikeCreateOrConnectWithoutPostInput | LikeCreateOrConnectWithoutPostInput[]
-    createMany?: LikeCreateManyPostInputEnvelope
-    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-  }
-
   export type EnumPublishedStatusFieldUpdateOperationsInput = {
     set?: $Enums.PublishedStatus
-  }
-
-  export type LikeUpdateManyWithoutPostNestedInput = {
-    create?: XOR<LikeCreateWithoutPostInput, LikeUncheckedCreateWithoutPostInput> | LikeCreateWithoutPostInput[] | LikeUncheckedCreateWithoutPostInput[]
-    connectOrCreate?: LikeCreateOrConnectWithoutPostInput | LikeCreateOrConnectWithoutPostInput[]
-    upsert?: LikeUpsertWithWhereUniqueWithoutPostInput | LikeUpsertWithWhereUniqueWithoutPostInput[]
-    createMany?: LikeCreateManyPostInputEnvelope
-    set?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    disconnect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    delete?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    update?: LikeUpdateWithWhereUniqueWithoutPostInput | LikeUpdateWithWhereUniqueWithoutPostInput[]
-    updateMany?: LikeUpdateManyWithWhereWithoutPostInput | LikeUpdateManyWithWhereWithoutPostInput[]
-    deleteMany?: LikeScalarWhereInput | LikeScalarWhereInput[]
-  }
-
-  export type LikeUncheckedUpdateManyWithoutPostNestedInput = {
-    create?: XOR<LikeCreateWithoutPostInput, LikeUncheckedCreateWithoutPostInput> | LikeCreateWithoutPostInput[] | LikeUncheckedCreateWithoutPostInput[]
-    connectOrCreate?: LikeCreateOrConnectWithoutPostInput | LikeCreateOrConnectWithoutPostInput[]
-    upsert?: LikeUpsertWithWhereUniqueWithoutPostInput | LikeUpsertWithWhereUniqueWithoutPostInput[]
-    createMany?: LikeCreateManyPostInputEnvelope
-    set?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    disconnect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    delete?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
-    update?: LikeUpdateWithWhereUniqueWithoutPostInput | LikeUpdateWithWhereUniqueWithoutPostInput[]
-    updateMany?: LikeUpdateManyWithWhereWithoutPostInput | LikeUpdateManyWithWhereWithoutPostInput[]
-    deleteMany?: LikeScalarWhereInput | LikeScalarWhereInput[]
-  }
-
-  export type UserCreateNestedOneWithoutLikesInput = {
-    create?: XOR<UserCreateWithoutLikesInput, UserUncheckedCreateWithoutLikesInput>
-    connectOrCreate?: UserCreateOrConnectWithoutLikesInput
-    connect?: UserWhereUniqueInput
-  }
-
-  export type PostCreateNestedOneWithoutLikesInput = {
-    create?: XOR<PostCreateWithoutLikesInput, PostUncheckedCreateWithoutLikesInput>
-    connectOrCreate?: PostCreateOrConnectWithoutLikesInput
-    connect?: PostWhereUniqueInput
-  }
-
-  export type EnumContentTypeFieldUpdateOperationsInput = {
-    set?: $Enums.ContentType
-  }
-
-  export type EnumDeviceFieldUpdateOperationsInput = {
-    set?: $Enums.Device
-  }
-
-  export type UserUpdateOneRequiredWithoutLikesNestedInput = {
-    create?: XOR<UserCreateWithoutLikesInput, UserUncheckedCreateWithoutLikesInput>
-    connectOrCreate?: UserCreateOrConnectWithoutLikesInput
-    upsert?: UserUpsertWithoutLikesInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLikesInput, UserUpdateWithoutLikesInput>, UserUncheckedUpdateWithoutLikesInput>
-  }
-
-  export type PostUpdateOneRequiredWithoutLikesNestedInput = {
-    create?: XOR<PostCreateWithoutLikesInput, PostUncheckedCreateWithoutLikesInput>
-    connectOrCreate?: PostCreateOrConnectWithoutLikesInput
-    upsert?: PostUpsertWithoutLikesInput
-    connect?: PostWhereUniqueInput
-    update?: XOR<XOR<PostUpdateToOneWithWhereWithoutLikesInput, PostUpdateWithoutLikesInput>, PostUncheckedUpdateWithoutLikesInput>
   }
 
   export type UserCreateNestedOneWithoutSessionsInput = {
@@ -21104,6 +17572,10 @@ export namespace Prisma {
     connectOrCreate?: ChatAnalyticsCreateOrConnectWithoutSessionInput | ChatAnalyticsCreateOrConnectWithoutSessionInput[]
     createMany?: ChatAnalyticsCreateManySessionInputEnvelope
     connect?: ChatAnalyticsWhereUniqueInput | ChatAnalyticsWhereUniqueInput[]
+  }
+
+  export type EnumDeviceFieldUpdateOperationsInput = {
+    set?: $Enums.Device
   }
 
   export type UserUpdateOneWithoutSessionsNestedInput = {
@@ -21318,25 +17790,11 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type PersonalizedOutputCreateNestedManyWithoutArticleInput = {
-    create?: XOR<PersonalizedOutputCreateWithoutArticleInput, PersonalizedOutputUncheckedCreateWithoutArticleInput> | PersonalizedOutputCreateWithoutArticleInput[] | PersonalizedOutputUncheckedCreateWithoutArticleInput[]
-    connectOrCreate?: PersonalizedOutputCreateOrConnectWithoutArticleInput | PersonalizedOutputCreateOrConnectWithoutArticleInput[]
-    createMany?: PersonalizedOutputCreateManyArticleInputEnvelope
-    connect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-  }
-
   export type GenerationCreateNestedManyWithoutArticleInput = {
     create?: XOR<GenerationCreateWithoutArticleInput, GenerationUncheckedCreateWithoutArticleInput> | GenerationCreateWithoutArticleInput[] | GenerationUncheckedCreateWithoutArticleInput[]
     connectOrCreate?: GenerationCreateOrConnectWithoutArticleInput | GenerationCreateOrConnectWithoutArticleInput[]
     createMany?: GenerationCreateManyArticleInputEnvelope
     connect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
-  }
-
-  export type PersonalizedOutputUncheckedCreateNestedManyWithoutArticleInput = {
-    create?: XOR<PersonalizedOutputCreateWithoutArticleInput, PersonalizedOutputUncheckedCreateWithoutArticleInput> | PersonalizedOutputCreateWithoutArticleInput[] | PersonalizedOutputUncheckedCreateWithoutArticleInput[]
-    connectOrCreate?: PersonalizedOutputCreateOrConnectWithoutArticleInput | PersonalizedOutputCreateOrConnectWithoutArticleInput[]
-    createMany?: PersonalizedOutputCreateManyArticleInputEnvelope
-    connect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
   }
 
   export type GenerationUncheckedCreateNestedManyWithoutArticleInput = {
@@ -21380,20 +17838,6 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEditedArticlesInput, UserUpdateWithoutEditedArticlesInput>, UserUncheckedUpdateWithoutEditedArticlesInput>
   }
 
-  export type PersonalizedOutputUpdateManyWithoutArticleNestedInput = {
-    create?: XOR<PersonalizedOutputCreateWithoutArticleInput, PersonalizedOutputUncheckedCreateWithoutArticleInput> | PersonalizedOutputCreateWithoutArticleInput[] | PersonalizedOutputUncheckedCreateWithoutArticleInput[]
-    connectOrCreate?: PersonalizedOutputCreateOrConnectWithoutArticleInput | PersonalizedOutputCreateOrConnectWithoutArticleInput[]
-    upsert?: PersonalizedOutputUpsertWithWhereUniqueWithoutArticleInput | PersonalizedOutputUpsertWithWhereUniqueWithoutArticleInput[]
-    createMany?: PersonalizedOutputCreateManyArticleInputEnvelope
-    set?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    disconnect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    delete?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    connect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    update?: PersonalizedOutputUpdateWithWhereUniqueWithoutArticleInput | PersonalizedOutputUpdateWithWhereUniqueWithoutArticleInput[]
-    updateMany?: PersonalizedOutputUpdateManyWithWhereWithoutArticleInput | PersonalizedOutputUpdateManyWithWhereWithoutArticleInput[]
-    deleteMany?: PersonalizedOutputScalarWhereInput | PersonalizedOutputScalarWhereInput[]
-  }
-
   export type GenerationUpdateManyWithoutArticleNestedInput = {
     create?: XOR<GenerationCreateWithoutArticleInput, GenerationUncheckedCreateWithoutArticleInput> | GenerationCreateWithoutArticleInput[] | GenerationUncheckedCreateWithoutArticleInput[]
     connectOrCreate?: GenerationCreateOrConnectWithoutArticleInput | GenerationCreateOrConnectWithoutArticleInput[]
@@ -21408,20 +17852,6 @@ export namespace Prisma {
     deleteMany?: GenerationScalarWhereInput | GenerationScalarWhereInput[]
   }
 
-  export type PersonalizedOutputUncheckedUpdateManyWithoutArticleNestedInput = {
-    create?: XOR<PersonalizedOutputCreateWithoutArticleInput, PersonalizedOutputUncheckedCreateWithoutArticleInput> | PersonalizedOutputCreateWithoutArticleInput[] | PersonalizedOutputUncheckedCreateWithoutArticleInput[]
-    connectOrCreate?: PersonalizedOutputCreateOrConnectWithoutArticleInput | PersonalizedOutputCreateOrConnectWithoutArticleInput[]
-    upsert?: PersonalizedOutputUpsertWithWhereUniqueWithoutArticleInput | PersonalizedOutputUpsertWithWhereUniqueWithoutArticleInput[]
-    createMany?: PersonalizedOutputCreateManyArticleInputEnvelope
-    set?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    disconnect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    delete?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    connect?: PersonalizedOutputWhereUniqueInput | PersonalizedOutputWhereUniqueInput[]
-    update?: PersonalizedOutputUpdateWithWhereUniqueWithoutArticleInput | PersonalizedOutputUpdateWithWhereUniqueWithoutArticleInput[]
-    updateMany?: PersonalizedOutputUpdateManyWithWhereWithoutArticleInput | PersonalizedOutputUpdateManyWithWhereWithoutArticleInput[]
-    deleteMany?: PersonalizedOutputScalarWhereInput | PersonalizedOutputScalarWhereInput[]
-  }
-
   export type GenerationUncheckedUpdateManyWithoutArticleNestedInput = {
     create?: XOR<GenerationCreateWithoutArticleInput, GenerationUncheckedCreateWithoutArticleInput> | GenerationCreateWithoutArticleInput[] | GenerationUncheckedCreateWithoutArticleInput[]
     connectOrCreate?: GenerationCreateOrConnectWithoutArticleInput | GenerationCreateOrConnectWithoutArticleInput[]
@@ -21434,43 +17864,6 @@ export namespace Prisma {
     update?: GenerationUpdateWithWhereUniqueWithoutArticleInput | GenerationUpdateWithWhereUniqueWithoutArticleInput[]
     updateMany?: GenerationUpdateManyWithWhereWithoutArticleInput | GenerationUpdateManyWithWhereWithoutArticleInput[]
     deleteMany?: GenerationScalarWhereInput | GenerationScalarWhereInput[]
-  }
-
-  export type PersonalizedOutputCreatepersonalizedKeyInsightsInput = {
-    set: string[]
-  }
-
-  export type UserCreateNestedOneWithoutPersonalizationsInput = {
-    create?: XOR<UserCreateWithoutPersonalizationsInput, UserUncheckedCreateWithoutPersonalizationsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutPersonalizationsInput
-    connect?: UserWhereUniqueInput
-  }
-
-  export type ArticleCreateNestedOneWithoutPersonalizationsInput = {
-    create?: XOR<ArticleCreateWithoutPersonalizationsInput, ArticleUncheckedCreateWithoutPersonalizationsInput>
-    connectOrCreate?: ArticleCreateOrConnectWithoutPersonalizationsInput
-    connect?: ArticleWhereUniqueInput
-  }
-
-  export type PersonalizedOutputUpdatepersonalizedKeyInsightsInput = {
-    set?: string[]
-    push?: string | string[]
-  }
-
-  export type UserUpdateOneRequiredWithoutPersonalizationsNestedInput = {
-    create?: XOR<UserCreateWithoutPersonalizationsInput, UserUncheckedCreateWithoutPersonalizationsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutPersonalizationsInput
-    upsert?: UserUpsertWithoutPersonalizationsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPersonalizationsInput, UserUpdateWithoutPersonalizationsInput>, UserUncheckedUpdateWithoutPersonalizationsInput>
-  }
-
-  export type ArticleUpdateOneRequiredWithoutPersonalizationsNestedInput = {
-    create?: XOR<ArticleCreateWithoutPersonalizationsInput, ArticleUncheckedCreateWithoutPersonalizationsInput>
-    connectOrCreate?: ArticleCreateOrConnectWithoutPersonalizationsInput
-    upsert?: ArticleUpsertWithoutPersonalizationsInput
-    connect?: ArticleWhereUniqueInput
-    update?: XOR<XOR<ArticleUpdateToOneWithWhereWithoutPersonalizationsInput, ArticleUpdateWithoutPersonalizationsInput>, ArticleUncheckedUpdateWithoutPersonalizationsInput>
   }
 
   export type GenerationCreatecontentArrayInput = {
@@ -21801,40 +18194,6 @@ export namespace Prisma {
     _max?: NestedEnumPublishedStatusFilter<$PrismaModel>
   }
 
-  export type NestedEnumContentTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.ContentType | EnumContentTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.ContentType[] | ListEnumContentTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ContentType[] | ListEnumContentTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumContentTypeFilter<$PrismaModel> | $Enums.ContentType
-  }
-
-  export type NestedEnumDeviceFilter<$PrismaModel = never> = {
-    equals?: $Enums.Device | EnumDeviceFieldRefInput<$PrismaModel>
-    in?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
-    not?: NestedEnumDeviceFilter<$PrismaModel> | $Enums.Device
-  }
-
-  export type NestedEnumContentTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ContentType | EnumContentTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.ContentType[] | ListEnumContentTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ContentType[] | ListEnumContentTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumContentTypeWithAggregatesFilter<$PrismaModel> | $Enums.ContentType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumContentTypeFilter<$PrismaModel>
-    _max?: NestedEnumContentTypeFilter<$PrismaModel>
-  }
-
-  export type NestedEnumDeviceWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.Device | EnumDeviceFieldRefInput<$PrismaModel>
-    in?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
-    not?: NestedEnumDeviceWithAggregatesFilter<$PrismaModel> | $Enums.Device
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumDeviceFilter<$PrismaModel>
-    _max?: NestedEnumDeviceFilter<$PrismaModel>
-  }
-
   export type NestedUuidNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -21844,6 +18203,13 @@ export namespace Prisma {
     gt?: string | StringFieldRefInput<$PrismaModel>
     gte?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedUuidNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedEnumDeviceFilter<$PrismaModel = never> = {
+    equals?: $Enums.Device | EnumDeviceFieldRefInput<$PrismaModel>
+    in?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
+    not?: NestedEnumDeviceFilter<$PrismaModel> | $Enums.Device
   }
 
   export type NestedUuidNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -21858,6 +18224,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumDeviceWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Device | EnumDeviceFieldRefInput<$PrismaModel>
+    in?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Device[] | ListEnumDeviceFieldRefInput<$PrismaModel>
+    not?: NestedEnumDeviceWithAggregatesFilter<$PrismaModel> | $Enums.Device
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumDeviceFilter<$PrismaModel>
+    _max?: NestedEnumDeviceFilter<$PrismaModel>
   }
 
   export type NestedDecimalNullableFilter<$PrismaModel = never> = {
@@ -21959,36 +18335,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumSocialPlatformNullableFilter<$PrismaModel>
     _max?: NestedEnumSocialPlatformNullableFilter<$PrismaModel>
-  }
-
-  export type LikeCreateWithoutUserInput = {
-    id?: string
-    contentId: string
-    contentType: $Enums.ContentType
-    contentTitle: string
-    deviceType?: $Enums.Device
-    timestamp?: Date | string
-    post: PostCreateNestedOneWithoutLikesInput
-  }
-
-  export type LikeUncheckedCreateWithoutUserInput = {
-    id?: string
-    postId: string
-    contentId: string
-    contentType: $Enums.ContentType
-    contentTitle: string
-    deviceType?: $Enums.Device
-    timestamp?: Date | string
-  }
-
-  export type LikeCreateOrConnectWithoutUserInput = {
-    where: LikeWhereUniqueInput
-    create: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput>
-  }
-
-  export type LikeCreateManyUserInputEnvelope = {
-    data: LikeCreateManyUserInput | LikeCreateManyUserInput[]
-    skipDuplicates?: boolean
   }
 
   export type UserSessionCreateWithoutUserInput = {
@@ -22179,7 +18525,6 @@ export namespace Prisma {
     rejectionReason?: string | null
     reviewNotes?: string | null
     lastEditedBy?: UserCreateNestedOneWithoutEditedArticlesInput
-    personalizations?: PersonalizedOutputCreateNestedManyWithoutArticleInput
     generations?: GenerationCreateNestedManyWithoutArticleInput
   }
 
@@ -22209,7 +18554,6 @@ export namespace Prisma {
     rejectionReason?: string | null
     reviewNotes?: string | null
     lastEditedByAdminId?: string | null
-    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutArticleInput
     generations?: GenerationUncheckedCreateNestedManyWithoutArticleInput
   }
 
@@ -22249,7 +18593,6 @@ export namespace Prisma {
     rejectionReason?: string | null
     reviewNotes?: string | null
     createdBy?: UserCreateNestedOneWithoutCreatedArticlesInput
-    personalizations?: PersonalizedOutputCreateNestedManyWithoutArticleInput
     generations?: GenerationCreateNestedManyWithoutArticleInput
   }
 
@@ -22279,7 +18622,6 @@ export namespace Prisma {
     rejectionReason?: string | null
     reviewNotes?: string | null
     createdByAdminId?: string | null
-    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutArticleInput
     generations?: GenerationUncheckedCreateNestedManyWithoutArticleInput
   }
 
@@ -22290,44 +18632,6 @@ export namespace Prisma {
 
   export type ArticleCreateManyLastEditedByInputEnvelope = {
     data: ArticleCreateManyLastEditedByInput | ArticleCreateManyLastEditedByInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type PersonalizedOutputCreateWithoutUserInput = {
-    id?: string
-    personalizedKeyInsights?: PersonalizedOutputCreatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: string | null
-    personalizedEmailTemplate?: string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: number | null
-    generationCount?: number
-    lastGeneratedAt?: Date | string
-    createdAt?: Date | string
-    article: ArticleCreateNestedOneWithoutPersonalizationsInput
-  }
-
-  export type PersonalizedOutputUncheckedCreateWithoutUserInput = {
-    id?: string
-    articleId: string
-    personalizedKeyInsights?: PersonalizedOutputCreatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: string | null
-    personalizedEmailTemplate?: string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: number | null
-    generationCount?: number
-    lastGeneratedAt?: Date | string
-    createdAt?: Date | string
-  }
-
-  export type PersonalizedOutputCreateOrConnectWithoutUserInput = {
-    where: PersonalizedOutputWhereUniqueInput
-    create: XOR<PersonalizedOutputCreateWithoutUserInput, PersonalizedOutputUncheckedCreateWithoutUserInput>
-  }
-
-  export type PersonalizedOutputCreateManyUserInputEnvelope = {
-    data: PersonalizedOutputCreateManyUserInput | PersonalizedOutputCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -22363,36 +18667,6 @@ export namespace Prisma {
   export type GenerationCreateManyUserInputEnvelope = {
     data: GenerationCreateManyUserInput | GenerationCreateManyUserInput[]
     skipDuplicates?: boolean
-  }
-
-  export type LikeUpsertWithWhereUniqueWithoutUserInput = {
-    where: LikeWhereUniqueInput
-    update: XOR<LikeUpdateWithoutUserInput, LikeUncheckedUpdateWithoutUserInput>
-    create: XOR<LikeCreateWithoutUserInput, LikeUncheckedCreateWithoutUserInput>
-  }
-
-  export type LikeUpdateWithWhereUniqueWithoutUserInput = {
-    where: LikeWhereUniqueInput
-    data: XOR<LikeUpdateWithoutUserInput, LikeUncheckedUpdateWithoutUserInput>
-  }
-
-  export type LikeUpdateManyWithWhereWithoutUserInput = {
-    where: LikeScalarWhereInput
-    data: XOR<LikeUpdateManyMutationInput, LikeUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type LikeScalarWhereInput = {
-    AND?: LikeScalarWhereInput | LikeScalarWhereInput[]
-    OR?: LikeScalarWhereInput[]
-    NOT?: LikeScalarWhereInput | LikeScalarWhereInput[]
-    id?: UuidFilter<"Like"> | string
-    userId?: UuidFilter<"Like"> | string
-    postId?: UuidFilter<"Like"> | string
-    contentId?: StringFilter<"Like"> | string
-    contentType?: EnumContentTypeFilter<"Like"> | $Enums.ContentType
-    contentTitle?: StringFilter<"Like"> | string
-    deviceType?: EnumDeviceFilter<"Like"> | $Enums.Device
-    timestamp?: DateTimeFilter<"Like"> | Date | string
   }
 
   export type UserSessionUpsertWithWhereUniqueWithoutUserInput = {
@@ -22597,40 +18871,6 @@ export namespace Prisma {
     data: XOR<ArticleUpdateManyMutationInput, ArticleUncheckedUpdateManyWithoutLastEditedByInput>
   }
 
-  export type PersonalizedOutputUpsertWithWhereUniqueWithoutUserInput = {
-    where: PersonalizedOutputWhereUniqueInput
-    update: XOR<PersonalizedOutputUpdateWithoutUserInput, PersonalizedOutputUncheckedUpdateWithoutUserInput>
-    create: XOR<PersonalizedOutputCreateWithoutUserInput, PersonalizedOutputUncheckedCreateWithoutUserInput>
-  }
-
-  export type PersonalizedOutputUpdateWithWhereUniqueWithoutUserInput = {
-    where: PersonalizedOutputWhereUniqueInput
-    data: XOR<PersonalizedOutputUpdateWithoutUserInput, PersonalizedOutputUncheckedUpdateWithoutUserInput>
-  }
-
-  export type PersonalizedOutputUpdateManyWithWhereWithoutUserInput = {
-    where: PersonalizedOutputScalarWhereInput
-    data: XOR<PersonalizedOutputUpdateManyMutationInput, PersonalizedOutputUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type PersonalizedOutputScalarWhereInput = {
-    AND?: PersonalizedOutputScalarWhereInput | PersonalizedOutputScalarWhereInput[]
-    OR?: PersonalizedOutputScalarWhereInput[]
-    NOT?: PersonalizedOutputScalarWhereInput | PersonalizedOutputScalarWhereInput[]
-    id?: UuidFilter<"PersonalizedOutput"> | string
-    userId?: UuidFilter<"PersonalizedOutput"> | string
-    articleId?: UuidFilter<"PersonalizedOutput"> | string
-    personalizedKeyInsights?: StringNullableListFilter<"PersonalizedOutput">
-    personalizedVideoScript?: StringNullableFilter<"PersonalizedOutput"> | string | null
-    personalizedEmailTemplate?: StringNullableFilter<"PersonalizedOutput"> | string | null
-    personalizedSocialContent?: JsonNullableFilter<"PersonalizedOutput">
-    truetoneSettings?: JsonNullableFilter<"PersonalizedOutput">
-    tokensUsed?: IntNullableFilter<"PersonalizedOutput"> | number | null
-    generationCount?: IntFilter<"PersonalizedOutput"> | number
-    lastGeneratedAt?: DateTimeFilter<"PersonalizedOutput"> | Date | string
-    createdAt?: DateTimeFilter<"PersonalizedOutput"> | Date | string
-  }
-
   export type GenerationUpsertWithWhereUniqueWithoutUserInput = {
     where: GenerationWhereUniqueInput
     update: XOR<GenerationUpdateWithoutUserInput, GenerationUncheckedUpdateWithoutUserInput>
@@ -22663,304 +18903,6 @@ export namespace Prisma {
     truetoneSnapshot?: JsonNullableFilter<"Generation">
   }
 
-  export type LikeCreateWithoutPostInput = {
-    id?: string
-    contentId: string
-    contentType: $Enums.ContentType
-    contentTitle: string
-    deviceType?: $Enums.Device
-    timestamp?: Date | string
-    user: UserCreateNestedOneWithoutLikesInput
-  }
-
-  export type LikeUncheckedCreateWithoutPostInput = {
-    id?: string
-    userId: string
-    contentId: string
-    contentType: $Enums.ContentType
-    contentTitle: string
-    deviceType?: $Enums.Device
-    timestamp?: Date | string
-  }
-
-  export type LikeCreateOrConnectWithoutPostInput = {
-    where: LikeWhereUniqueInput
-    create: XOR<LikeCreateWithoutPostInput, LikeUncheckedCreateWithoutPostInput>
-  }
-
-  export type LikeCreateManyPostInputEnvelope = {
-    data: LikeCreateManyPostInput | LikeCreateManyPostInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type LikeUpsertWithWhereUniqueWithoutPostInput = {
-    where: LikeWhereUniqueInput
-    update: XOR<LikeUpdateWithoutPostInput, LikeUncheckedUpdateWithoutPostInput>
-    create: XOR<LikeCreateWithoutPostInput, LikeUncheckedCreateWithoutPostInput>
-  }
-
-  export type LikeUpdateWithWhereUniqueWithoutPostInput = {
-    where: LikeWhereUniqueInput
-    data: XOR<LikeUpdateWithoutPostInput, LikeUncheckedUpdateWithoutPostInput>
-  }
-
-  export type LikeUpdateManyWithWhereWithoutPostInput = {
-    where: LikeScalarWhereInput
-    data: XOR<LikeUpdateManyMutationInput, LikeUncheckedUpdateManyWithoutPostInput>
-  }
-
-  export type UserCreateWithoutLikesInput = {
-    id?: string
-    name?: string
-    firstName?: string
-    lastName?: string
-    email: string
-    company?: string | null
-    avatar?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    kindeId?: string | null
-    categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
-    tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
-    toneOfVoice?: string | null
-    humor?: string | null
-    detailOrientation?: string | null
-    contentLength?: string | null
-    formality?: string | null
-    emotionalExpression?: string | null
-    vocabulary?: string | null
-    engagementStyle?: string | null
-    subscriptionTier?: $Enums.SubscriptionTier
-    subscriptionStatus?: string | null
-    subscriptionExpiresAt?: Date | string | null
-    subscriptionCreatedAt?: Date | string | null
-    monthlyGenerationLimit?: number
-    monthlyGenerationsUsed?: number
-    generationResetDate?: Date | string | null
-    stripeCustomerId?: string | null
-    stripeSubscriptionId?: string | null
-    stripePriceId?: string | null
-    hasCompletedOnboarding?: boolean
-    onboardingStep?: number | null
-    onboardingCompletedAt?: Date | string | null
-    sessions?: UserSessionCreateNestedManyWithoutUserInput
-    events?: AnalyticsEventCreateNestedManyWithoutUserInput
-    pageViews?: PageViewCreateNestedManyWithoutUserInput
-    chatAnalytics?: ChatAnalyticsCreateNestedManyWithoutUserInput
-    createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
-    editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
-    generations?: GenerationCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutLikesInput = {
-    id?: string
-    name?: string
-    firstName?: string
-    lastName?: string
-    email: string
-    company?: string | null
-    avatar?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    kindeId?: string | null
-    categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
-    tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
-    toneOfVoice?: string | null
-    humor?: string | null
-    detailOrientation?: string | null
-    contentLength?: string | null
-    formality?: string | null
-    emotionalExpression?: string | null
-    vocabulary?: string | null
-    engagementStyle?: string | null
-    subscriptionTier?: $Enums.SubscriptionTier
-    subscriptionStatus?: string | null
-    subscriptionExpiresAt?: Date | string | null
-    subscriptionCreatedAt?: Date | string | null
-    monthlyGenerationLimit?: number
-    monthlyGenerationsUsed?: number
-    generationResetDate?: Date | string | null
-    stripeCustomerId?: string | null
-    stripeSubscriptionId?: string | null
-    stripePriceId?: string | null
-    hasCompletedOnboarding?: boolean
-    onboardingStep?: number | null
-    onboardingCompletedAt?: Date | string | null
-    sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
-    events?: AnalyticsEventUncheckedCreateNestedManyWithoutUserInput
-    pageViews?: PageViewUncheckedCreateNestedManyWithoutUserInput
-    chatAnalytics?: ChatAnalyticsUncheckedCreateNestedManyWithoutUserInput
-    createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
-    editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
-    generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutLikesInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutLikesInput, UserUncheckedCreateWithoutLikesInput>
-  }
-
-  export type PostCreateWithoutLikesInput = {
-    id?: string
-    title: string
-    content: JsonNullValueInput | InputJsonValue
-    publishedStatus?: $Enums.PublishedStatus
-    publishedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type PostUncheckedCreateWithoutLikesInput = {
-    id?: string
-    title: string
-    content: JsonNullValueInput | InputJsonValue
-    publishedStatus?: $Enums.PublishedStatus
-    publishedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type PostCreateOrConnectWithoutLikesInput = {
-    where: PostWhereUniqueInput
-    create: XOR<PostCreateWithoutLikesInput, PostUncheckedCreateWithoutLikesInput>
-  }
-
-  export type UserUpsertWithoutLikesInput = {
-    update: XOR<UserUpdateWithoutLikesInput, UserUncheckedUpdateWithoutLikesInput>
-    create: XOR<UserCreateWithoutLikesInput, UserUncheckedCreateWithoutLikesInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutLikesInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutLikesInput, UserUncheckedUpdateWithoutLikesInput>
-  }
-
-  export type UserUpdateWithoutLikesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    company?: NullableStringFieldUpdateOperationsInput | string | null
-    avatar?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    kindeId?: NullableStringFieldUpdateOperationsInput | string | null
-    categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
-    tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
-    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
-    humor?: NullableStringFieldUpdateOperationsInput | string | null
-    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
-    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
-    formality?: NullableStringFieldUpdateOperationsInput | string | null
-    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
-    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
-    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
-    subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-    subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    subscriptionCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    monthlyGenerationLimit?: IntFieldUpdateOperationsInput | number
-    monthlyGenerationsUsed?: IntFieldUpdateOperationsInput | number
-    generationResetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    stripeCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
-    stripeSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
-    stripePriceId?: NullableStringFieldUpdateOperationsInput | string | null
-    hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
-    onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
-    onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sessions?: UserSessionUpdateManyWithoutUserNestedInput
-    events?: AnalyticsEventUpdateManyWithoutUserNestedInput
-    pageViews?: PageViewUpdateManyWithoutUserNestedInput
-    chatAnalytics?: ChatAnalyticsUpdateManyWithoutUserNestedInput
-    createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
-    editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
-    generations?: GenerationUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutLikesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    company?: NullableStringFieldUpdateOperationsInput | string | null
-    avatar?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    kindeId?: NullableStringFieldUpdateOperationsInput | string | null
-    categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
-    tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
-    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
-    humor?: NullableStringFieldUpdateOperationsInput | string | null
-    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
-    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
-    formality?: NullableStringFieldUpdateOperationsInput | string | null
-    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
-    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
-    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
-    subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-    subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    subscriptionCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    monthlyGenerationLimit?: IntFieldUpdateOperationsInput | number
-    monthlyGenerationsUsed?: IntFieldUpdateOperationsInput | number
-    generationResetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    stripeCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
-    stripeSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
-    stripePriceId?: NullableStringFieldUpdateOperationsInput | string | null
-    hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
-    onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
-    onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
-    events?: AnalyticsEventUncheckedUpdateManyWithoutUserNestedInput
-    pageViews?: PageViewUncheckedUpdateManyWithoutUserNestedInput
-    chatAnalytics?: ChatAnalyticsUncheckedUpdateManyWithoutUserNestedInput
-    createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
-    editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
-    generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type PostUpsertWithoutLikesInput = {
-    update: XOR<PostUpdateWithoutLikesInput, PostUncheckedUpdateWithoutLikesInput>
-    create: XOR<PostCreateWithoutLikesInput, PostUncheckedCreateWithoutLikesInput>
-    where?: PostWhereInput
-  }
-
-  export type PostUpdateToOneWithWhereWithoutLikesInput = {
-    where?: PostWhereInput
-    data: XOR<PostUpdateWithoutLikesInput, PostUncheckedUpdateWithoutLikesInput>
-  }
-
-  export type PostUpdateWithoutLikesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    content?: JsonNullValueInput | InputJsonValue
-    publishedStatus?: EnumPublishedStatusFieldUpdateOperationsInput | $Enums.PublishedStatus
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type PostUncheckedUpdateWithoutLikesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    content?: JsonNullValueInput | InputJsonValue
-    publishedStatus?: EnumPublishedStatusFieldUpdateOperationsInput | $Enums.PublishedStatus
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type UserCreateWithoutSessionsInput = {
     id?: string
     name?: string
@@ -22974,7 +18916,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -22996,13 +18937,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeCreateNestedManyWithoutUserInput
     events?: AnalyticsEventCreateNestedManyWithoutUserInput
     pageViews?: PageViewCreateNestedManyWithoutUserInput
     chatAnalytics?: ChatAnalyticsCreateNestedManyWithoutUserInput
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
     generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
@@ -23019,7 +18958,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -23041,13 +18979,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
     events?: AnalyticsEventUncheckedCreateNestedManyWithoutUserInput
     pageViews?: PageViewUncheckedCreateNestedManyWithoutUserInput
     chatAnalytics?: ChatAnalyticsUncheckedCreateNestedManyWithoutUserInput
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
     generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -23194,7 +19130,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23216,13 +19151,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUpdateManyWithoutUserNestedInput
     events?: AnalyticsEventUpdateManyWithoutUserNestedInput
     pageViews?: PageViewUpdateManyWithoutUserNestedInput
     chatAnalytics?: ChatAnalyticsUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
     generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
@@ -23239,7 +19172,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23261,13 +19193,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
     events?: AnalyticsEventUncheckedUpdateManyWithoutUserNestedInput
     pageViews?: PageViewUncheckedUpdateManyWithoutUserNestedInput
     chatAnalytics?: ChatAnalyticsUncheckedUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
     generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -23375,7 +19305,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -23397,13 +19326,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeCreateNestedManyWithoutUserInput
     sessions?: UserSessionCreateNestedManyWithoutUserInput
     pageViews?: PageViewCreateNestedManyWithoutUserInput
     chatAnalytics?: ChatAnalyticsCreateNestedManyWithoutUserInput
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
     generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
@@ -23420,7 +19347,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -23442,13 +19368,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
     sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
     pageViews?: PageViewUncheckedCreateNestedManyWithoutUserInput
     chatAnalytics?: ChatAnalyticsUncheckedCreateNestedManyWithoutUserInput
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
     generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -23530,7 +19454,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23552,13 +19475,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUpdateManyWithoutUserNestedInput
     pageViews?: PageViewUpdateManyWithoutUserNestedInput
     chatAnalytics?: ChatAnalyticsUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
     generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
@@ -23575,7 +19496,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23597,13 +19517,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
     pageViews?: PageViewUncheckedUpdateManyWithoutUserNestedInput
     chatAnalytics?: ChatAnalyticsUncheckedUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
     generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -23663,7 +19581,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -23685,13 +19602,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeCreateNestedManyWithoutUserInput
     sessions?: UserSessionCreateNestedManyWithoutUserInput
     events?: AnalyticsEventCreateNestedManyWithoutUserInput
     chatAnalytics?: ChatAnalyticsCreateNestedManyWithoutUserInput
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
     generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
@@ -23708,7 +19623,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -23730,13 +19644,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
     sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
     events?: AnalyticsEventUncheckedCreateNestedManyWithoutUserInput
     chatAnalytics?: ChatAnalyticsUncheckedCreateNestedManyWithoutUserInput
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
     generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -23818,7 +19730,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23840,13 +19751,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUpdateManyWithoutUserNestedInput
     events?: AnalyticsEventUpdateManyWithoutUserNestedInput
     chatAnalytics?: ChatAnalyticsUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
     generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
@@ -23863,7 +19772,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23885,13 +19793,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
     events?: AnalyticsEventUncheckedUpdateManyWithoutUserNestedInput
     chatAnalytics?: ChatAnalyticsUncheckedUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
     generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -23951,7 +19857,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -23973,13 +19878,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeCreateNestedManyWithoutUserInput
     sessions?: UserSessionCreateNestedManyWithoutUserInput
     events?: AnalyticsEventCreateNestedManyWithoutUserInput
     pageViews?: PageViewCreateNestedManyWithoutUserInput
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
     generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
@@ -23996,7 +19899,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -24018,13 +19920,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
     sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
     events?: AnalyticsEventUncheckedCreateNestedManyWithoutUserInput
     pageViews?: PageViewUncheckedCreateNestedManyWithoutUserInput
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
     generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -24106,7 +20006,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24128,13 +20027,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUpdateManyWithoutUserNestedInput
     events?: AnalyticsEventUpdateManyWithoutUserNestedInput
     pageViews?: PageViewUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
     generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
@@ -24151,7 +20048,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24173,13 +20069,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
     events?: AnalyticsEventUncheckedUpdateManyWithoutUserNestedInput
     pageViews?: PageViewUncheckedUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
     generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -24196,7 +20090,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -24218,13 +20111,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeCreateNestedManyWithoutUserInput
     sessions?: UserSessionCreateNestedManyWithoutUserInput
     events?: AnalyticsEventCreateNestedManyWithoutUserInput
     pageViews?: PageViewCreateNestedManyWithoutUserInput
     chatAnalytics?: ChatAnalyticsCreateNestedManyWithoutUserInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
     generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
@@ -24241,7 +20132,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -24263,13 +20153,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
     sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
     events?: AnalyticsEventUncheckedCreateNestedManyWithoutUserInput
     pageViews?: PageViewUncheckedCreateNestedManyWithoutUserInput
     chatAnalytics?: ChatAnalyticsUncheckedCreateNestedManyWithoutUserInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
     generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -24291,7 +20179,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -24313,13 +20200,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeCreateNestedManyWithoutUserInput
     sessions?: UserSessionCreateNestedManyWithoutUserInput
     events?: AnalyticsEventCreateNestedManyWithoutUserInput
     pageViews?: PageViewCreateNestedManyWithoutUserInput
     chatAnalytics?: ChatAnalyticsCreateNestedManyWithoutUserInput
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
-    personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
     generations?: GenerationCreateNestedManyWithoutUserInput
   }
 
@@ -24336,7 +20221,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -24358,57 +20242,17 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
     sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
     events?: AnalyticsEventUncheckedCreateNestedManyWithoutUserInput
     pageViews?: PageViewUncheckedCreateNestedManyWithoutUserInput
     chatAnalytics?: ChatAnalyticsUncheckedCreateNestedManyWithoutUserInput
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
-    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
     generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEditedArticlesInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutEditedArticlesInput, UserUncheckedCreateWithoutEditedArticlesInput>
-  }
-
-  export type PersonalizedOutputCreateWithoutArticleInput = {
-    id?: string
-    personalizedKeyInsights?: PersonalizedOutputCreatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: string | null
-    personalizedEmailTemplate?: string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: number | null
-    generationCount?: number
-    lastGeneratedAt?: Date | string
-    createdAt?: Date | string
-    user: UserCreateNestedOneWithoutPersonalizationsInput
-  }
-
-  export type PersonalizedOutputUncheckedCreateWithoutArticleInput = {
-    id?: string
-    userId: string
-    personalizedKeyInsights?: PersonalizedOutputCreatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: string | null
-    personalizedEmailTemplate?: string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: number | null
-    generationCount?: number
-    lastGeneratedAt?: Date | string
-    createdAt?: Date | string
-  }
-
-  export type PersonalizedOutputCreateOrConnectWithoutArticleInput = {
-    where: PersonalizedOutputWhereUniqueInput
-    create: XOR<PersonalizedOutputCreateWithoutArticleInput, PersonalizedOutputUncheckedCreateWithoutArticleInput>
-  }
-
-  export type PersonalizedOutputCreateManyArticleInputEnvelope = {
-    data: PersonalizedOutputCreateManyArticleInput | PersonalizedOutputCreateManyArticleInput[]
-    skipDuplicates?: boolean
   }
 
   export type GenerationCreateWithoutArticleInput = {
@@ -24469,7 +20313,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24491,13 +20334,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUpdateManyWithoutUserNestedInput
     events?: AnalyticsEventUpdateManyWithoutUserNestedInput
     pageViews?: PageViewUpdateManyWithoutUserNestedInput
     chatAnalytics?: ChatAnalyticsUpdateManyWithoutUserNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
     generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
@@ -24514,7 +20355,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24536,13 +20376,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
     events?: AnalyticsEventUncheckedUpdateManyWithoutUserNestedInput
     pageViews?: PageViewUncheckedUpdateManyWithoutUserNestedInput
     chatAnalytics?: ChatAnalyticsUncheckedUpdateManyWithoutUserNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
     generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -24570,7 +20408,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24592,13 +20429,11 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUpdateManyWithoutUserNestedInput
     events?: AnalyticsEventUpdateManyWithoutUserNestedInput
     pageViews?: PageViewUpdateManyWithoutUserNestedInput
     chatAnalytics?: ChatAnalyticsUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
-    personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
     generations?: GenerationUpdateManyWithoutUserNestedInput
   }
 
@@ -24615,7 +20450,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24637,30 +20471,12 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
     events?: AnalyticsEventUncheckedUpdateManyWithoutUserNestedInput
     pageViews?: PageViewUncheckedUpdateManyWithoutUserNestedInput
     chatAnalytics?: ChatAnalyticsUncheckedUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
-    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
     generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type PersonalizedOutputUpsertWithWhereUniqueWithoutArticleInput = {
-    where: PersonalizedOutputWhereUniqueInput
-    update: XOR<PersonalizedOutputUpdateWithoutArticleInput, PersonalizedOutputUncheckedUpdateWithoutArticleInput>
-    create: XOR<PersonalizedOutputCreateWithoutArticleInput, PersonalizedOutputUncheckedCreateWithoutArticleInput>
-  }
-
-  export type PersonalizedOutputUpdateWithWhereUniqueWithoutArticleInput = {
-    where: PersonalizedOutputWhereUniqueInput
-    data: XOR<PersonalizedOutputUpdateWithoutArticleInput, PersonalizedOutputUncheckedUpdateWithoutArticleInput>
-  }
-
-  export type PersonalizedOutputUpdateManyWithWhereWithoutArticleInput = {
-    where: PersonalizedOutputScalarWhereInput
-    data: XOR<PersonalizedOutputUpdateManyMutationInput, PersonalizedOutputUncheckedUpdateManyWithoutArticleInput>
   }
 
   export type GenerationUpsertWithWhereUniqueWithoutArticleInput = {
@@ -24679,338 +20495,6 @@ export namespace Prisma {
     data: XOR<GenerationUpdateManyMutationInput, GenerationUncheckedUpdateManyWithoutArticleInput>
   }
 
-  export type UserCreateWithoutPersonalizationsInput = {
-    id?: string
-    name?: string
-    firstName?: string
-    lastName?: string
-    email: string
-    company?: string | null
-    avatar?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    kindeId?: string | null
-    categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
-    tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
-    toneOfVoice?: string | null
-    humor?: string | null
-    detailOrientation?: string | null
-    contentLength?: string | null
-    formality?: string | null
-    emotionalExpression?: string | null
-    vocabulary?: string | null
-    engagementStyle?: string | null
-    subscriptionTier?: $Enums.SubscriptionTier
-    subscriptionStatus?: string | null
-    subscriptionExpiresAt?: Date | string | null
-    subscriptionCreatedAt?: Date | string | null
-    monthlyGenerationLimit?: number
-    monthlyGenerationsUsed?: number
-    generationResetDate?: Date | string | null
-    stripeCustomerId?: string | null
-    stripeSubscriptionId?: string | null
-    stripePriceId?: string | null
-    hasCompletedOnboarding?: boolean
-    onboardingStep?: number | null
-    onboardingCompletedAt?: Date | string | null
-    likes?: LikeCreateNestedManyWithoutUserInput
-    sessions?: UserSessionCreateNestedManyWithoutUserInput
-    events?: AnalyticsEventCreateNestedManyWithoutUserInput
-    pageViews?: PageViewCreateNestedManyWithoutUserInput
-    chatAnalytics?: ChatAnalyticsCreateNestedManyWithoutUserInput
-    createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
-    editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
-    generations?: GenerationCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutPersonalizationsInput = {
-    id?: string
-    name?: string
-    firstName?: string
-    lastName?: string
-    email: string
-    company?: string | null
-    avatar?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    kindeId?: string | null
-    categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
-    tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
-    toneOfVoice?: string | null
-    humor?: string | null
-    detailOrientation?: string | null
-    contentLength?: string | null
-    formality?: string | null
-    emotionalExpression?: string | null
-    vocabulary?: string | null
-    engagementStyle?: string | null
-    subscriptionTier?: $Enums.SubscriptionTier
-    subscriptionStatus?: string | null
-    subscriptionExpiresAt?: Date | string | null
-    subscriptionCreatedAt?: Date | string | null
-    monthlyGenerationLimit?: number
-    monthlyGenerationsUsed?: number
-    generationResetDate?: Date | string | null
-    stripeCustomerId?: string | null
-    stripeSubscriptionId?: string | null
-    stripePriceId?: string | null
-    hasCompletedOnboarding?: boolean
-    onboardingStep?: number | null
-    onboardingCompletedAt?: Date | string | null
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
-    sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
-    events?: AnalyticsEventUncheckedCreateNestedManyWithoutUserInput
-    pageViews?: PageViewUncheckedCreateNestedManyWithoutUserInput
-    chatAnalytics?: ChatAnalyticsUncheckedCreateNestedManyWithoutUserInput
-    createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
-    editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
-    generations?: GenerationUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutPersonalizationsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutPersonalizationsInput, UserUncheckedCreateWithoutPersonalizationsInput>
-  }
-
-  export type ArticleCreateWithoutPersonalizationsInput = {
-    id?: string
-    title: string
-    summary?: string | null
-    content?: string | null
-    contentType?: string
-    articleTopic?: string | null
-    category?: string | null
-    tags?: ArticleCreatetagsInput | string[]
-    defaultKeyInsights?: ArticleCreatedefaultKeyInsightsInput | string[]
-    defaultVideoScript?: string | null
-    defaultEmailTemplate?: string | null
-    defaultSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    position?: number
-    imageUrl?: string | null
-    sourceUrl?: string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    status?: $Enums.ArticleStatus
-    publishedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    submittedAt?: Date | string | null
-    reviewedAt?: Date | string | null
-    rejectionReason?: string | null
-    reviewNotes?: string | null
-    createdBy?: UserCreateNestedOneWithoutCreatedArticlesInput
-    lastEditedBy?: UserCreateNestedOneWithoutEditedArticlesInput
-    generations?: GenerationCreateNestedManyWithoutArticleInput
-  }
-
-  export type ArticleUncheckedCreateWithoutPersonalizationsInput = {
-    id?: string
-    title: string
-    summary?: string | null
-    content?: string | null
-    contentType?: string
-    articleTopic?: string | null
-    category?: string | null
-    tags?: ArticleCreatetagsInput | string[]
-    defaultKeyInsights?: ArticleCreatedefaultKeyInsightsInput | string[]
-    defaultVideoScript?: string | null
-    defaultEmailTemplate?: string | null
-    defaultSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    position?: number
-    imageUrl?: string | null
-    sourceUrl?: string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    status?: $Enums.ArticleStatus
-    publishedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    submittedAt?: Date | string | null
-    reviewedAt?: Date | string | null
-    rejectionReason?: string | null
-    reviewNotes?: string | null
-    createdByAdminId?: string | null
-    lastEditedByAdminId?: string | null
-    generations?: GenerationUncheckedCreateNestedManyWithoutArticleInput
-  }
-
-  export type ArticleCreateOrConnectWithoutPersonalizationsInput = {
-    where: ArticleWhereUniqueInput
-    create: XOR<ArticleCreateWithoutPersonalizationsInput, ArticleUncheckedCreateWithoutPersonalizationsInput>
-  }
-
-  export type UserUpsertWithoutPersonalizationsInput = {
-    update: XOR<UserUpdateWithoutPersonalizationsInput, UserUncheckedUpdateWithoutPersonalizationsInput>
-    create: XOR<UserCreateWithoutPersonalizationsInput, UserUncheckedCreateWithoutPersonalizationsInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutPersonalizationsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutPersonalizationsInput, UserUncheckedUpdateWithoutPersonalizationsInput>
-  }
-
-  export type UserUpdateWithoutPersonalizationsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    company?: NullableStringFieldUpdateOperationsInput | string | null
-    avatar?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    kindeId?: NullableStringFieldUpdateOperationsInput | string | null
-    categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
-    tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
-    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
-    humor?: NullableStringFieldUpdateOperationsInput | string | null
-    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
-    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
-    formality?: NullableStringFieldUpdateOperationsInput | string | null
-    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
-    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
-    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
-    subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-    subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    subscriptionCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    monthlyGenerationLimit?: IntFieldUpdateOperationsInput | number
-    monthlyGenerationsUsed?: IntFieldUpdateOperationsInput | number
-    generationResetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    stripeCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
-    stripeSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
-    stripePriceId?: NullableStringFieldUpdateOperationsInput | string | null
-    hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
-    onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
-    onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUpdateManyWithoutUserNestedInput
-    sessions?: UserSessionUpdateManyWithoutUserNestedInput
-    events?: AnalyticsEventUpdateManyWithoutUserNestedInput
-    pageViews?: PageViewUpdateManyWithoutUserNestedInput
-    chatAnalytics?: ChatAnalyticsUpdateManyWithoutUserNestedInput
-    createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
-    editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
-    generations?: GenerationUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutPersonalizationsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    company?: NullableStringFieldUpdateOperationsInput | string | null
-    avatar?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    kindeId?: NullableStringFieldUpdateOperationsInput | string | null
-    categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
-    tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
-    toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
-    humor?: NullableStringFieldUpdateOperationsInput | string | null
-    detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
-    contentLength?: NullableStringFieldUpdateOperationsInput | string | null
-    formality?: NullableStringFieldUpdateOperationsInput | string | null
-    emotionalExpression?: NullableStringFieldUpdateOperationsInput | string | null
-    vocabulary?: NullableStringFieldUpdateOperationsInput | string | null
-    engagementStyle?: NullableStringFieldUpdateOperationsInput | string | null
-    subscriptionTier?: EnumSubscriptionTierFieldUpdateOperationsInput | $Enums.SubscriptionTier
-    subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    subscriptionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    subscriptionCreatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    monthlyGenerationLimit?: IntFieldUpdateOperationsInput | number
-    monthlyGenerationsUsed?: IntFieldUpdateOperationsInput | number
-    generationResetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    stripeCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
-    stripeSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
-    stripePriceId?: NullableStringFieldUpdateOperationsInput | string | null
-    hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
-    onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
-    onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
-    sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
-    events?: AnalyticsEventUncheckedUpdateManyWithoutUserNestedInput
-    pageViews?: PageViewUncheckedUpdateManyWithoutUserNestedInput
-    chatAnalytics?: ChatAnalyticsUncheckedUpdateManyWithoutUserNestedInput
-    createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
-    editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
-    generations?: GenerationUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type ArticleUpsertWithoutPersonalizationsInput = {
-    update: XOR<ArticleUpdateWithoutPersonalizationsInput, ArticleUncheckedUpdateWithoutPersonalizationsInput>
-    create: XOR<ArticleCreateWithoutPersonalizationsInput, ArticleUncheckedCreateWithoutPersonalizationsInput>
-    where?: ArticleWhereInput
-  }
-
-  export type ArticleUpdateToOneWithWhereWithoutPersonalizationsInput = {
-    where?: ArticleWhereInput
-    data: XOR<ArticleUpdateWithoutPersonalizationsInput, ArticleUncheckedUpdateWithoutPersonalizationsInput>
-  }
-
-  export type ArticleUpdateWithoutPersonalizationsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
-    content?: NullableStringFieldUpdateOperationsInput | string | null
-    contentType?: StringFieldUpdateOperationsInput | string
-    articleTopic?: NullableStringFieldUpdateOperationsInput | string | null
-    category?: NullableStringFieldUpdateOperationsInput | string | null
-    tags?: ArticleUpdatetagsInput | string[]
-    defaultKeyInsights?: ArticleUpdatedefaultKeyInsightsInput | string[]
-    defaultVideoScript?: NullableStringFieldUpdateOperationsInput | string | null
-    defaultEmailTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    defaultSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    position?: IntFieldUpdateOperationsInput | number
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    status?: EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
-    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
-    createdBy?: UserUpdateOneWithoutCreatedArticlesNestedInput
-    lastEditedBy?: UserUpdateOneWithoutEditedArticlesNestedInput
-    generations?: GenerationUpdateManyWithoutArticleNestedInput
-  }
-
-  export type ArticleUncheckedUpdateWithoutPersonalizationsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
-    content?: NullableStringFieldUpdateOperationsInput | string | null
-    contentType?: StringFieldUpdateOperationsInput | string
-    articleTopic?: NullableStringFieldUpdateOperationsInput | string | null
-    category?: NullableStringFieldUpdateOperationsInput | string | null
-    tags?: ArticleUpdatetagsInput | string[]
-    defaultKeyInsights?: ArticleUpdatedefaultKeyInsightsInput | string[]
-    defaultVideoScript?: NullableStringFieldUpdateOperationsInput | string | null
-    defaultEmailTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    defaultSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    position?: IntFieldUpdateOperationsInput | number
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    status?: EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
-    reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
-    createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
-    lastEditedByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
-    generations?: GenerationUncheckedUpdateManyWithoutArticleNestedInput
-  }
-
   export type UserCreateWithoutGenerationsInput = {
     id?: string
     name?: string
@@ -25024,7 +20508,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -25046,14 +20529,12 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeCreateNestedManyWithoutUserInput
     sessions?: UserSessionCreateNestedManyWithoutUserInput
     events?: AnalyticsEventCreateNestedManyWithoutUserInput
     pageViews?: PageViewCreateNestedManyWithoutUserInput
     chatAnalytics?: ChatAnalyticsCreateNestedManyWithoutUserInput
     createdArticles?: ArticleCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutGenerationsInput = {
@@ -25069,7 +20550,6 @@ export namespace Prisma {
     kindeId?: string | null
     categoryPreferences?: UserCreatecategoryPreferencesInput | string[]
     tagPreferences?: UserCreatetagPreferencesInput | string[]
-    savedArticleIds?: UserCreatesavedArticleIdsInput | string[]
     toneOfVoice?: string | null
     humor?: string | null
     detailOrientation?: string | null
@@ -25091,14 +20571,12 @@ export namespace Prisma {
     hasCompletedOnboarding?: boolean
     onboardingStep?: number | null
     onboardingCompletedAt?: Date | string | null
-    likes?: LikeUncheckedCreateNestedManyWithoutUserInput
     sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
     events?: AnalyticsEventUncheckedCreateNestedManyWithoutUserInput
     pageViews?: PageViewUncheckedCreateNestedManyWithoutUserInput
     chatAnalytics?: ChatAnalyticsUncheckedCreateNestedManyWithoutUserInput
     createdArticles?: ArticleUncheckedCreateNestedManyWithoutCreatedByInput
     editedArticles?: ArticleUncheckedCreateNestedManyWithoutLastEditedByInput
-    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutGenerationsInput = {
@@ -25133,7 +20611,6 @@ export namespace Prisma {
     reviewNotes?: string | null
     createdBy?: UserCreateNestedOneWithoutCreatedArticlesInput
     lastEditedBy?: UserCreateNestedOneWithoutEditedArticlesInput
-    personalizations?: PersonalizedOutputCreateNestedManyWithoutArticleInput
   }
 
   export type ArticleUncheckedCreateWithoutGenerationsInput = {
@@ -25163,7 +20640,6 @@ export namespace Prisma {
     reviewNotes?: string | null
     createdByAdminId?: string | null
     lastEditedByAdminId?: string | null
-    personalizations?: PersonalizedOutputUncheckedCreateNestedManyWithoutArticleInput
   }
 
   export type ArticleCreateOrConnectWithoutGenerationsInput = {
@@ -25195,7 +20671,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25217,14 +20692,12 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUpdateManyWithoutUserNestedInput
     events?: AnalyticsEventUpdateManyWithoutUserNestedInput
     pageViews?: PageViewUpdateManyWithoutUserNestedInput
     chatAnalytics?: ChatAnalyticsUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGenerationsInput = {
@@ -25240,7 +20713,6 @@ export namespace Prisma {
     kindeId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryPreferences?: UserUpdatecategoryPreferencesInput | string[]
     tagPreferences?: UserUpdatetagPreferencesInput | string[]
-    savedArticleIds?: UserUpdatesavedArticleIdsInput | string[]
     toneOfVoice?: NullableStringFieldUpdateOperationsInput | string | null
     humor?: NullableStringFieldUpdateOperationsInput | string | null
     detailOrientation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25262,14 +20734,12 @@ export namespace Prisma {
     hasCompletedOnboarding?: BoolFieldUpdateOperationsInput | boolean
     onboardingStep?: NullableIntFieldUpdateOperationsInput | number | null
     onboardingCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    likes?: LikeUncheckedUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
     events?: AnalyticsEventUncheckedUpdateManyWithoutUserNestedInput
     pageViews?: PageViewUncheckedUpdateManyWithoutUserNestedInput
     chatAnalytics?: ChatAnalyticsUncheckedUpdateManyWithoutUserNestedInput
     createdArticles?: ArticleUncheckedUpdateManyWithoutCreatedByNestedInput
     editedArticles?: ArticleUncheckedUpdateManyWithoutLastEditedByNestedInput
-    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ArticleUpsertWithoutGenerationsInput = {
@@ -25310,7 +20780,6 @@ export namespace Prisma {
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: UserUpdateOneWithoutCreatedArticlesNestedInput
     lastEditedBy?: UserUpdateOneWithoutEditedArticlesNestedInput
-    personalizations?: PersonalizedOutputUpdateManyWithoutArticleNestedInput
   }
 
   export type ArticleUncheckedUpdateWithoutGenerationsInput = {
@@ -25340,17 +20809,6 @@ export namespace Prisma {
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutArticleNestedInput
-  }
-
-  export type LikeCreateManyUserInput = {
-    id?: string
-    postId: string
-    contentId: string
-    contentType: $Enums.ContentType
-    contentTitle: string
-    deviceType?: $Enums.Device
-    timestamp?: Date | string
   }
 
   export type UserSessionCreateManyUserInput = {
@@ -25467,20 +20925,6 @@ export namespace Prisma {
     createdByAdminId?: string | null
   }
 
-  export type PersonalizedOutputCreateManyUserInput = {
-    id?: string
-    articleId: string
-    personalizedKeyInsights?: PersonalizedOutputCreatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: string | null
-    personalizedEmailTemplate?: string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: number | null
-    generationCount?: number
-    lastGeneratedAt?: Date | string
-    createdAt?: Date | string
-  }
-
   export type GenerationCreateManyUserInput = {
     id?: string
     articleId: string
@@ -25491,36 +20935,6 @@ export namespace Prisma {
     tokensUsed?: number | null
     generatedAt?: Date | string
     truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type LikeUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    contentId?: StringFieldUpdateOperationsInput | string
-    contentType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
-    contentTitle?: StringFieldUpdateOperationsInput | string
-    deviceType?: EnumDeviceFieldUpdateOperationsInput | $Enums.Device
-    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    post?: PostUpdateOneRequiredWithoutLikesNestedInput
-  }
-
-  export type LikeUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    postId?: StringFieldUpdateOperationsInput | string
-    contentId?: StringFieldUpdateOperationsInput | string
-    contentType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
-    contentTitle?: StringFieldUpdateOperationsInput | string
-    deviceType?: EnumDeviceFieldUpdateOperationsInput | $Enums.Device
-    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type LikeUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    postId?: StringFieldUpdateOperationsInput | string
-    contentId?: StringFieldUpdateOperationsInput | string
-    contentType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
-    contentTitle?: StringFieldUpdateOperationsInput | string
-    deviceType?: EnumDeviceFieldUpdateOperationsInput | $Enums.Device
-    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserSessionUpdateWithoutUserInput = {
@@ -25729,7 +21143,6 @@ export namespace Prisma {
     rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedBy?: UserUpdateOneWithoutEditedArticlesNestedInput
-    personalizations?: PersonalizedOutputUpdateManyWithoutArticleNestedInput
     generations?: GenerationUpdateManyWithoutArticleNestedInput
   }
 
@@ -25759,7 +21172,6 @@ export namespace Prisma {
     rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     lastEditedByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutArticleNestedInput
     generations?: GenerationUncheckedUpdateManyWithoutArticleNestedInput
   }
 
@@ -25817,7 +21229,6 @@ export namespace Prisma {
     rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: UserUpdateOneWithoutCreatedArticlesNestedInput
-    personalizations?: PersonalizedOutputUpdateManyWithoutArticleNestedInput
     generations?: GenerationUpdateManyWithoutArticleNestedInput
   }
 
@@ -25847,7 +21258,6 @@ export namespace Prisma {
     rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizations?: PersonalizedOutputUncheckedUpdateManyWithoutArticleNestedInput
     generations?: GenerationUncheckedUpdateManyWithoutArticleNestedInput
   }
 
@@ -25877,48 +21287,6 @@ export namespace Prisma {
     rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     reviewNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdByAdminId?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type PersonalizedOutputUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    personalizedKeyInsights?: PersonalizedOutputUpdatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedEmailTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
-    generationCount?: IntFieldUpdateOperationsInput | number
-    lastGeneratedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    article?: ArticleUpdateOneRequiredWithoutPersonalizationsNestedInput
-  }
-
-  export type PersonalizedOutputUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    articleId?: StringFieldUpdateOperationsInput | string
-    personalizedKeyInsights?: PersonalizedOutputUpdatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedEmailTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
-    generationCount?: IntFieldUpdateOperationsInput | number
-    lastGeneratedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type PersonalizedOutputUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    articleId?: StringFieldUpdateOperationsInput | string
-    personalizedKeyInsights?: PersonalizedOutputUpdatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedEmailTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
-    generationCount?: IntFieldUpdateOperationsInput | number
-    lastGeneratedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type GenerationUpdateWithoutUserInput = {
@@ -25955,46 +21323,6 @@ export namespace Prisma {
     tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
     generatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type LikeCreateManyPostInput = {
-    id?: string
-    userId: string
-    contentId: string
-    contentType: $Enums.ContentType
-    contentTitle: string
-    deviceType?: $Enums.Device
-    timestamp?: Date | string
-  }
-
-  export type LikeUpdateWithoutPostInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    contentId?: StringFieldUpdateOperationsInput | string
-    contentType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
-    contentTitle?: StringFieldUpdateOperationsInput | string
-    deviceType?: EnumDeviceFieldUpdateOperationsInput | $Enums.Device
-    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutLikesNestedInput
-  }
-
-  export type LikeUncheckedUpdateWithoutPostInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    contentId?: StringFieldUpdateOperationsInput | string
-    contentType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
-    contentTitle?: StringFieldUpdateOperationsInput | string
-    deviceType?: EnumDeviceFieldUpdateOperationsInput | $Enums.Device
-    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type LikeUncheckedUpdateManyWithoutPostInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    contentId?: StringFieldUpdateOperationsInput | string
-    contentType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
-    contentTitle?: StringFieldUpdateOperationsInput | string
-    deviceType?: EnumDeviceFieldUpdateOperationsInput | $Enums.Device
-    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AnalyticsEventCreateManySessionInput = {
@@ -26165,20 +21493,6 @@ export namespace Prisma {
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type PersonalizedOutputCreateManyArticleInput = {
-    id?: string
-    userId: string
-    personalizedKeyInsights?: PersonalizedOutputCreatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: string | null
-    personalizedEmailTemplate?: string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: number | null
-    generationCount?: number
-    lastGeneratedAt?: Date | string
-    createdAt?: Date | string
-  }
-
   export type GenerationCreateManyArticleInput = {
     id?: string
     userId: string
@@ -26189,48 +21503,6 @@ export namespace Prisma {
     tokensUsed?: number | null
     generatedAt?: Date | string
     truetoneSnapshot?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type PersonalizedOutputUpdateWithoutArticleInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    personalizedKeyInsights?: PersonalizedOutputUpdatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedEmailTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
-    generationCount?: IntFieldUpdateOperationsInput | number
-    lastGeneratedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutPersonalizationsNestedInput
-  }
-
-  export type PersonalizedOutputUncheckedUpdateWithoutArticleInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    personalizedKeyInsights?: PersonalizedOutputUpdatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedEmailTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
-    generationCount?: IntFieldUpdateOperationsInput | number
-    lastGeneratedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type PersonalizedOutputUncheckedUpdateManyWithoutArticleInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    personalizedKeyInsights?: PersonalizedOutputUpdatepersonalizedKeyInsightsInput | string[]
-    personalizedVideoScript?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedEmailTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    personalizedSocialContent?: NullableJsonNullValueInput | InputJsonValue
-    truetoneSettings?: NullableJsonNullValueInput | InputJsonValue
-    tokensUsed?: NullableIntFieldUpdateOperationsInput | number | null
-    generationCount?: IntFieldUpdateOperationsInput | number
-    lastGeneratedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type GenerationUpdateWithoutArticleInput = {

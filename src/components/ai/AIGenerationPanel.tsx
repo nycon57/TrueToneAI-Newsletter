@@ -17,6 +17,7 @@ interface AIGenerationPanelProps {
   userTier: 'free' | 'paid';
   remainingGenerations: number;
   initialContent?: string; // Pre-existing generated content from cache
+  hasExistingGeneration?: boolean; // Whether this article already has generated content for this type
   onSave?: (content: string) => void;
   onGenerationComplete?: () => void; // Callback to refresh parent state
   onContentGenerated?: (content: string) => void; // Callback when new content is generated
@@ -29,6 +30,7 @@ export function AIGenerationPanel({
   userTier,
   remainingGenerations,
   initialContent,
+  hasExistingGeneration = false,
   onSave,
   onGenerationComplete,
   onContentGenerated,
@@ -37,7 +39,56 @@ export function AIGenerationPanel({
   const router = useRouter();
   const [generatedContent, setGeneratedContent] = useState<string>(initialContent || '');
   const [isSaving, setIsSaving] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
+  // If we have existing saved content, initialize isSaved to true
+  const [isSaved, setIsSaved] = useState(hasExistingGeneration && !!initialContent);
+
+  // Get color scheme based on content type
+  const getColorScheme = () => {
+    switch (contentType) {
+      case 'key_insights':
+        return {
+          bg: 'from-purple-50 to-purple-50/50',
+          border: 'border-purple-200',
+          text: 'text-purple-600',
+          heading: 'text-purple-900',
+          button: 'bg-purple-600 hover:bg-purple-700'
+        };
+      case 'video_script':
+        return {
+          bg: 'from-red-50 to-red-50/50',
+          border: 'border-red-200',
+          text: 'text-red-600',
+          heading: 'text-red-900',
+          button: 'bg-red-600 hover:bg-red-700'
+        };
+      case 'email_template':
+        return {
+          bg: 'from-green-50 to-emerald-50/50',
+          border: 'border-green-200',
+          text: 'text-green-600',
+          heading: 'text-green-900',
+          button: 'bg-green-600 hover:bg-green-700'
+        };
+      case 'social_content':
+        return {
+          bg: 'from-blue-50 to-blue-50/50',
+          border: 'border-blue-200',
+          text: 'text-blue-600',
+          heading: 'text-blue-900',
+          button: 'bg-blue-600 hover:bg-blue-700'
+        };
+      default:
+        return {
+          bg: 'from-green-50 to-emerald-50/50',
+          border: 'border-green-200',
+          text: 'text-green-600',
+          heading: 'text-green-900',
+          button: 'bg-green-600 hover:bg-green-700'
+        };
+    }
+  };
+
+  const colors = getColorScheme();
 
   const {
     completion,
@@ -190,8 +241,8 @@ export function AIGenerationPanel({
 
   return (
     <div className={cn('space-y-4', className)}>
-      {/* Generate Button (idle state) */}
-      {!isLoading && !completion && (
+      {/* Generate/Regenerate Button (idle state) - Only show if no content exists yet */}
+      {!isLoading && !completion && !generatedContent && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -202,8 +253,17 @@ export function AIGenerationPanel({
             disabled={remainingGenerations <= 0}
             className="w-full bg-gradient-to-r from-orchid to-indigo hover:from-indigo hover:to-shadow text-white shadow-md hover:shadow-lg transition-all"
           >
-            <Sparkles className="h-4 w-4 mr-2" />
-            Generate with AI
+            {hasExistingGeneration ? (
+              <>
+                <RotateCw className="h-4 w-4 mr-2" />
+                Regenerate with AI
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4 mr-2" />
+                Generate with AI
+              </>
+            )}
           </Button>
           {remainingGenerations <= 2 && remainingGenerations > 0 && userTier === 'free' && (
             <p className="text-xs text-yellow-600 mt-2 text-center">
@@ -267,14 +327,14 @@ export function AIGenerationPanel({
             className="space-y-3"
           >
             {/* Generated content display */}
-            <div className="p-4 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200">
+            <div className={cn('p-4 rounded-lg bg-gradient-to-br border', colors.bg, colors.border)}>
               <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-semibold text-green-900">
+                <Sparkles className={cn('h-4 w-4', colors.text)} />
+                <span className={cn('text-sm font-semibold', colors.heading)}>
                   AI Generated Content
                 </span>
                 {isSaved && (
-                  <span className="text-xs text-green-600 ml-auto">✓ Saved</span>
+                  <span className={cn('text-xs ml-auto', colors.text)}>✓ Saved</span>
                 )}
               </div>
               <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
@@ -290,8 +350,9 @@ export function AIGenerationPanel({
                 variant="default"
                 size="sm"
                 className={cn(
-                  'bg-green-600 hover:bg-green-700 text-white',
-                  isSaved && 'bg-green-700'
+                  'text-white',
+                  colors.button,
+                  isSaved && colors.button
                 )}
               >
                 {isSaving ? (

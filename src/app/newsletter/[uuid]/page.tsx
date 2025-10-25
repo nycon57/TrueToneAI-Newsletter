@@ -13,9 +13,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// Newsletter components
-import { LikeButton } from '@/components/newsletter/like-button';
-import type { ContentType } from '@/generated/prisma';
+// Newsletter components (like feature removed)
 
 // Hooks
 import { useAIChat } from '@/hooks/use-ai-chat';
@@ -66,13 +64,6 @@ interface NewsletterData {
     title: string;
     publishedAt: string;
     articles: Article[];
-    userLikes: {
-      contentId: string;
-      contentType: ContentType;
-    }[];
-    likeCounts: {
-      [contentId: string]: number;
-    };
   };
 }
 
@@ -143,12 +134,9 @@ const CopyButton = ({ content, type, className }: CopyButtonProps) => {
 interface ArticleCardProps {
   article: Article;
   postId: string;
-  userId?: string;
-  userLikes: { contentId: string; contentType: ContentType }[];
-  likeCounts: { [contentId: string]: number };
 }
 
-const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: ArticleCardProps) => {
+const ArticleCard = ({ article, postId }: ArticleCardProps) => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
   // Determine article icon based on type or content
@@ -228,25 +216,11 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
           >
             <div className="absolute inset-0 bg-gradient-to-br from-lavender/30 to-lavender/20 rounded-xl" />
             <div className="relative p-8 bg-white/60 backdrop-blur-sm rounded-xl border border-lavender/50">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-lavender/30 rounded-lg">
-                    <Lightbulb className="h-5 w-5 text-orchid" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900">Key Insights</h3>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-lavender/30 rounded-lg">
+                  <Lightbulb className="h-5 w-5 text-orchid" />
                 </div>
-                <LikeButton
-                  postId={postId}
-                  contentId={`${article.contentID}-insights`}
-                  contentType="KEY_INSIGHTS"
-                  contentTitle={`Key Insights - ${article.title}`}
-                  userId={userId}
-                  initialLiked={userLikes.some(
-                    like => like.contentId === `${article.contentID}-insights` && like.contentType === "KEY_INSIGHTS"
-                  )}
-                  initialCount={likeCounts[`${article.contentID}-insights`] || 0}
-                  size="sm"
-                />
+                <h3 className="text-xl font-bold text-gray-900">Key Insights</h3>
               </div>
               
               <div className="space-y-4 mb-6">
@@ -284,28 +258,14 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
             transition={{ duration: 0.3 }}
             className="mt-6 bg-gradient-to-br from-gray-50 to-gray-100/50 p-8 rounded-xl border border-gray-200"
           >
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 rounded-lg">
-                  <Video className="h-5 w-5 text-red-600" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">Video Script</h3>
-                <Badge className="bg-red-100 text-red-700 border-0 text-xs">
-                  30-60 seconds
-                </Badge>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-red-100 rounded-lg">
+                <Video className="h-5 w-5 text-red-600" />
               </div>
-              <LikeButton
-                postId={postId}
-                contentId={`${article.contentID}-video`}
-                contentType="VIDEO_SCRIPT"
-                contentTitle={`Video Script - ${article.title}`}
-                userId={userId}
-                initialLiked={userLikes.some(
-                  like => like.contentId === `${article.contentID}-video` && like.contentType === "VIDEO_SCRIPT"
-                )}
-                initialCount={likeCounts[`${article.contentID}-video`] || 0}
-                size="sm"
-              />
+              <h3 className="text-xl font-bold text-gray-900">Video Script</h3>
+              <Badge className="bg-red-100 text-red-700 border-0 text-xs">
+                30-60 seconds
+              </Badge>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-6">
               <div className="space-y-4">
@@ -331,25 +291,11 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
             transition={{ duration: 0.3 }}
             className="mt-6 bg-gradient-to-br from-green-50 to-emerald-50/50 p-8 rounded-xl border border-green-200"
           >
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <Mail className="h-5 w-5 text-green-700" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">Email Template</h3>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <Mail className="h-5 w-5 text-green-700" />
               </div>
-              <LikeButton
-                postId={postId}
-                contentId={`${article.contentID}-email`}
-                contentType="EMAIL_TEMPLATE"
-                contentTitle={`Email Template - ${article.title}`}
-                userId={userId}
-                initialLiked={userLikes.some(
-                  like => like.contentId === `${article.contentID}-email` && like.contentType === "EMAIL_TEMPLATE"
-                )}
-                initialCount={likeCounts[`${article.contentID}-email`] || 0}
-                size="sm"
-              />
+              <h3 className="text-xl font-bold text-gray-900">Email Template</h3>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm border border-green-100 mb-6">
               <div className="space-y-4">
@@ -442,23 +388,10 @@ const ArticleCard = ({ article, postId, userId, userLikes, likeCounts }: Article
     <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
       <CardContent className="p-7">
         <div className="flex-1">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center mb-4">
               <Badge className="bg-lavender/30 text-orchid border-0 px-3 py-1">
                 • Market Update
               </Badge>
-              <LikeButton
-                postId={postId}
-                contentId={article.contentID}
-                contentType="ARTICLE"
-                contentTitle={article.title}
-                userId={userId}
-                initialLiked={userLikes.some(
-                  like => like.contentId === article.contentID && like.contentType === "ARTICLE"
-                )}
-                initialCount={likeCounts[article.contentID] || 0}
-                size="sm"
-                showCount
-              />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-3 leading-tight">
               {article.title || 'Untitled Article'}
@@ -594,9 +527,10 @@ const AIChat = ({ newsletter, onClose }: { newsletter: NewsletterData['newslette
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Scroll to bottom on mount only
   useEffect(() => {
     scrollToBottom();
-  }, [messages, streamingContent]);
+  }, []);
 
   // Initialize conversation when component mounts
   useEffect(() => {
@@ -629,13 +563,16 @@ const AIChat = ({ newsletter, onClose }: { newsletter: NewsletterData['newslette
     try {
       // Get the selected article content
       const selectedArticleData = newsletter.articles.find(article => article.title === selectedArticle);
-      
+
       await sendMessage(
         content,
         selectedArticle,
         selectedContentType,
         selectedArticleData
       );
+
+      // Scroll after state update completes
+      queueMicrotask(scrollToBottom);
     } catch (error) {
       console.error('Error sending message:', error);
       toast.error('Failed to send message. Please try again.');
@@ -1093,9 +1030,6 @@ export default function NewsletterPage() {
                     <ArticleCard
                       article={article}
                       postId={data.newsletter.id}
-                      userId={userUuid || undefined}
-                      userLikes={data.newsletter.userLikes || []}
-                      likeCounts={data.newsletter.likeCounts || {}}
                     />
                   </motion.div>
                 );

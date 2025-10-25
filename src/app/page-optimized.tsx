@@ -1,24 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { motion } from 'motion/react';
-import { Sparkles, Settings, UserPlus, FileText } from 'lucide-react';
+import { Sparkles, UserPlus, FileText } from 'lucide-react';
 import Image from 'next/image';
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
-import { RegisterLink } from '@kinde-oss/kinde-auth-nextjs/components';
+import { RegisterLink, LoginLink } from '@kinde-oss/kinde-auth-nextjs/components';
 import { useQueryState } from 'nuqs';
 
 // UI Components
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { NavUser } from '@/components/ui/nav-user';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Custom Components
 import { ArticleCard } from '@/components/article/ArticleCard';
 import { UpgradePrompt } from '@/components/upgrade/UpgradePrompt';
-import { LoginModal } from '@/components/auth/LoginModal';
+
+// Hooks
+import { useArticles, useUser } from '@/hooks/use-articles';
 
 interface Article {
   id: string;
@@ -55,11 +56,6 @@ interface User {
 }
 
 export default function HomePage() {
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-
   // URL parameter filters using nuqs
   const [industry] = useQueryState('industry');
   const [category] = useQueryState('category');
@@ -69,64 +65,51 @@ export default function HomePage() {
   // Kinde authentication hooks
   const { logout, isAuthenticated, isLoading: kindeLoading, user: kindeUser } = useKindeBrowserClient();
 
-  // Compute tier flags outside effect for use in JSX
-  const normalizedTier = user?.subscription_tier?.toLowerCase() || 'free';
-  const isPaid = normalizedTier === 'paid';
+  // OPTIMIZED: Use React Query hooks for data fetching with automatic caching
+  const {
+    data: articlesData,
+    isLoading: articlesLoading,
+    error: articlesError
+  } = useArticles({
+    industry,
+    category,
+    tags,
+    saved,
+    enabled: !kindeLoading, // Only fetch when Kinde has finished loading
+  });
+
+  const {
+    data: userData,
+    isLoading: userLoading
+  } = useUser(isAuthenticated);
+
+  // OPTIMIZED: Calculate tier eligibility during render (not in effect)
+  const canAccessPremium = useMemo(() => {
+    const tier = userData?.subscription_tier?.toLowerCase() || 'free';
+    return tier === 'premium' || tier === 'pro' || tier === 'paid';
+  }, [userData?.subscription_tier]);
+
+  // OPTIMIZED: Compute tier flags during render
+  const normalizedTier = userData?.subscription_tier?.toLowerCase() || 'free';
+  const isPaid = normalizedTier === 'paid' || canAccessPremium;
   const isFreeUser = !isAuthenticated || normalizedTier === 'free';
 
-  // OPTIMIZED: Parallel API calls for articles and user data
-  useEffect(() => {
-    const fetchData = async () => {
-      if (kindeLoading) return;
+  // OPTIMIZED: Filter articles based on tier during render (not during fetch)
+  const visibleArticles = useMemo(() => {
+    const articles = articlesData?.articles || [];
+    if (canAccessPremium) {
+      return articles; // Premium users see all articles
+    }
+    // Free users only see free-tier articles
+    return articles.filter(article => {
+      const articleTier = article.tier?.toLowerCase() || 'free';
+      return articleTier === 'free';
+    });
+  }, [articlesData?.articles, canAccessPremium]);
 
-      try {
-        // Build query params
-        const params = new URLSearchParams();
-        if (industry) params.append('industry', industry);
-        if (category) params.append('category', category);
-        if (tags) params.append('tags', tags);
-        if (saved === 'true' && isPaid) params.append('saved', 'true');
-
-        // Parallel fetch with Promise.all
-        const promises: Promise<Response | null>[] = [
-          fetch(`/api/articles?${params.toString()}`),
-        ];
-
-        // Only fetch user data if authenticated
-        if (isAuthenticated && kindeUser) {
-          promises.push(fetch('/api/user'));
-        } else {
-          promises.push(Promise.resolve(null));
-        }
-
-        const [articlesRes, userRes] = await Promise.all(promises);
-
-        // Process articles response
-        if (articlesRes && articlesRes.ok) {
-          const articlesData = await articlesRes.json();
-          setArticles(articlesData.articles || []);
-        } else if (articlesRes && !articlesRes.ok) {
-          throw new Error('Failed to fetch articles');
-        }
-
-        // Process user response
-        if (userRes && userRes.ok) {
-          const userData = await userRes.json();
-          setUser(userData);
-        } else {
-          setUser(null);
-        }
-
-      } catch (err) {
-        console.error('Error fetching data:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [industry, category, tags, saved, isAuthenticated, kindeUser, kindeLoading, user?.subscription_tier]);
+  // Combine loading states
+  const loading = kindeLoading || articlesLoading || (isAuthenticated && userLoading);
+  const error = articlesError ? (articlesError instanceof Error ? articlesError.message : 'An error occurred') : null;
 
   if (loading || kindeLoading) {
     return (
@@ -194,20 +177,20 @@ export default function HomePage() {
                 {isAuthenticated ? (
                   <NavUser
                     user={{
-                      name: `${kindeUser?.given_name || user?.firstName || 'User'} ${kindeUser?.family_name || user?.lastName || ''}`.trim(),
-                      email: kindeUser?.email || user?.email || '',
-                      avatar: user?.avatar || kindeUser?.picture || '',
-                      subscription_tier: user?.subscription_tier || 'free'
+                      name: `${kindeUser?.given_name || userData?.firstName || 'User'} ${kindeUser?.family_name || userData?.lastName || ''}`.trim(),
+                      email: kindeUser?.email || userData?.email || '',
+                      avatar: userData?.avatar || kindeUser?.picture || '',
+                      subscription_tier: userData?.subscription_tier || 'free'
                     }}
                     onLogout={logout}
                   />
                 ) : (
                   <div className="flex items-center gap-4">
-                    <LoginModal>
+                    <LoginLink postLoginRedirectURL="/">
                       <button className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">
                         Login
                       </button>
-                    </LoginModal>
+                    </LoginLink>
                     <RegisterLink postLoginRedirectURL="/onboarding">
                       <Button
                         size="sm"
@@ -235,7 +218,7 @@ export default function HomePage() {
               {isAuthenticated && (
                 <div className="inline-flex items-center gap-2 bg-lavender/30 text-orchid px-4 py-2 rounded-full text-sm font-medium mb-6">
                   <Sparkles className="h-4 w-4" />
-                  <span>Welcome back, {kindeUser?.given_name || user?.firstName || user?.name || 'there'}!</span>
+                  <span>Welcome back, {kindeUser?.given_name || userData?.firstName || userData?.name || 'there'}!</span>
                 </div>
               )}
               <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
@@ -255,11 +238,11 @@ export default function HomePage() {
               </p>
 
               {/* Generation quota for paid users */}
-              {isPaid && user?.monthly_generation_limit && (
+              {isPaid && userData?.monthly_generation_limit && (
                 <div className="mt-6 inline-flex items-center gap-2 bg-blue-50 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
                   <Sparkles className="h-4 w-4" />
                   <span>
-                    AI Credits: {user.monthly_generations_used || 0} / {user.monthly_generation_limit} used this month
+                    AI Credits: {userData.monthly_generations_used || 0} / {userData.monthly_generation_limit} used this month
                   </span>
                 </div>
               )}
@@ -270,7 +253,7 @@ export default function HomePage() {
         {/* Articles */}
         <div className="max-w-4xl mx-auto px-4 py-8 pb-32">
           <div className="space-y-6">
-            {articles.length === 0 ? (
+            {visibleArticles.length === 0 ? (
               <Card className="shadow-lg border-0">
                 <CardContent className="p-8 text-center">
                   <FileText className="h-12 w-12 mx-auto text-gray-400 mb-4" />
@@ -280,7 +263,7 @@ export default function HomePage() {
               </Card>
             ) : (
               <>
-                {articles.map((article, index) => (
+                {visibleArticles.map((article, index) => (
                   <motion.div
                     key={article.id}
                     initial={{ opacity: 0, y: 20 }}
@@ -296,7 +279,7 @@ export default function HomePage() {
                 ))}
 
                 {/* Show upgrade prompt after 3rd article for free users */}
-                {isFreeUser && articles.length >= 3 && (
+                {isFreeUser && visibleArticles.length >= 3 && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

@@ -97,32 +97,7 @@ export async function GET(
     };
     const articles = content.articles || [];
 
-    // Optimize: Fetch user likes and like counts in parallel to eliminate N+1 query
-    const [userLikes, likeCounts] = await Promise.all([
-      prisma.like.findMany({
-        where: {
-          userId: userUuid,
-          postId: post.id
-        },
-        select: {
-          contentId: true,
-          contentType: true
-        }
-      }),
-      prisma.like.groupBy({
-        by: ['contentId'],
-        where: {
-          postId: post.id
-        },
-        _count: true
-      })
-    ]);
-
-    // Convert like counts to a map for easy access
-    const likeCountsMap = likeCounts.reduce((acc, item) => {
-      acc[item.contentId] = item._count;
-      return acc;
-    }, {} as Record<string, number>);
+    // Like feature has been removed
 
     // Transform the data to match the expected response structure
     const response = {
@@ -153,10 +128,7 @@ export async function GET(
           // Ad-specific fields
           valueProps: article.value_props || [],
           cta: article.cta || null
-        })),
-        // Include user's likes and like counts
-        userLikes: userLikes,
-        likeCounts: likeCountsMap
+        }))
       }
     };
 

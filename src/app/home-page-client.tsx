@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useTransition, useEffect } from 'react';
+import { useState, useTransition, useCallback, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Sparkles, UserPlus, FileText } from 'lucide-react';
 import Image from 'next/image';
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
-import { RegisterLink } from '@kinde-oss/kinde-auth-nextjs/components';
+import { RegisterLink, LoginLink } from '@kinde-oss/kinde-auth-nextjs/components';
 import { useRouter } from 'next/navigation';
 import { useQueryState } from 'nuqs';
+import { useArticles } from '@/hooks/use-articles';
 
 // UI Components
 import { Button } from '@/components/ui/button';
@@ -15,21 +16,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { NavUser } from '@/components/ui/nav-user';
 
 // Filter Components
-import { GenerationFilterPanel, GenerationFilters } from '@/components/filters/GenerationFilterPanel';
-import { SortDropdown, SortOption } from '@/components/filters/SortDropdown';
+import { ArticleFilterBar, type ArticleFilters } from '@/components/filters';
+import type { PersonalizationType } from '@/components/filters/PersonalizationsMultiselect';
 
 // Custom Components - Lazy load non-critical components
 import dynamic from 'next/dynamic';
+import { InfiniteScroll } from '@/components/pagination/InfiniteScroll';
 
 const ArticleCard = dynamic(() => import('@/components/article/ArticleCard').then(mod => ({ default: mod.ArticleCard })), {
   ssr: true,
 });
 
 const UpgradePrompt = dynamic(() => import('@/components/upgrade/UpgradePrompt').then(mod => ({ default: mod.UpgradePrompt })), {
-  ssr: true,
-});
-
-const LoginModal = dynamic(() => import('@/components/auth/LoginModal').then(mod => ({ default: mod.LoginModal })), {
   ssr: true,
 });
 
@@ -61,33 +59,42 @@ export function HomePageClient({
   const [isPending, startTransition] = useTransition();
 
   // Use server data as initial state
-  const [articles, setArticles] = useState(initialArticles?.articles || []);
   const [user] = useState(initialUser);
 
-  // URL state management for generation filters
-  const [contentTypesParam, setContentTypesParam] = useQueryState('contentTypes');
-  const [platformsParam, setPlatformsParam] = useQueryState('platforms');
-  const [dateRangeParam, setDateRangeParam] = useQueryState('dateRange');
-  const [dateFromParam, setDateFromParam] = useQueryState('dateFrom');
-  const [dateToParam, setDateToParam] = useQueryState('dateTo');
+  // Pagination state
+  const [allArticles, setAllArticles] = useState<any[]>(initialArticles?.articles || []);
+  const [cursor, setCursor] = useState<string | null>(initialArticles?.next_cursor || null);
+  const [hasMore, setHasMore] = useState<boolean>(initialArticles?.has_more || false);
+
+  // URL state management for all filters
+  const [searchParam, setSearchParam] = useQueryState('search');
   const [sortParam, setSortParam] = useQueryState('sort');
+  const [categoriesParam, setCategoriesParam] = useQueryState('categories');
+  const [tagsParam, setTagsParam] = useQueryState('tags');
+  const [personalizationsParam, setPersonalizationsParam] = useQueryState('personalizations');
 
-  // Parse URL params into filter object
-  const generationFilters: GenerationFilters = {
-    contentTypes: contentTypesParam ? contentTypesParam.split(',') : [],
-    platforms: platformsParam ? platformsParam.split(',') : [],
-    dateRange: (dateRangeParam as GenerationFilters['dateRange']) || 'all',
-    customDateFrom: dateFromParam || undefined,
-    customDateTo: dateToParam || undefined,
-  };
+  // Valid personalization types
+  const VALID_PERSONALIZATIONS: PersonalizationType[] = ['default', 'key_insights', 'video_script', 'email_template', 'social_media'];
 
-  const currentSort: SortOption = (sortParam as SortOption) || 'newest';
+  // Parse URL params into filter object (memoized to prevent infinite loops)
+  const articleFilters: ArticleFilters = useMemo(() => {
+    // Validate personalizations from URL
+    const validatedPersonalizations: PersonalizationType[] = personalizationsParam
+      ? personalizationsParam
+          .split(',')
+          .filter((value): value is PersonalizationType =>
+            VALID_PERSONALIZATIONS.includes(value as PersonalizationType)
+          )
+      : [];
 
-  // Calculate active filter count
-  const activeFilterCount =
-    generationFilters.contentTypes.length +
-    generationFilters.platforms.length +
-    (generationFilters.dateRange !== 'all' ? 1 : 0);
+    return {
+      search: searchParam || '',
+      sort: sortParam || 'newest',
+      categories: categoriesParam ? categoriesParam.split(',') : [],
+      tags: tagsParam ? tagsParam.split(',') : [],
+      personalizations: validatedPersonalizations,
+    };
+  }, [searchParam, sortParam, categoriesParam, tagsParam, personalizationsParam]);
 
   // Client-side Kinde hooks for logout only
   // We trust the server auth status completely to avoid 1+ second delay
@@ -124,58 +131,85 @@ export function HomePageClient({
     resetDate: user.generation_reset_date || undefined
   } : undefined;
 
-  // Handle generation filter changes
-  const handleGenerationFiltersChange = (newFilters: GenerationFilters) => {
-    setContentTypesParam(newFilters.contentTypes.length > 0 ? newFilters.contentTypes.join(',') : null);
-    setPlatformsParam(newFilters.platforms.length > 0 ? newFilters.platforms.join(',') : null);
-    setDateRangeParam(newFilters.dateRange !== 'all' ? newFilters.dateRange : null);
-    setDateFromParam(newFilters.customDateFrom || null);
-    setDateToParam(newFilters.customDateTo || null);
-  };
+  // Use the enhanced useArticles hook for data fetching
+  const {
+    data: articlesData,
+    isLoading: isLoadingArticles,
+    error: articlesError,
+    refetch
+  } = useArticles({
+    // Legacy filters from server props
+    industry: filters.industry,
+    saved: filters.saved,
+    // New filter params from ArticleFilterBar
+    search: searchParam,
+    sort: sortParam,
+    categories: categoriesParam,
+    tags: tagsParam,
+    personalizations: personalizationsParam,
+    // Pagination params
+    page_size: 9, // Load 9 articles at a time for paid users
+    cursor: cursor, // Use the current cursor
+    // Enable automatic fetching when filters change
+    enabled: true,
+  });
 
-  // Handle sort change
-  const handleSortChange = (newSort: SortOption) => {
-    setSortParam(newSort !== 'newest' ? newSort : null);
-  };
-
-  // Fetch articles when filters or sort changes
+  // Reset pagination when filter params change
   useEffect(() => {
-    // Only fetch if user is authenticated and paid (filters only work for paid users)
-    if (!isPaid) return;
+    setCursor(null);
+    setHasMore(false);
+  }, [searchParam, sortParam, categoriesParam, tagsParam, personalizationsParam]);
 
-    const fetchArticles = async () => {
-      startTransition(async () => {
-        try {
-          const params = new URLSearchParams();
+  // Update articles when filter results come in
+  useEffect(() => {
+    if (articlesData?.articles) {
+      // Check if we're paginating (have existing articles) or filtering (starting fresh)
+      if (allArticles.length > 0 && cursor !== null) {
+        // Pagination: append new articles, avoiding duplicates
+        setAllArticles(prev => {
+          const existingIds = new Set(prev.map(a => a.id));
+          const newArticles = articlesData.articles.filter((a: any) => !existingIds.has(a.id));
+          return [...prev, ...newArticles];
+        });
+      } else {
+        // Initial load or filter change: replace articles
+        setAllArticles(articlesData.articles);
+      }
+      setHasMore(articlesData.has_more || false);
+    }
+  }, [articlesData, cursor, allArticles.length]);
 
-          // Add existing filters
-          if (filters.industry) params.set('industry', filters.industry);
-          if (filters.category) params.set('category', filters.category);
-          if (filters.tags) params.set('tags', filters.tags);
-          if (filters.saved) params.set('saved', filters.saved);
+  // Always display accumulated articles (starting with initial articles)
+  const articles = allArticles;
 
-          // Add generation filters
-          if (contentTypesParam) params.set('contentTypes', contentTypesParam);
-          if (platformsParam) params.set('platforms', platformsParam);
-          if (dateRangeParam) params.set('dateRange', dateRangeParam);
-          if (dateFromParam) params.set('dateFrom', dateFromParam);
-          if (dateToParam) params.set('dateTo', dateToParam);
-          if (sortParam) params.set('sort', sortParam);
+  // Handle loading more articles
+  const handleLoadMore = useCallback(async () => {
+    if (!isPaid || !hasMore || isLoadingArticles || !articlesData?.next_cursor) return;
 
-          const response = await fetch(`/api/articles?${params.toString()}`);
-          const data = await response.json();
+    try {
+      // Update cursor to trigger automatic refetch with next page
+      // The useEffect above will handle appending the new articles
+      setCursor(articlesData.next_cursor);
+    } catch (error) {
+      console.error('Error loading more articles:', error);
+    }
+  }, [isPaid, hasMore, isLoadingArticles, articlesData]);
 
-          if (data.articles) {
-            setArticles(data.articles);
-          }
-        } catch (error) {
-          console.error('Error fetching articles:', error);
-        }
-      });
-    };
+  // Handle all filter changes (memoized to prevent infinite loops)
+  const handleFiltersChange = useCallback((newFilters: ArticleFilters) => {
+    // Validate personalizations before writing to URL
+    const validatedPersonalizations = newFilters.personalizations.filter((value) =>
+      VALID_PERSONALIZATIONS.includes(value)
+    );
 
-    fetchArticles();
-  }, [contentTypesParam, platformsParam, dateRangeParam, dateFromParam, dateToParam, sortParam, isPaid, filters]);
+    // Update URL params (this will trigger a refetch via useArticles)
+    // The useEffect will handle updating the articles when new data arrives
+    setSearchParam(newFilters.search || null);
+    setSortParam(newFilters.sort !== 'newest' ? newFilters.sort : null);
+    setCategoriesParam(newFilters.categories.length > 0 ? newFilters.categories.join(',') : null);
+    setTagsParam(newFilters.tags.length > 0 ? newFilters.tags.join(',') : null);
+    setPersonalizationsParam(validatedPersonalizations.length > 0 ? validatedPersonalizations.join(',') : null);
+  }, [setSearchParam, setSortParam, setCategoriesParam, setTagsParam, setPersonalizationsParam]);
 
   // Handle filter changes with transitions for smooth updates (for old filters)
   const handleFilterChange = (newFilters: Record<string, string>) => {
@@ -206,6 +240,16 @@ export function HomePageClient({
               />
             </div>
             <div className="flex items-center gap-3">
+              {/* AI Credits Badge - Show for authenticated paid users */}
+              {isAuthenticated && isPaid && user?.monthly_generation_limit && (
+                <div className="inline-flex items-center gap-2 bg-green-50 text-green-800 px-3 py-1.5 rounded-full text-sm font-medium border border-green-200">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>
+                    {user.monthly_generations_used || 0}/{user.monthly_generation_limit}
+                  </span>
+                </div>
+              )}
+
               {isAuthenticated ? (
                 <NavUser
                   user={{
@@ -218,11 +262,11 @@ export function HomePageClient({
                 />
               ) : (
                 <div className="flex items-center gap-4">
-                  <LoginModal>
+                  <LoginLink postLoginRedirectURL="/">
                     <button className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">
                       Login
                     </button>
-                  </LoginModal>
+                  </LoginLink>
                   <RegisterLink postLoginRedirectURL="/onboarding">
                     <Button
                       size="sm"
@@ -268,16 +312,6 @@ export function HomePageClient({
                   )
               }
             </p>
-
-            {/* Generation quota for paid users */}
-            {isPaid && user?.monthly_generation_limit && (
-              <div className="mt-6 inline-flex items-center gap-2 bg-blue-50 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
-                <Sparkles className="h-4 w-4" />
-                <span>
-                  AI Credits: {user.monthly_generations_used || 0} / {user.monthly_generation_limit} used this month
-                </span>
-              </div>
-            )}
           </motion.div>
         </div>
       </div>
@@ -285,33 +319,27 @@ export function HomePageClient({
       {/* Filter and Sort Controls - Only show for paid users */}
       {isPaid && (
         <div className="max-w-4xl mx-auto px-4 pb-6">
-          <div className="space-y-4">
-            {/* Generation Filters */}
-            <GenerationFilterPanel
-              filters={generationFilters}
-              onFiltersChange={handleGenerationFiltersChange}
-              activeFilterCount={activeFilterCount}
-            />
-
-            {/* Sort Dropdown */}
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-600">
-                {articles.length} {articles.length === 1 ? 'article' : 'articles'} found
-              </p>
-              <SortDropdown
-                value={currentSort}
-                onChange={handleSortChange}
-                className="w-[200px]"
-              />
-            </div>
-          </div>
+          {/* Article Filters */}
+          <ArticleFilterBar
+            filters={articleFilters}
+            onFiltersChange={handleFiltersChange}
+          />
         </div>
       )}
 
       {/* Articles - Optimized with minimal animations */}
       <div className="max-w-4xl mx-auto px-4 py-8 pb-32">
-        <div className="space-y-6" style={{ opacity: isPending ? 0.6 : 1 }}>
-          {articles.length === 0 ? (
+        <div className="space-y-6" style={{ opacity: isPending || isLoadingArticles ? 0.6 : 1 }}>
+          {isLoadingArticles && isPaid ? (
+            <Card className="shadow-lg border-0">
+              <CardContent className="p-8 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orchid" />
+                  <span className="text-gray-600">Loading articles...</span>
+                </div>
+              </CardContent>
+            </Card>
+          ) : articles.length === 0 ? (
             <Card className="shadow-lg border-0">
               <CardContent className="p-8 text-center">
                 <FileText className="h-12 w-12 mx-auto text-gray-400 mb-4" />
@@ -349,6 +377,19 @@ export function HomePageClient({
                 </motion.div>
               )}
             </>
+          )}
+
+          {/* Infinite Scroll - Only for paid users */}
+          {isPaid && (
+            <InfiniteScroll
+              hasMore={hasMore}
+              onLoadMore={handleLoadMore}
+              isLoading={isLoadingArticles}
+              showSkeleton={true}
+              skeletonCount={2}
+              autoLoad={true}
+              threshold={400}
+            />
           )}
         </div>
 

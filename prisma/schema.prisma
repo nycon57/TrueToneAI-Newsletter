@@ -34,7 +34,6 @@ model User {
   // User preferences
   categoryPreferences String[] @default([]) @map("category_preferences") /// User's preferred content categories
   tagPreferences      String[] @default([]) @map("tag_preferences") /// User's preferred content tags for refinement
-  savedArticleIds     String[] @default([]) @map("saved_article_ids") /// IDs of articles saved by the user
 
   // TrueTone characteristics
   toneOfVoice         String?  @default("Friendly") @map("tone_of_voice") /// TrueTone: Tone of Voice characteristic
@@ -66,14 +65,12 @@ model User {
   onboardingCompletedAt  DateTime? @map("onboarding_completed_at") /// When onboarding was completed
 
   // Relations
-  likes            Like[] /// User's likes on various content
   sessions         UserSession[] /// User's analytics sessions
   events           AnalyticsEvent[] /// User's tracked events
   pageViews        PageView[] /// User's page view history
   chatAnalytics    ChatAnalytics[] /// User's AI chat usage analytics
   createdArticles  Article[]            @relation("ArticleCreator") /// Articles created by this admin user
   editedArticles   Article[]            @relation("ArticleEditor") /// Articles last edited by this admin user
-  personalizations PersonalizedOutput[] /// User's personalized content outputs
   generations      Generation[] /// User's AI-generated content
 
   // Indexes for performance
@@ -101,20 +98,9 @@ model Post {
   createdAt       DateTime        @default(now()) /// Timestamp when the post was created
   updatedAt       DateTime        @updatedAt /// Timestamp when the post was last updated
 
-  // Relations
-  likes Like[] /// Likes on this post and its content
-
   @@map("newsletter_posts")
 }
 
-/// Enum defining different types of content that can be liked
-enum ContentType {
-  ARTICLE /// Main article content
-  KEY_INSIGHTS /// Key insights section
-  VIDEO_SCRIPT /// Video script section
-  EMAIL_TEMPLATE /// Email template section
-  SOCIAL_CONTENT /// Social media content section
-}
 
 /// Enum defining device types for analytics
 enum Device {
@@ -154,30 +140,6 @@ enum SocialPlatform {
   LINKEDIN /// LinkedIn platform
 }
 
-/// Like model represents user engagement with content
-/// Tracks likes on articles and specific content sections
-/// Maps to "likes" table in the database
-model Like {
-  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid /// Unique identifier for the like
-  userId       String      @db.Uuid /// ID of the user who liked
-  postId       String      @db.Uuid /// ID of the post containing the content
-  contentId    String /// Stable contentID from the JSONB content
-  contentType  ContentType /// Type of content being liked
-  contentTitle String /// Human-readable title of the liked content
-  deviceType   Device      @default(UNKNOWN) /// Device type used when liking
-  timestamp    DateTime    @default(now()) /// When the like was created
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  // Constraints and indexes
-  @@unique([userId, postId, contentId, contentType]) /// Prevent duplicate likes
-  @@index([postId, contentType]) /// Fast lookup by post and content type
-  @@index([userId]) /// Fast lookup by user
-  @@index([timestamp]) /// For time-based analytics
-  @@map("likes")
-}
 
 /// User session tracking for analytics and user journey insights
 /// Maps to "user_sessions" table in the database
@@ -342,7 +304,6 @@ model Article {
   lastEditedBy        User?   @relation("ArticleEditor", fields: [lastEditedByAdminId], references: [id])
 
   // Relations
-  personalizations PersonalizedOutput[] /// User personalizations of this article
   generations      Generation[] /// AI-generated content for this article
 
   // Indexes for performance
@@ -350,41 +311,11 @@ model Article {
   @@index([category]) /// Category filtering
   @@index([contentType]) /// Content type filtering
   @@index([createdAt]) /// Time-based queries
+  @@index([publishedAt(sort: Desc), id(sort: Desc)], map: "articles_published_desc_cursor_idx") /// Cursor-based pagination (newest first)
+  @@index([publishedAt(sort: Asc), id(sort: Asc)], map: "articles_published_asc_cursor_idx") /// Cursor-based pagination (oldest first)
+  @@index([title, id], map: "articles_title_cursor_idx") /// Cursor-based pagination (alphabetical sort)
+  @@index([tags]) /// Tag filtering
   @@map("articles")
-}
-
-/// PersonalizedOutput model represents AI-generated personalized versions of article content for paid users
-/// Maps to "personalized_outputs" table in the database
-model PersonalizedOutput {
-  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid /// Unique identifier for the personalization
-  userId    String @db.Uuid /// User who owns this personalization
-  articleId String @db.Uuid /// Article being personalized
-
-  // Personalized content (generated with user's TrueTone profile)
-  personalizedKeyInsights   String[] @default([]) /// Personalized key insights
-  personalizedVideoScript   String? /// Personalized video script
-  personalizedEmailTemplate String? /// Personalized email template
-  personalizedSocialContent Json?    @db.JsonB /// Personalized social media content
-
-  // TrueTone snapshot at generation time
-  truetoneSettings Json? @db.JsonB /// TrueTone settings used for generation
-
-  // Usage tracking
-  tokensUsed      Int? /// AI tokens consumed for generation
-  generationCount Int      @default(1) /// Number of times regenerated
-  lastGeneratedAt DateTime @default(now()) /// Last generation timestamp
-  createdAt       DateTime @default(now()) /// First creation timestamp
-
-  // Relations
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
-
-  // Constraints and indexes
-  @@unique([userId, articleId]) /// One personalization per user per article
-  @@index([userId]) /// User personalizations lookup
-  @@index([articleId]) /// Article personalizations lookup
-  @@index([lastGeneratedAt]) /// Recent generations lookup
-  @@map("personalized_outputs")
 }
 
 /// Generation model represents individual AI-generated content pieces

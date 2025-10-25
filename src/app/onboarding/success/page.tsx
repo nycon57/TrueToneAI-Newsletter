@@ -5,8 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { Loader2, Sparkles, Mail, Bot, Settings, CheckCircle2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
@@ -18,12 +16,6 @@ function OnboardingSuccessContent() {
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<VerificationStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [checklist, setChecklist] = useState({
-    content: false,
-    personalize: false,
-    settings: false,
-    explore: false,
-  });
 
   useEffect(() => {
     const verifyPayment = async () => {
@@ -241,19 +233,11 @@ function OnboardingSuccessContent() {
                 </h3>
               </div>
               <div className="space-y-3">
-                <div className="flex items-start gap-3 group">
-                  <Checkbox
-                    id="content"
-                    checked={checklist.content}
-                    onCheckedChange={(checked) =>
-                      setChecklist(prev => ({ ...prev, content: checked as boolean }))
-                    }
-                    className="mt-1"
-                  />
-                  <Label
-                    htmlFor="content"
-                    className="flex-1 cursor-pointer group-hover:text-foreground transition-colors"
-                  >
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="h-5 w-5 rounded border-2 border-muted-foreground/30" />
+                  </div>
+                  <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-skyward" />
                       <span className="font-medium">Browse Spark content</span>
@@ -261,22 +245,14 @@ function OnboardingSuccessContent() {
                     <p className="text-sm text-muted-foreground mt-1">
                       Explore curated articles tailored to your preferences
                     </p>
-                  </Label>
+                  </div>
                 </div>
 
-                <div className="flex items-start gap-3 group">
-                  <Checkbox
-                    id="personalize"
-                    checked={checklist.personalize}
-                    onCheckedChange={(checked) =>
-                      setChecklist(prev => ({ ...prev, personalize: checked as boolean }))
-                    }
-                    className="mt-1"
-                  />
-                  <Label
-                    htmlFor="personalize"
-                    className="flex-1 cursor-pointer group-hover:text-foreground transition-colors"
-                  >
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="h-5 w-5 rounded border-2 border-muted-foreground/30" />
+                  </div>
+                  <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <Sparkles className="h-4 w-4 text-orchid" />
                       <span className="font-medium">Personalize with AI</span>
@@ -284,22 +260,14 @@ function OnboardingSuccessContent() {
                     <p className="text-sm text-muted-foreground mt-1">
                       Transform articles for your unique voice and audience
                     </p>
-                  </Label>
+                  </div>
                 </div>
 
-                <div className="flex items-start gap-3 group">
-                  <Checkbox
-                    id="settings"
-                    checked={checklist.settings}
-                    onCheckedChange={(checked) =>
-                      setChecklist(prev => ({ ...prev, settings: checked as boolean }))
-                    }
-                    className="mt-1"
-                  />
-                  <Label
-                    htmlFor="settings"
-                    className="flex-1 cursor-pointer group-hover:text-foreground transition-colors"
-                  >
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="h-5 w-5 rounded border-2 border-muted-foreground/30" />
+                  </div>
+                  <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <Settings className="h-4 w-4 text-shadow" />
                       <span className="font-medium">Review your preferences</span>
@@ -307,22 +275,14 @@ function OnboardingSuccessContent() {
                     <p className="text-sm text-muted-foreground mt-1">
                       Adjust categories and tags anytime in settings
                     </p>
-                  </Label>
+                  </div>
                 </div>
 
-                <div className="flex items-start gap-3 group">
-                  <Checkbox
-                    id="explore"
-                    checked={checklist.explore}
-                    onCheckedChange={(checked) =>
-                      setChecklist(prev => ({ ...prev, explore: checked as boolean }))
-                    }
-                    className="mt-1"
-                  />
-                  <Label
-                    htmlFor="explore"
-                    className="flex-1 cursor-pointer group-hover:text-foreground transition-colors"
-                  >
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="h-5 w-5 rounded border-2 border-muted-foreground/30" />
+                  </div>
+                  <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <Bot className="h-4 w-4 text-primary" />
                       <span className="font-medium">Try copying content</span>
@@ -330,7 +290,7 @@ function OnboardingSuccessContent() {
                     <p className="text-sm text-muted-foreground mt-1">
                       One-click copy for emails, social media, and more
                     </p>
-                  </Label>
+                  </div>
                 </div>
               </div>
             </div>

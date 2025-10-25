@@ -107,6 +107,15 @@ export interface ApiUser {
   category_preferences?: string[];
   tag_preferences?: string[];
   saved_article_ids?: string[];
+  // TrueTone characteristics
+  toneOfVoice?: string;
+  humor?: string;
+  detailOrientation?: string;
+  contentLength?: string;
+  formality?: string;
+  emotionalExpression?: string;
+  vocabulary?: string;
+  engagementStyle?: string;
   // Subscription fields
   subscription_tier?: string;
   subscription_expires_at?: string;
