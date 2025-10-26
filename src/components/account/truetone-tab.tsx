@@ -111,7 +111,7 @@ export function TrueToneTab({ user }: TrueToneTabProps) {
 
   return (
     <Card className="shadow-lg border-orchid/10">
-      <CardHeader className="border-b border-border/50 bg-gradient-to-r from-orchid/5 to-indigo/5">
+      <CardHeader className="border-b border-orchid/20">
         <div className="flex items-start gap-3">
           <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-orchid to-indigo flex-shrink-0">
             <Sparkles className="w-6 h-6 text-white" />

@@ -269,6 +269,167 @@
 }
 
 @layer utilities {
+  /* Article Content Markdown Styling - In utilities layer for highest precedence */
+  .article-content {
+    color: rgb(55 65 81);
+    line-height: 1.625;
+    font-size: 1.125rem;
+  }
+
+  .article-content h1 {
+    font-size: 1.875rem !important;
+    font-weight: 700 !important;
+    color: rgb(17 24 39) !important;
+    margin-top: 2rem !important;
+    margin-bottom: 1rem !important;
+    font-family: var(--font-heading);
+  }
+
+  .article-content h2 {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    color: rgb(17 24 39) !important;
+    margin-top: 3rem !important;
+    margin-bottom: 1.5rem !important;
+    font-family: var(--font-heading);
+  }
+
+  .article-content h3 {
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+    color: rgb(17 24 39) !important;
+    margin-top: 2rem !important;
+    margin-bottom: 1rem !important;
+    font-family: var(--font-heading);
+  }
+
+  .article-content h4 {
+    font-size: 1.125rem !important;
+    font-weight: 600 !important;
+    color: rgb(17 24 39) !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.75rem !important;
+    font-family: var(--font-heading);
+  }
+
+  .article-content p {
+    margin-top: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+    color: rgb(55 65 81);
+    line-height: 1.625;
+  }
+
+  .article-content ul,
+  .article-content ol {
+    margin-top: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+    padding-left: 1.5rem !important;
+  }
+}
+
+.article-content ul {
+  list-style-type: disc;
+}
+
+.article-content ol {
+  list-style-type: decimal;
+}
+
+.article-content li {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: rgb(55 65 81);
+  line-height: 1.625;
+}
+
+.article-content li::marker {
+  color: #4F518C;
+}
+
+.article-content strong {
+  font-weight: 600;
+  color: rgb(17 24 39);
+}
+
+.article-content a {
+  color: #4F518C;
+  text-decoration: none;
+}
+
+.article-content a:hover {
+  text-decoration: underline;
+}
+
+.article-content blockquote {
+  border-left: 4px solid #4F518C;
+  background-color: rgba(218, 191, 255, 0.1);
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+.article-content code {
+  background-color: rgb(243 244 246);
+  color: rgb(17 24 39);
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  font-family: var(--font-mono);
+}
+
+.article-content pre {
+  background-color: rgb(17 24 39);
+  color: rgb(243 244 246);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+.article-content pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+.article-content hr {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border-color: rgb(229 231 235);
+}
+
+.article-content table {
+  width: 100%;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-collapse: collapse;
+}
+
+.article-content th,
+.article-content td {
+  border: 1px solid rgb(209 213 219);
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.article-content th {
+  background-color: rgb(243 244 246);
+  font-weight: 600;
+  color: rgb(17 24 39);
+}
+
+@layer utilities {
   /* TrueTone AI Brand Colors */
   .bg-shadow {
     background-color: #131321;

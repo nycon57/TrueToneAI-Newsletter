@@ -70,31 +70,31 @@ export default function AccountClient({ user }: AccountClientProps) {
             onValueChange={setActiveTab}
             className="w-full"
           >
-            <TabsList className="grid w-full grid-cols-4 mb-8 h-auto p-1">
+            <TabsList className="grid w-full grid-cols-4 mb-8 h-auto p-1 bg-white border-2 border-orchid/20">
               <TabsTrigger
                 value="profile"
-                className="flex items-center gap-2 py-3 data-[state=active]:bg-background"
+                className="flex items-center gap-2 py-3 text-orchid/70 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orchid data-[state=active]:to-indigo data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200"
               >
                 <UserCircle className="w-4 h-4" />
                 <span className="hidden sm:inline">Profile</span>
               </TabsTrigger>
               <TabsTrigger
                 value="truetone"
-                className="flex items-center gap-2 py-3 data-[state=active]:bg-background"
+                className="flex items-center gap-2 py-3 text-orchid/70 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orchid data-[state=active]:to-indigo data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200"
               >
                 <Wand2 className="w-4 h-4" />
                 <span className="hidden sm:inline">TrueTone</span>
               </TabsTrigger>
               <TabsTrigger
                 value="billing"
-                className="flex items-center gap-2 py-3 data-[state=active]:bg-background"
+                className="flex items-center gap-2 py-3 text-orchid/70 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orchid data-[state=active]:to-indigo data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200"
               >
                 <CreditCard className="w-4 h-4" />
                 <span className="hidden sm:inline">Billing</span>
               </TabsTrigger>
               <TabsTrigger
                 value="support"
-                className="flex items-center gap-2 py-3 data-[state=active]:bg-background"
+                className="flex items-center gap-2 py-3 text-orchid/70 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orchid data-[state=active]:to-indigo data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span className="hidden sm:inline">Support</span>
