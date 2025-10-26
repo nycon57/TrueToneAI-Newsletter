@@ -14,6 +14,10 @@ import { useArticles } from '@/hooks/use-articles';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { NavUser } from '@/components/ui/nav-user';
+import { GenerationLimitBadge } from '@/components/ai/GenerationLimitBadge';
+
+// Article Modal
+import { useArticleModal } from '@/lib/context';
 
 // Filter Components
 import { ArticleFilterBar, type ArticleFilters } from '@/components/filters';
@@ -27,7 +31,15 @@ const ArticleCard = dynamic(() => import('@/components/article/ArticleCard').the
   ssr: true,
 });
 
+const SimpleArticleModal = dynamic(() => import('@/components/article/SimpleArticleModal').then(mod => ({ default: mod.SimpleArticleModal })), {
+  ssr: true,
+});
+
 const UpgradePrompt = dynamic(() => import('@/components/upgrade/UpgradePrompt').then(mod => ({ default: mod.UpgradePrompt })), {
+  ssr: true,
+});
+
+const LockedGenerationsCard = dynamic(() => import('@/components/upgrade/LockedGenerationsCard').then(mod => ({ default: mod.LockedGenerationsCard })), {
   ssr: true,
 });
 
@@ -58,8 +70,18 @@ export function HomePageClient({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
+  // Client-only hydration flag to prevent auth mismatch
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Use server data as initial state
   const [user] = useState(initialUser);
+
+  // Article Modal state
+  const { isOpen, article, closeArticle} = useArticleModal();
 
   // Pagination state
   const [allArticles, setAllArticles] = useState<any[]>(initialArticles?.articles || []);
@@ -100,10 +122,6 @@ export function HomePageClient({
   // We trust the server auth status completely to avoid 1+ second delay
   const kindeClient = useKindeBrowserClient();
 
-  // Debug: Log what Kinde returns
-  console.log('[HomePageClient] Kinde client:', kindeClient);
-  console.log('[HomePageClient] Kinde client keys:', Object.keys(kindeClient || {}));
-
   // Create a proper logout handler
   const handleLogout = async () => {
     console.log('[HomePageClient] handleLogout called');
@@ -122,6 +140,23 @@ export function HomePageClient({
   const normalizedTier = user?.subscription_tier?.toUpperCase() || 'FREE';
   const isPaid = normalizedTier === 'PAID' || normalizedTier === 'PREMIUM';
   const isFreeUser = !isAuthenticated || normalizedTier === 'FREE';
+
+  // Locked generations count for free users
+  const [lockedGenerationsCount, setLockedGenerationsCount] = useState<number>(0);
+
+  // Fetch locked generations count for free users
+  useEffect(() => {
+    if (isAuthenticated && isFreeUser) {
+      fetch('/api/user/locked-generations')
+        .then(res => res.json())
+        .then(data => {
+          if (data.count) {
+            setLockedGenerationsCount(data.count);
+          }
+        })
+        .catch(err => console.error('Error fetching locked generations:', err));
+    }
+  }, [isAuthenticated, isFreeUser]);
 
   // Calculate generation stats from user data
   const userGenerationStats = isAuthenticated && user ? {
@@ -225,58 +260,64 @@ export function HomePageClient({
   return (
     <div className="min-h-screen bg-gradient-to-br from-lavender/20 via-white to-lavender/20">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-lavender/30">
+      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-lavender/30" suppressHydrationWarning>
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <div className="relative">
+            <div className="relative h-10">
               <Image
                 src="/logo/landscape/TrueToneAI-Landscape-Logo-Full-Color.png"
                 alt="TrueTone AI"
                 width={200}
                 height={40}
-                className="object-contain"
-                style={{ height: '40px', width: 'auto' }}
+                className="h-10 w-auto object-contain"
                 priority
               />
             </div>
-            <div className="flex items-center gap-3">
-              {/* AI Credits Badge - Show for authenticated paid users */}
-              {isAuthenticated && isPaid && user?.monthly_generation_limit && (
-                <div className="inline-flex items-center gap-2 bg-green-50 text-green-800 px-3 py-1.5 rounded-full text-sm font-medium border border-green-200">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>
-                    {user.monthly_generations_used || 0}/{user.monthly_generation_limit}
-                  </span>
-                </div>
-              )}
+            <div className="flex items-center gap-3" suppressHydrationWarning>
+              {mounted ? (
+                <>
+                  {/* AI Generation Limit Badge - Show for ALL authenticated users */}
+                  {isAuthenticated && user && userGenerationStats && (
+                    <GenerationLimitBadge
+                      remaining={userGenerationStats.remaining}
+                      limit={userGenerationStats.limit}
+                      tier={userGenerationStats.tier}
+                      resetDate={userGenerationStats.resetDate}
+                    />
+                  )}
 
-              {isAuthenticated ? (
-                <NavUser
-                  user={{
-                    name: `${kindeUser?.given_name || user?.firstName || 'User'} ${kindeUser?.family_name || user?.lastName || ''}`.trim(),
-                    email: kindeUser?.email || user?.email || '',
-                    avatar: user?.avatar || kindeUser?.picture || '',
-                    subscription_tier: user?.subscription_tier?.toUpperCase() || 'FREE'
-                  }}
-                  onLogout={handleLogout}
-                />
+                  {isAuthenticated ? (
+                    <NavUser
+                      user={{
+                        name: `${kindeUser?.given_name || user?.firstName || 'User'} ${kindeUser?.family_name || user?.lastName || ''}`.trim(),
+                        email: kindeUser?.email || user?.email || '',
+                        avatar: user?.avatar || kindeUser?.picture || '',
+                        subscription_tier: user?.subscription_tier?.toUpperCase() || 'FREE'
+                      }}
+                      onLogout={handleLogout}
+                    />
+                  ) : (
+                    <div className="flex items-center gap-4">
+                      <LoginLink
+                        postLoginRedirectURL="/"
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium"
+                      >
+                        Login
+                      </LoginLink>
+                      <RegisterLink postLoginRedirectURL="/onboarding">
+                        <Button
+                          size="sm"
+                          className="bg-gradient-to-r from-orchid to-indigo hover:from-indigo hover:to-shadow text-white border-0 shadow-md hover:shadow-lg transition-all duration-300"
+                        >
+                          <UserPlus className="h-4 w-4 mr-2" />
+                          Sign Up
+                        </Button>
+                      </RegisterLink>
+                    </div>
+                  )}
+                </>
               ) : (
-                <div className="flex items-center gap-4">
-                  <LoginLink postLoginRedirectURL="/">
-                    <button className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">
-                      Login
-                    </button>
-                  </LoginLink>
-                  <RegisterLink postLoginRedirectURL="/onboarding">
-                    <Button
-                      size="sm"
-                      className="bg-gradient-to-r from-orchid to-indigo hover:from-indigo hover:to-shadow text-white border-0 shadow-md hover:shadow-lg transition-all duration-300"
-                    >
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Sign Up
-                    </Button>
-                  </RegisterLink>
-                </div>
+                <div className="h-10 w-32" />
               )}
             </div>
           </div>
@@ -366,6 +407,17 @@ export function HomePageClient({
                 </motion.div>
               ))}
 
+              {/* Show locked generations card for free users with saved content */}
+              {isFreeUser && isAuthenticated && lockedGenerationsCount > 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <LockedGenerationsCard lockedCount={lockedGenerationsCount} />
+                </motion.div>
+              )}
+
               {/* Show upgrade prompt after 3rd article for free users */}
               {isFreeUser && articles.length >= 3 && (
                 <motion.div
@@ -398,6 +450,13 @@ export function HomePageClient({
           © 2024 Spark by TrueTone AI. Curated insights for sales professionals who lead.
         </div>
       </div>
+
+      {/* Simple Article Reading Modal */}
+      <SimpleArticleModal
+        isOpen={isOpen}
+        onClose={closeArticle}
+        article={article}
+      />
     </div>
   );
 }

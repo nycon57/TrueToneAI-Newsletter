@@ -61,6 +61,7 @@ export const prefetchArticles = cache(async (params: FetchArticlesParams) => {
           id: a.id,
           title: a.title,
           summary: a.summary,
+          content: a.content, // Full markdown article content
           content_type: a.content_type,
           industry: a.industry,
           category: a.category,
@@ -119,6 +120,14 @@ export const prefetchArticles = cache(async (params: FetchArticlesParams) => {
 
     const { data: articles } = await query;
 
+    // DEBUG: Log what we got from database
+    console.log('[prefetchArticles] Fetched articles from DB:', {
+      count: articles?.length || 0,
+      firstArticleContent: articles?.[0]?.content ? `${articles[0].content.substring(0, 100)}...` : 'NO CONTENT',
+      firstArticleHasContent: !!articles?.[0]?.content,
+      firstArticleKeys: articles?.[0] ? Object.keys(articles[0]) : []
+    });
+
     // Check if there are more articles
     const hasMore = articles && articles.length > effectivePageSize;
     const articlesToReturn = hasMore ? articles.slice(0, effectivePageSize) : articles || [];
@@ -165,10 +174,19 @@ export const prefetchArticles = cache(async (params: FetchArticlesParams) => {
 
       const hasGenerations = articleGenerations.length > 0;
 
+      // Build social media generation IDs map
+      const socialMediaGenIds: Record<string, string> = {};
+      socialGens.forEach(gen => {
+        if (gen.platform) {
+          socialMediaGenIds[gen.platform.toLowerCase()] = gen.id;
+        }
+      });
+
       return {
         id: article.id,
         title: article.title,
         summary: article.summary,
+        content: article.content, // Full markdown article content
         content_type: article.content_type,
         industry: article.industry,
         category: article.category,
@@ -188,8 +206,22 @@ export const prefetchArticles = cache(async (params: FetchArticlesParams) => {
           hasEmailTemplate: !!emailTemplateGen,
           hasSocialMedia: socialGens.length > 0,
           socialPlatforms: socialGens.map(g => g.platform).filter(Boolean)
+        },
+        generation_ids: {
+          keyInsights: keyInsightsGen?.id,
+          videoScript: videoScriptGen?.id,
+          emailTemplate: emailTemplateGen?.id,
+          socialMedia: Object.keys(socialMediaGenIds).length > 0 ? socialMediaGenIds : undefined
         }
       };
+    });
+
+    // DEBUG: Log what we're returning
+    console.log('[prefetchArticles] Returning enriched articles:', {
+      count: enrichedArticles?.length || 0,
+      firstArticleHasContent: !!enrichedArticles?.[0]?.content,
+      firstArticleContentLength: enrichedArticles?.[0]?.content?.length || 0,
+      firstArticleKeys: enrichedArticles?.[0] ? Object.keys(enrichedArticles[0]) : []
     });
 
     return {

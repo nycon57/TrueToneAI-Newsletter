@@ -276,6 +276,7 @@ export async function GET(req: NextRequest) {
           id: a.id,
           title: a.title,
           summary: a.summary,
+          content: a.content, // Full markdown article content for modal
           content_type: a.content_type,
           industry: a.industry,
           category: a.category,
@@ -482,7 +483,7 @@ export async function GET(req: NextRequest) {
 
       // Get social media generations
       const socialGens = articleGenerations.filter(g => g.content_type === 'SOCIAL_MEDIA');
-      const socialContent: any = {};
+      const socialContent: Record<string, string> = {};
       socialGens.forEach(gen => {
         if (gen.platform) {
           socialContent[gen.platform.toLowerCase()] = gen.content;
@@ -501,13 +502,23 @@ export async function GET(req: NextRequest) {
         socialPlatforms: socialGens.map(g => g.platform).filter(Boolean)
       };
 
+      // Build social media generation IDs map
+      const socialMediaGenIds: Record<string, string> = {};
+      socialGens.forEach(gen => {
+        if (gen.platform) {
+          socialMediaGenIds[gen.platform.toLowerCase()] = gen.id;
+        }
+      });
+
       // Remove any joined data from the article object
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { personalized_outputs, generations, ...articleData } = article as any;
 
       return {
         id: articleData.id,
         title: articleData.title,
         summary: articleData.summary,
+        content: articleData.content, // Full markdown article content for modal
         content_type: articleData.content_type,
         industry: articleData.industry,
         category: articleData.category,
@@ -520,7 +531,13 @@ export async function GET(req: NextRequest) {
         socialContent: Object.keys(socialContent).length > 0 ? socialContent : (articleData.default_social_content || {}),
         is_personalized: hasGenerations,
         tier: user.subscription_tier,
-        generation_stats: generationStats
+        generation_stats: generationStats,
+        generation_ids: {
+          keyInsights: keyInsightsGen?.id,
+          videoScript: videoScriptGen?.id,
+          emailTemplate: emailTemplateGen?.id,
+          socialMedia: Object.keys(socialMediaGenIds).length > 0 ? socialMediaGenIds : undefined
+        }
       };
     });
 

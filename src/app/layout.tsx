@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { inter, signal } from "./fonts";
 import { Providers } from "./providers";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
@@ -42,12 +41,10 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         <Providers>
-          <NuqsAdapter>
-            <TooltipProvider>
-              {children}
-              <Toaster />
-            </TooltipProvider>
-          </NuqsAdapter>
+          <TooltipProvider>
+            {children}
+            <Toaster />
+          </TooltipProvider>
           <ServiceWorkerRegistration />
           <WebVitals />
         </Providers>

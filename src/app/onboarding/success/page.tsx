@@ -234,60 +234,40 @@ function OnboardingSuccessContent() {
               </div>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 mt-1">
-                    <div className="h-5 w-5 rounded border-2 border-muted-foreground/30" />
-                  </div>
+                  <Mail className="h-5 w-5 text-skyward flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-skyward" />
-                      <span className="font-medium">Browse Spark content</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <span className="font-medium block mb-1">Browse Spark content</span>
+                    <p className="text-sm text-muted-foreground">
                       Explore curated articles tailored to your preferences
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 mt-1">
-                    <div className="h-5 w-5 rounded border-2 border-muted-foreground/30" />
-                  </div>
+                  <Sparkles className="h-5 w-5 text-orchid flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-orchid" />
-                      <span className="font-medium">Personalize with AI</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <span className="font-medium block mb-1">Personalize with AI</span>
+                    <p className="text-sm text-muted-foreground">
                       Transform articles for your unique voice and audience
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 mt-1">
-                    <div className="h-5 w-5 rounded border-2 border-muted-foreground/30" />
-                  </div>
+                  <Settings className="h-5 w-5 text-shadow flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <Settings className="h-4 w-4 text-shadow" />
-                      <span className="font-medium">Review your preferences</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <span className="font-medium block mb-1">Review your preferences</span>
+                    <p className="text-sm text-muted-foreground">
                       Adjust categories and tags anytime in settings
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 mt-1">
-                    <div className="h-5 w-5 rounded border-2 border-muted-foreground/30" />
-                  </div>
+                  <Bot className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <Bot className="h-4 w-4 text-primary" />
-                      <span className="font-medium">Try copying content</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <span className="font-medium block mb-1">Try copying content</span>
+                    <p className="text-sm text-muted-foreground">
                       One-click copy for emails, social media, and more
                     </p>
                   </div>

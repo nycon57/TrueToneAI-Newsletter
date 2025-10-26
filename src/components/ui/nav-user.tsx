@@ -48,13 +48,6 @@ export function NavUser({ user, onLogout }: NavUserProps) {
   // Check if avatar URL is valid and not blank
   const hasValidAvatar = user.avatar && user.avatar.trim() !== '' && !user.avatar.includes('d=blank')
 
-  // Debug logging
-  console.log('[NavUser] Avatar data:', {
-    avatar: user.avatar,
-    hasValidAvatar,
-    userName: user.name,
-  })
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

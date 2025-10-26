@@ -275,13 +275,14 @@ export async function POST(req: NextRequest) {
         const planName = priceId ? getPlanNameFromPrice(priceId) : undefined;
         const endDate = new Date(subscription.current_period_end * 1000);
 
-        // Downgrade to free tier
+        // Downgrade to free tier with FRESH 3 generations
         const { error: updateError } = await supabase
           .from('users')
           .update({
             subscription_tier: 'free',
             subscription_status: 'canceled',
             monthly_generation_limit: 3, // Lifetime limit for free tier
+            monthly_generations_used: 0, // Fresh start with 3 generations
             generation_reset_date: null, // No reset for free tier (lifetime limit)
             stripe_subscription_id: null,
             updatedAt: new Date().toISOString(),
@@ -324,13 +325,25 @@ export async function POST(req: NextRequest) {
             const now = new Date();
             const nextReset = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
-            // Ensure subscription is active with proper reset date
+            // Check if this is a renewal (reset generation counter if reset date has passed)
+            const { data: currentUser } = await supabase
+              .from('users')
+              .select('generation_reset_date')
+              .eq('id', user.id)
+              .single();
+
+            const shouldResetGenerations =
+              !currentUser?.generation_reset_date ||
+              new Date(currentUser.generation_reset_date) <= now;
+
+            // Ensure subscription is active with proper reset date AND counter reset
             const { error: updateError } = await supabase
               .from('users')
               .update({
                 subscription_status: 'active',
                 subscription_tier: 'paid',
                 generation_reset_date: nextReset.toISOString().split('T')[0], // Ensure monthly reset for paid tier (date only)
+                monthly_generations_used: shouldResetGenerations ? 0 : undefined, // Reset counter if due
                 updatedAt: new Date().toISOString(),
               })
               .eq('id', user.id);
@@ -338,7 +351,8 @@ export async function POST(req: NextRequest) {
             if (updateError) {
               console.error('[Webhook] Error updating after payment:', updateError);
             } else {
-              console.log('[Webhook] Payment processed for user:', user.id);
+              console.log('[Webhook] Payment processed for user:', user.id,
+                shouldResetGenerations ? '(generations reset)' : '(no reset needed)');
 
               // Send payment successful email only for paid invoices (non-blocking)
               if (isPaidInvoice) {
