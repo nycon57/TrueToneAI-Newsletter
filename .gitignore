@@ -201,21 +201,8 @@ prisma/generated/
 # =============================================================================
 # Documentation - SELECTIVE IGNORING
 # =============================================================================
-# NOTE: We keep most docs tracked, but ignore specific sensitive patterns
-# DO NOT use broad patterns like docs/* or *.md
-# docs/*  # ❌ TOO BROAD - Don't use this
-# *.md    # ❌ TOO BROAD - Don't use this
 
-# Ignore specific private/draft documentation if needed
-# docs/private/
-# docs/internal/
-# docs/*PRIVATE*.md
-
-# =============================================================================
-# Migrations - SELECTIVE IGNORING
-# =============================================================================
-# Keep migration files tracked by default
-# Only ignore specific patterns if needed for local testing
-# *.sql  # ❌ TOO BROAD - Don't use this
-# local-test-migrations/
-# test-*.sql
+docs/*  
+*.sql
+local-test-migrations/
+test-*.sql

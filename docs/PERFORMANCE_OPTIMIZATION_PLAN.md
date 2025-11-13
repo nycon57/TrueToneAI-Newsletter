@@ -4,11 +4,13 @@
 The application has **critical performance bottlenecks** causing slow load times:
 - **Sequential API calls** blocking render (400-800ms total)
 - **N+1 database queries** in articles API (200-400ms overhead)
+
 - **Excessive font loading** (58KB local + 2 Google Fonts)
 - **Full client-side rendering** with no static optimization
 - **Auth overhead** on every API request (100-200ms per request)
 
 **Expected Total Performance Improvement: 60-75% faster initial load**
+
 
 ---
 

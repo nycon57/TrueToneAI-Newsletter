@@ -72,6 +72,7 @@ All would use the **same custom UI repository** but display different designs.
 
 ### Step 2: Store Client IDs as Environment Variables
 
+
 **In your custom UI repository**, create a `.env` file:
 
 ```bash
