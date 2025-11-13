@@ -1,49 +1,221 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# =============================================================================
+# TrueTone AI Newsletter - Git Ignore Configuration
+# =============================================================================
+# This file controls which files and directories are excluded from Git tracking.
+# SECURITY: Properly configured to prevent sensitive data from being committed.
 
-# dependencies
+# =============================================================================
+# Dependencies & Package Managers
+# =============================================================================
 /node_modules
 /.pnp
 .pnp.js
+.yarn/cache
+.yarn/install-state.gz
+node_modules/
+bower_components/
 
-# testing
+# =============================================================================
+# Testing & Coverage
+# =============================================================================
 /coverage
+*.lcov
+.nyc_output
+/test-results/
+/playwright-report/
 
-# next.js
+# =============================================================================
+# Next.js Build Output
+# =============================================================================
 /.next/
 /out/
+.next/
+out/
+build/
 
-# production
+# =============================================================================
+# Production Builds
+# =============================================================================
 /build
+/dist
 
-# misc
-.DS_Store
+# =============================================================================
+# CRITICAL: Environment Variables & Secrets
+# =============================================================================
+# All .env files except .env.example
+.env
+.env.*
+.env.local
+.env.*.local
+.env.development
+.env.development.local
+.env.production
+.env.production.local
+.env.test
+.env.test.local
+supabase/.env
+
+# Exception: Allow .env.example files (safe templates)
+!.env.example
+!**/.env.example
+
+# =============================================================================
+# CRITICAL: API Keys & Credentials
+# =============================================================================
 *.pem
+*.key
+*.p12
+*.pfx
+*.cer
+*.crt
+*.der
+**/credentials.json
+**/service-account*.json
+**/*-key.json
+**/*-credentials.json
+secrets/
+.secrets
+auth.json
 
-# debug
+# =============================================================================
+# CRITICAL: Log Files (May Contain Sensitive Data)
+# =============================================================================
+*.log
+logs/
+dev.log
+dev_*.log
+dev*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-debug.log*
+sentry-wizard-installation-error-*.log
+*.log.*
 
-# local env files
-.env*.local
-.env
-supabase/.env
-.env.*
-.env.local
+# =============================================================================
+# Database Files & Backups
+# =============================================================================
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+/backups/
+/dumps/
+*.dump
+*.sql.gz
+*.sql.backup
 
-# vercel
-.vercel
+# =============================================================================
+# Operating System Files
+# =============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
 
-# typescript
+# =============================================================================
+# IDE & Editor Files
+# =============================================================================
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Vim
+*.swp
+*.swo
+*.swn
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Other
+.project
+.settings/
+.classpath
+
+# =============================================================================
+# TypeScript
+# =============================================================================
 *.tsbuildinfo
 next-env.d.ts
 
-# mcp
+# =============================================================================
+# Vercel
+# =============================================================================
+.vercel
+.vercel.json
+
+# =============================================================================
+# MCP (Model Context Protocol)
+# =============================================================================
 .mcp.json
 
-# docs
-docs/*
-*.md
+# =============================================================================
+# Temporary Files & Caches
+# =============================================================================
+.cache/
+.temp/
+.tmp/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+.sass-cache/
 
-# migrations
-*.sql
+# =============================================================================
+# Security & Analysis Tools
+# =============================================================================
+.snyk
+
+# =============================================================================
+# Generated Files
+# =============================================================================
+/src/generated/
+prisma/generated/
+
+# =============================================================================
+# Documentation - SELECTIVE IGNORING
+# =============================================================================
+# NOTE: We keep most docs tracked, but ignore specific sensitive patterns
+# DO NOT use broad patterns like docs/* or *.md
+# docs/*  # ❌ TOO BROAD - Don't use this
+# *.md    # ❌ TOO BROAD - Don't use this
+
+# Ignore specific private/draft documentation if needed
+# docs/private/
+# docs/internal/
+# docs/*PRIVATE*.md
+
+# =============================================================================
+# Migrations - SELECTIVE IGNORING
+# =============================================================================
+# Keep migration files tracked by default
+# Only ignore specific patterns if needed for local testing
+# *.sql  # ❌ TOO BROAD - Don't use this
+# local-test-migrations/
+# test-*.sql
