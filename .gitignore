@@ -202,7 +202,7 @@ prisma/generated/
 # Documentation - SELECTIVE IGNORING
 # =============================================================================
 
-docs/*  
+/docs/*  
 *.sql
 local-test-migrations/
 test-*.sql
