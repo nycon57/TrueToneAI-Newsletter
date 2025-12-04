@@ -78,7 +78,7 @@ export default function VoiceOnboardingPage() {
             Create Your TrueTone Profile
           </h1>
           <p className="text-xl text-gray-600">
-            Let's capture your unique communication style through a brief voice interview
+            let&apos;s capture your unique communication style through a brief voice interview
           </p>
         </div>
 
@@ -111,7 +111,7 @@ export default function VoiceOnboardingPage() {
                 <CardHeader>
                   <CardTitle className="text-2xl mb-4">Welcome to TrueTone AI</CardTitle>
                   <CardDescription className="text-lg">
-                    We'll have a brief 5-minute conversation to understand your unique communication style.
+                    we&apos;ll have a brief 5-minute conversation to understand your unique communication style.
                     This helps us personalize all content to sound authentically like you.
                   </CardDescription>
                 </CardHeader>

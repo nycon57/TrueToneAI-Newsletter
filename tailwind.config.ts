@@ -1,5 +1,23 @@
 import type { Config } from "tailwindcss"
-import { fontFamily } from "tailwindcss/defaultTheme"
+
+// Tailwind CSS v4: fontFamily is no longer exported from defaultTheme
+// Define system font stacks directly
+const systemFontStack = [
+  'ui-sans-serif',
+  'system-ui',
+  '-apple-system',
+  'BlinkMacSystemFont',
+  '"Segoe UI"',
+  'Roboto',
+  '"Helvetica Neue"',
+  'Arial',
+  '"Noto Sans"',
+  'sans-serif',
+  '"Apple Color Emoji"',
+  '"Segoe UI Emoji"',
+  '"Segoe UI Symbol"',
+  '"Noto Color Emoji"'
+];
 
 const config: Config = {
   darkMode: ["class"],
@@ -30,15 +48,11 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", ...fontFamily.sans],
-        heading: ["var(--font-signal)", ...fontFamily.sans],
-        signal: [
-          'var(--font-signal)'
-        ],
-        inter: [
-          'var(--font-inter)'
-        ],
-        body: ["var(--font-inter)", ...fontFamily.sans],
+        sans: ["var(--font-inter)", ...systemFontStack],
+        heading: ["var(--font-signal)", ...systemFontStack],
+        signal: ['var(--font-signal)'],
+        inter: ['var(--font-inter)'],
+        body: ["var(--font-inter)", ...systemFontStack],
       },
       zIndex: {
         '60': '60'
@@ -252,7 +266,8 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  // Note: Using tw-animate-css for animations (CSS-only, no plugin needed)
+  plugins: [require("@tailwindcss/typography")],
 };
 
 export default config;

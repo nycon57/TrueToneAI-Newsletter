@@ -20,7 +20,7 @@ interface AiLimitModalProps {
   onOpenChange: (open: boolean) => void;
   generationsUsed: number;
   generationLimit: number;
-  isBlocked?: boolean; // true if user has hit limit and can't generate
+  isBlocked?: boolean; // true if user has hit limit and can&apos;t generate
 }
 
 const PRICING_TIERS = [
@@ -138,7 +138,7 @@ export function AiLimitModal({
           <DialogDescription className="text-base">
             {isBlocked
               ? 'You\'ve used all your free AI generations this month. Upgrade to Pro for unlimited access.'
-              : `You've used ${generationsUsed} of ${generationLimit} free AI generations this month.`}
+              : `you&apos;ve used ${generationsUsed} of ${generationLimit} free AI generations this month.`}
           </DialogDescription>
         </DialogHeader>
 

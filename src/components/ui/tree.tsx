@@ -10,7 +10,9 @@ import { cn } from "@/lib/utils"
 interface TreeContextValue<T = any> {
   indent: number
   currentItem?: ItemInstance<T>
-  tree?: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tree?: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any
 }
 
 const TreeContext = React.createContext<TreeContextValue>({
@@ -25,7 +27,9 @@ function useTreeContext<T = any>() {
 
 interface TreeProps extends React.HTMLAttributes<HTMLDivElement> {
   indent?: number
-  tree?: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tree?: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any
 }
 
 function Tree({ indent = 20, tree, className, ...props }: TreeProps) {

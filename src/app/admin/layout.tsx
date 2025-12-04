@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getApiUser } from "@/lib/api/auth";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { Separator } from "@/components/ui/separator";
-import { prisma } from "@/lib/prisma";
+import { AdminNavUser } from "@/components/admin/admin-nav-user";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminLayout({
   children,
@@ -24,9 +24,11 @@ export default async function AdminLayout({
   }
 
   // Get pending articles count for sidebar badge
-  const pendingCount = await prisma.article.count({
-    where: { status: "DRAFT" },
-  });
+  const supabase = await createClient();
+  const { count: pendingCount } = await supabase
+    .from('articles')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'draft');
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -40,7 +42,7 @@ export default async function AdminLayout({
               </Link>
             </div>
             <div className="flex-1 overflow-auto py-2">
-              <AdminSidebar pendingCount={pendingCount} />
+              <AdminSidebar pendingCount={pendingCount ?? 0} />
             </div>
           </div>
         </aside>
@@ -52,14 +54,15 @@ export default async function AdminLayout({
             <div className="flex-1">
               {/* Page-specific titles are rendered by individual pages */}
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-muted-foreground">
-                {user.name || user.email}
-              </span>
-              <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-                {user.role}
-              </span>
-            </div>
+            <AdminNavUser
+              user={{
+                name: user.name || '',
+                email: user.email,
+                avatar: user.avatar_url || undefined,
+                subscription_tier: user.subscription_tier || 'free',
+                role: user.role || 'admin',
+              }}
+            />
           </header>
 
           {/* Page content */}

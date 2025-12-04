@@ -185,7 +185,7 @@ export function TrueToneTab({ user }: TrueToneTabProps) {
                             <div className="space-y-2">
                               <p className="font-medium">{option.description}</p>
                               <p className="text-xs text-muted-foreground italic">
-                                Example: "{option.example}"
+                                Example: &quot;{option.example}&quot;
                               </p>
                             </div>
                           </TooltipContent>
@@ -197,7 +197,7 @@ export function TrueToneTab({ user }: TrueToneTabProps) {
 
                 {/* Example Text */}
                 <div className="text-sm text-muted-foreground bg-muted/50 rounded p-3 min-h-[60px] flex items-center">
-                  <p className="italic">"{getSelectedExample(characteristic.id)}"</p>
+                  <p className="italic">&quot;{getSelectedExample(characteristic.id)}&quot;</p>
                 </div>
               </div>
             ))}

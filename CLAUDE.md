@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-This is a Next.js 15 application using the App Router, React 19, TypeScript, and Tailwind CSS 4. The project follows standard Next.js conventions with the `src/app` directory structure.
+This is a Next.js 16 application using the App Router with Turbopack, React 19, TypeScript, and Tailwind CSS 4. The project follows standard Next.js conventions with the `src/app` directory structure.
 
 **TrueTone Insights**: Mobile-first web platform for Loan Officers to view newsletter content, copy marketing scripts, and chat with AI about articles.
 ## Development Commands
@@ -15,18 +15,20 @@ This is a Next.js 15 application using the App Router, React 19, TypeScript, and
 
 ## Database Commands
 
-- `npx prisma generate` - Generate Prisma client after schema changes
-- `npx prisma db push` - Push schema changes to database
-- `npx prisma studio` - Open Prisma Studio for database management
-- `npx prisma migrate dev` - Create and apply new migration
+Database operations use Supabase. Schema changes should be made via Supabase migrations.
+
+- Use `mcp__supabase__apply_migration` to apply schema changes
+- Use `mcp__supabase__execute_sql` for ad-hoc queries
+- Use `mcp__supabase__generate_typescript_types` to regenerate types after schema changes
+- Types are stored in `src/types/database.types.ts`
 
 ## Architecture Overview
 
-This is a Next.js 15 application built with TypeScript, using the App Router pattern. The application appears to be focused on newsletter/email intelligence functionality.
+This is a Next.js 16 application built with TypeScript, using the App Router pattern with Turbopack as the default bundler. The application is focused on newsletter/email intelligence functionality.
 
 ### Tech Stack
-- **Framework**: Next.js 15 with App Router
-- **Database**: PostgreSQL with Prisma ORM
+- **Framework**: Next.js 16 with App Router and Turbopack
+- **Database**: PostgreSQL with Supabase (typed client)
 - **UI**: Radix UI components with shadcn/ui component library
 - **Styling**: Tailwind CSS v4
 - **Type Safety**: TypeScript with strict configuration
@@ -48,9 +50,10 @@ This is a Next.js 15 application built with TypeScript, using the App Router pat
   - `newsletter/[uuid]/` - Newsletter display pages
 - `src/components/ui/` - Reusable UI components (shadcn/ui based)
 - `src/components/ui/kibo-ui` - Kibo UI is a custom registry of composable, accessible and open source components designed for use with shadcn/ui.
-- `src/lib/` - Utility functions and Prisma client setup
+- `src/lib/` - Utility functions and Supabase client setup
+- `src/lib/supabase/` - Supabase client configuration (server.ts, client.ts)
+- `src/types/` - TypeScript types including database.types.ts
 - `src/hooks/` - Custom React hooks
-- `prisma/` - Database schema and migrations
 
 ### Database Schema
 
@@ -189,9 +192,11 @@ The project uses shadcn/ui components with:
 - **Carousel**: Embla Carousel React for image/content carousels
 - **Utilities**: clsx and tailwind-merge for conditional styling, class-variance-authority for component variants
 
-### Prisma Configuration
+### Supabase Configuration
 
-- Client generated to `src/generated/prisma/`
-- Uses connection pooling with Prisma Accelerate
-- Configured for both direct and pooled database connections
+- **Project ID**: `rzuhnhnkhfehxaijmgho`
+- Use this project ID when interacting with Supabase MCP tools
+- Database operations should use the Supabase client from `@/lib/supabase/server`
+- TypeScript types are generated in `src/types/database.types.ts`
 - UUID-based primary keys with database-generated values
+- Tables use snake_case column naming convention

@@ -16,21 +16,40 @@ export async function GET(req: NextRequest) {
 
     const supabase = await createClient();
 
-    const { data: articles, error } = await supabase
+    // Build query - support 'all' status to fetch all articles
+    let query = supabase
       .from('articles')
       .select(`
         *,
         created_by:users!articles_created_by_admin_id_fkey(name, email),
         edited_by:users!articles_last_edited_by_admin_id_fkey(name, email)
-      `)
-      .eq('status', status)
-      .order('created_at', { ascending: false });
+      `);
+
+    // Only filter by status if not 'all'
+    if (status !== 'all') {
+      query = query.eq('status', status);
+    }
+
+    const { data: articles, error } = await query.order('created_at', { ascending: false });
+
+    // Also get counts for each status
+    const { data: counts } = await supabase
+      .from('articles')
+      .select('status')
+      .then(({ data }) => {
+        const statusCounts = { draft: 0, published: 0, archived: 0, all: 0 };
+        data?.forEach((article) => {
+          statusCounts[article.status as keyof typeof statusCounts]++;
+          statusCounts.all++;
+        });
+        return { data: statusCounts };
+      });
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ articles });
+    return NextResponse.json({ articles, counts });
 
   } catch (error) {
     console.error('Admin articles error:', error);

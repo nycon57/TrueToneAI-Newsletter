@@ -2,6 +2,14 @@
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
+import {
+  staggeredContainer,
+  staggeredItem,
+  fadeInUp,
+  springs,
+  stagger,
+  buttonInteraction,
+} from '@/lib/motion';
 import { Check, Crown, CreditCard, Sparkles, ArrowLeft, Zap, Shield, Headphones } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -93,38 +101,60 @@ export function PricingClient({ isAuthenticated, user }: PricingClientProps) {
       <div className="relative overflow-hidden py-20">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            variants={staggeredContainer}
+            initial="hidden"
+            animate="visible"
+            className="space-y-6"
           >
-            <Badge className="mb-6 bg-gradient-to-r from-orchid to-indigo text-white border-0">
-              <Sparkles className="h-3 w-3 mr-1" />
-              Upgrade to Pro
-            </Badge>
+            <motion.div variants={staggeredItem}>
+              <Badge className="mb-6 bg-gradient-to-r from-orchid to-indigo text-white border-0">
+                <motion.span
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 0.5, delay: 0.8 }}
+                  className="inline-block"
+                >
+                  <Sparkles className="h-3 w-3 mr-1" />
+                </motion.span>
+                Upgrade to Pro
+              </Badge>
+            </motion.div>
 
-            <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight font-heading">
+            <motion.h1
+              variants={staggeredItem}
+              className="text-5xl font-bold text-gray-900 leading-tight font-heading"
+            >
               Transform Your Content Game with AI
-            </h1>
+            </motion.h1>
 
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-8">
+            <motion.p
+              variants={staggeredItem}
+              className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed"
+            >
               Unlock unlimited AI-powered content personalization, advanced analytics, and premium features to supercharge your marketing.
-            </p>
+            </motion.p>
 
             {/* Trust Indicators */}
-            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-orchid" />
-                <span>Secure Payments</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4 text-orchid" />
-                <span>Instant Access</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Headphones className="h-4 w-4 text-orchid" />
-                <span>Priority Support</span>
-              </div>
-            </div>
+            <motion.div
+              variants={staggeredItem}
+              className="flex items-center justify-center gap-6 text-sm text-muted-foreground"
+            >
+              {[
+                { icon: Shield, label: 'Secure Payments' },
+                { icon: Zap, label: 'Instant Access' },
+                { icon: Headphones, label: 'Priority Support' },
+              ].map((item, idx) => (
+                <motion.div
+                  key={item.label}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ ...springs.gentle, delay: 0.6 + idx * 0.1 }}
+                  className="flex items-center gap-2"
+                >
+                  <item.icon className="h-4 w-4 text-orchid" />
+                  <span>{item.label}</span>
+                </motion.div>
+              ))}
+            </motion.div>
           </motion.div>
         </div>
       </div>
@@ -132,9 +162,10 @@ export function PricingClient({ isAuthenticated, user }: PricingClientProps) {
       {/* Pricing Card */}
       <div className="max-w-4xl mx-auto px-4 pb-20">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={springs.gentle}
+          whileHover={{ y: -4 }}
         >
           <Card className="shadow-2xl border-2 border-orchid/20 relative overflow-hidden">
             {/* Popular Badge */}
@@ -169,7 +200,7 @@ export function PricingClient({ isAuthenticated, user }: PricingClientProps) {
             <CardContent className="p-8">
               {/* Features */}
               <div className="space-y-4 mb-8">
-                <h3 className="font-semibold text-lg mb-4">What's included:</h3>
+                <h3 className="font-semibold text-lg mb-4">what&apos;s included:</h3>
 
                 <div className="grid gap-3">
                   <div className="flex items-start gap-3">
@@ -285,40 +316,47 @@ export function PricingClient({ isAuthenticated, user }: PricingClientProps) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ ...springs.gentle, delay: 0.3 }}
           className="mt-12 text-center"
         >
           <h3 className="text-xl font-semibold mb-4">Frequently Asked Questions</h3>
 
-          <div className="grid md:grid-cols-2 gap-6 text-left">
-            <div className="p-4 rounded-lg bg-white/50 border border-lavender/20">
-              <h4 className="font-medium mb-2">Can I cancel anytime?</h4>
-              <p className="text-sm text-muted-foreground">
-                Yes! You can cancel anytime from your billing portal. Your subscription will remain active until the end of your billing period.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-lg bg-white/50 border border-lavender/20">
-              <h4 className="font-medium mb-2">What happens if I run out of AI generations?</h4>
-              <p className="text-sm text-muted-foreground">
-                Your limit resets monthly. If you need more, you'll see options to upgrade or wait until next month. You can still access all newsletter content.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-lg bg-white/50 border border-lavender/20">
-              <h4 className="font-medium mb-2">How does billing work?</h4>
-              <p className="text-sm text-muted-foreground">
-                You'll be charged $29 monthly on the same day you subscribe. Manage your billing, payment methods, and invoices through your secure billing portal.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-lg bg-white/50 border border-lavender/20">
-              <h4 className="font-medium mb-2">Is my payment information secure?</h4>
-              <p className="text-sm text-muted-foreground">
-                Absolutely. All payments are processed securely through Stripe. We never store your credit card information.
-              </p>
-            </div>
-          </div>
+          <motion.div
+            variants={staggeredContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-50px' }}
+            className="grid md:grid-cols-2 gap-6 text-left"
+          >
+            {[
+              {
+                q: 'Can I cancel anytime?',
+                a: "Yes! You can cancel anytime from your billing portal. Your subscription will remain active until the end of your billing period."
+              },
+              {
+                q: 'What happens if I run out of AI generations?',
+                a: "Your limit resets monthly. If you need more, you'll see options to upgrade or wait until next month. You can still access all newsletter content."
+              },
+              {
+                q: 'How does billing work?',
+                a: "You'll be charged $29 monthly on the same day you subscribe. Manage your billing, payment methods, and invoices through your secure billing portal."
+              },
+              {
+                q: 'Is my payment information secure?',
+                a: "Absolutely. All payments are processed securely through Stripe. We never store your credit card information."
+              }
+            ].map((faq, idx) => (
+              <motion.div
+                key={idx}
+                variants={staggeredItem}
+                whileHover={{ scale: 1.02, transition: springs.snappy }}
+                className="p-4 rounded-lg bg-white/50 border border-lavender/20 hover:border-orchid/30 hover:shadow-md transition-shadow"
+              >
+                <h4 className="font-medium mb-2">{faq.q}</h4>
+                <p className="text-sm text-muted-foreground">{faq.a}</p>
+              </motion.div>
+            ))}
+          </motion.div>
 
           <div className="mt-8">
             <p className="text-muted-foreground mb-4">Still have questions?</p>

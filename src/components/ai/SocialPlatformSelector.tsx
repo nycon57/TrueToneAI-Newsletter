@@ -78,6 +78,7 @@ const PLATFORM_CONFIGS: PlatformConfig[] = [
 interface SocialPlatformSelectorProps {
   onPlatformsChange: (platforms: SocialPlatform[]) => void;
   selectedPlatforms?: SocialPlatform[];
+  excludePlatforms?: SocialPlatform[];
   disabled?: boolean;
   className?: string;
 }
@@ -85,11 +86,17 @@ interface SocialPlatformSelectorProps {
 export function SocialPlatformSelector({
   onPlatformsChange,
   selectedPlatforms = [],
+  excludePlatforms = [],
   disabled = false,
   className
 }: SocialPlatformSelectorProps) {
   const [selected, setSelected] = useState<Set<SocialPlatform>>(
     new Set(selectedPlatforms)
+  );
+
+  // Filter out excluded platforms
+  const availablePlatforms = PLATFORM_CONFIGS.filter(
+    p => !excludePlatforms.includes(p.id)
   );
 
   const handlePlatformToggle = (platformId: SocialPlatform) => {
@@ -107,7 +114,7 @@ export function SocialPlatformSelector({
 
   const handleSelectAll = () => {
     if (disabled) return;
-    const allPlatforms = PLATFORM_CONFIGS.map(p => p.id);
+    const allPlatforms = availablePlatforms.map(p => p.id);
     setSelected(new Set(allPlatforms));
     onPlatformsChange(allPlatforms);
   };
@@ -118,7 +125,7 @@ export function SocialPlatformSelector({
     onPlatformsChange([]);
   };
 
-  const isAllSelected = selected.size === PLATFORM_CONFIGS.length;
+  const isAllSelected = selected.size === availablePlatforms.length && availablePlatforms.length > 0;
   const isNoneSelected = selected.size === 0;
 
   return (
@@ -130,7 +137,7 @@ export function SocialPlatformSelector({
             Select Platforms
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Choose where you want to share your content
+            Choose which platforms to generate content for
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -159,7 +166,7 @@ export function SocialPlatformSelector({
 
       {/* Platform selection grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {PLATFORM_CONFIGS.map((platform) => {
+        {availablePlatforms.map((platform) => {
           const isSelected = selected.has(platform.id);
           const Icon = platform.icon;
 

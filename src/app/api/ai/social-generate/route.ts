@@ -19,6 +19,7 @@ import { checkAndIncrementAIUsage, setAnonymousSessionCookie, rollbackUserGenera
 import { getOrCreateAnonymousSession } from '@/lib/ai/anonymous-session';
 import { getUserSubscriptionStatus, checkAndResetGenerationQuota } from '@/lib/stripe/subscription-guards';
 import { buildPlatformPrompt, validatePlatformContent, getPlatformDisplayName } from '@/lib/ai/platform-prompts';
+import { checkRateLimit, getClientIdentifier, getRateLimitHeaders, RATE_LIMIT_CONFIGS } from '@/lib/utils/rateLimit';
 import type { SocialPlatform } from '@/types/social-media';
 import type {
   PlatformSpecificGenerationRequest,
@@ -40,6 +41,16 @@ import type {
  * Response: Server-Sent Events (SSE) stream with platform generation progress
  */
 export async function POST(req: NextRequest) {
+  // Apply rate limiting before any processing
+  const clientId = getClientIdentifier(req, 'ai-social-generate');
+  if (!checkRateLimit(clientId, RATE_LIMIT_CONFIGS.AI_SOCIAL_GENERATE)) {
+    const headers = getRateLimitHeaders(clientId, RATE_LIMIT_CONFIGS.AI_SOCIAL_GENERATE);
+    return new Response(
+      JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+      { status: 429, headers: { ...headers, 'Content-Type': 'application/json' } }
+    );
+  }
+
   const controller = new AbortController();
   const encoder = new TextEncoder();
 

@@ -2,28 +2,35 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Edit2, Save, X, Check, Loader2, Plus, Trash2, GripVertical, Lightbulb } from 'lucide-react';
+import { Edit2, Save, X, Check, Loader2, Plus, Trash2, GripVertical, Sparkles, Copy, RotateCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export interface EditableKeyInsightsProps {
   insights: string[];
   onSave: (newInsights: string[]) => Promise<void>;
+  onRegenerate?: () => void;
   maxInsights?: number;
   maxLength?: number;
   className?: string;
   disabled?: boolean;
+  isRegenerating?: boolean;
+  isSavedInitially?: boolean;
 }
 
 export function EditableKeyInsights({
   insights,
   onSave,
+  onRegenerate,
   maxInsights = 6,
   maxLength = 200,
   className,
   disabled = false,
+  isRegenerating = false,
+  isSavedInitially = true,
 }: EditableKeyInsightsProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedInsights, setEditedInsights] = useState<string[]>(insights);
@@ -31,7 +38,30 @@ export function EditableKeyInsights({
   const [showSuccess, setShowSuccess] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
+  const [isSaved, setIsSaved] = useState(isSavedInitially);
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
+
+  // Handle copy to clipboard
+  const handleCopy = async () => {
+    try {
+      const insightsText = insights.map((insight, idx) => `${idx + 1}. ${insight}`).join('\n');
+      await navigator.clipboard.writeText(insightsText);
+      setIsCopied(true);
+      toast.success('Key insights copied to clipboard!');
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (error) {
+      toast.error('Failed to copy to clipboard');
+    }
+  };
+
+  // Handle regenerate
+  const handleRegenerate = () => {
+    if (onRegenerate) {
+      setIsSaved(false);
+      onRegenerate();
+    }
+  };
 
   // Update edited insights when insights prop changes
   useEffect(() => {
@@ -92,11 +122,12 @@ export function EditableKeyInsights({
       setIsEditing(false);
       setIsDirty(false);
       setFocusedIndex(null);
+      setIsSaved(true);
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);
     } catch (error) {
       console.error('Failed to save insights:', error);
-      // You could add error toast notification here
+      toast.error('Failed to save key insights');
     } finally {
       setIsSaving(false);
     }
@@ -156,8 +187,8 @@ export function EditableKeyInsights({
         {/* Header */}
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <div className="flex items-center gap-2">
-            <Lightbulb className="h-5 w-5 text-purple-600" />
-            <h4 className="font-bold text-gray-900">Key Insights</h4>
+            <Sparkles className="h-5 w-5 text-purple-600" />
+            <h4 className="font-bold text-gray-900 font-signal">AI Generated Content</h4>
             {isDirty && !isEditing && (
               <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-300 text-xs">
                 Unsaved
@@ -183,44 +214,94 @@ export function EditableKeyInsights({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             {!isEditing ? (
-              <Button
-                onClick={handleEdit}
-                disabled={disabled}
-                variant="outline"
-                size="sm"
-                className="gap-1.5 hover:bg-purple-100"
-              >
-                <Edit2 className="h-3.5 w-3.5" />
-                Edit
-              </Button>
+              <>
+                {/* Copy Button */}
+                <Button
+                  onClick={handleCopy}
+                  disabled={isCopied}
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    'h-7 text-xs px-2',
+                    isCopied && 'text-green-600'
+                  )}
+                >
+                  {isCopied ? (
+                    <>
+                      <Check className="h-3 w-3 mr-1" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3 w-3 mr-1" />
+                      Copy
+                    </>
+                  )}
+                </Button>
+
+                {/* Regenerate Button */}
+                {onRegenerate && (
+                  <Button
+                    onClick={handleRegenerate}
+                    disabled={isRegenerating || disabled}
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-xs px-2"
+                  >
+                    <RotateCw className={cn(
+                      'h-3 w-3 mr-1',
+                      isRegenerating && 'animate-spin'
+                    )} />
+                    Regenerate
+                  </Button>
+                )}
+
+                {/* Saved Status - matches social media pattern */}
+                <span className="h-7 px-2 text-xs flex items-center gap-1 text-green-600">
+                  <Check className="h-3 w-3" />
+                  Saved
+                </span>
+
+                {/* Edit Button - subtle icon-only */}
+                <Button
+                  onClick={handleEdit}
+                  disabled={disabled}
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                  title="Edit insights"
+                >
+                  <Edit2 className="h-3 w-3" />
+                </Button>
+              </>
             ) : (
               <>
                 <Button
                   onClick={handleCancel}
                   disabled={isSaving}
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="gap-1.5"
+                  className="h-7 text-xs px-2"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-3 w-3 mr-1" />
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSave}
                   disabled={isSaving || !isDirty || !hasValidInsights}
                   size="sm"
-                  className="gap-1.5 bg-purple-600 hover:bg-purple-700 text-white"
+                  className="h-7 text-xs px-2 bg-purple-600 hover:bg-purple-700 text-white"
                 >
                   {isSaving ? (
                     <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                       Saving...
                     </>
                   ) : (
                     <>
-                      <Save className="h-3.5 w-3.5" />
+                      <Save className="h-3 w-3 mr-1" />
                       Save
                     </>
                   )}

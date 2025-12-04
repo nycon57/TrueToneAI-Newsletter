@@ -20,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Camera, Loader2, Check, X, Upload, AlertCircle } from 'lucide-react';
+import { Camera, Loader2, Check, X, Upload, AlertCircle, User } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ApiUser } from '@/lib/api/auth-cached';
 import { motion, AnimatePresence } from 'motion/react';
@@ -246,8 +246,10 @@ export function ProfileTab({ user }: ProfileTabProps) {
                   {(avatarPreview || user.avatar) && (
                     <AvatarImage src={avatarPreview || user.avatar || undefined} />
                   )}
-                  <AvatarFallback className="bg-gradient-to-br from-orchid to-indigo text-white text-2xl font-heading">
-                    {getInitials()}
+                  <AvatarFallback className="bg-gradient-to-br from-lavender via-orchid/20 to-indigo/20">
+                    <div className="flex flex-col items-center justify-center">
+                      <User className="w-10 h-10 text-orchid/60" strokeWidth={1.5} />
+                    </div>
                   </AvatarFallback>
                 </Avatar>
 

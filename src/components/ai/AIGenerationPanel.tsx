@@ -110,8 +110,10 @@ export function AIGenerationPanel({
       if (onContentGenerated) {
         onContentGenerated(completion);
       }
-      // Don't call onGenerationComplete here - it remounts the component
-      // Generation limits will be refreshed on next page load/navigation
+      // Notify parent to update generation count in real-time
+      if (onGenerationComplete) {
+        onGenerationComplete();
+      }
     },
     onError: (error) => {
       console.error('Generation error:', error);

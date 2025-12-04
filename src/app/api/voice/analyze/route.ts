@@ -2,8 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getApiUser } from '@/lib/api/auth';
 import { createClient } from '@/lib/supabase/server';
 import { analyzeVoiceTranscript } from '@/lib/voice/analyzer';
+import { checkRateLimit, getClientIdentifier, getRateLimitHeaders, RATE_LIMIT_CONFIGS } from '@/lib/utils/rateLimit';
 
 export async function POST(req: NextRequest) {
+  // Apply rate limiting - voice analysis is expensive, so very restrictive
+  const clientId = getClientIdentifier(req, 'ai-voice-analyze');
+  if (!checkRateLimit(clientId, RATE_LIMIT_CONFIGS.AI_VOICE_ANALYZE)) {
+    const headers = getRateLimitHeaders(clientId, RATE_LIMIT_CONFIGS.AI_VOICE_ANALYZE);
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429, headers }
+    );
+  }
+
   try {
     const user = await getApiUser();
 

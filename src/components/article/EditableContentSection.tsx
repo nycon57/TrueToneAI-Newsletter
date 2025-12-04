@@ -2,17 +2,19 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Edit2, Save, X, Check, Loader2 } from 'lucide-react';
+import { Edit2, Save, X, Check, Loader2, Sparkles, Copy, RotateCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export interface EditableContentSectionProps {
   title: string;
   content: string;
   onSave: (newContent: string) => Promise<void>;
+  onRegenerate?: () => void;
   icon?: React.ComponentType<{ className?: string }>;
   iconColor?: string;
   bgColor?: string;
@@ -25,12 +27,15 @@ export interface EditableContentSectionProps {
   contentType: 'video_script' | 'email_template' | 'key_insights' | 'social_media';
   className?: string;
   disabled?: boolean;
+  isRegenerating?: boolean;
+  isSavedInitially?: boolean;
 }
 
 export function EditableContentSection({
   title,
   content,
   onSave,
+  onRegenerate,
   icon: Icon,
   iconColor = 'text-gray-600',
   bgColor = 'from-gray-50 to-gray-50/50',
@@ -43,14 +48,30 @@ export function EditableContentSection({
   contentType,
   className,
   disabled = false,
+  isRegenerating = false,
+  isSavedInitially = true,
 }: EditableContentSectionProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(content);
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const [isSaved, setIsSaved] = useState(isSavedInitially);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Handle copy to clipboard
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setIsCopied(true);
+      toast.success('Content copied to clipboard!');
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (error) {
+      toast.error('Failed to copy to clipboard');
+    }
+  };
 
   // Update edited content when content prop changes
   useEffect(() => {
@@ -110,13 +131,22 @@ export function EditableContentSection({
       await onSave(editedContent);
       setIsEditing(false);
       setIsDirty(false);
+      setIsSaved(true);
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);
     } catch (error) {
       console.error('Failed to save content:', error);
-      // You could add error toast notification here
+      toast.error('Failed to save content');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Handle regenerate
+  const handleRegenerate = () => {
+    if (onRegenerate) {
+      setIsSaved(false); // Reset saved state when regenerating
+      onRegenerate();
     }
   };
 
@@ -144,8 +174,12 @@ export function EditableContentSection({
         {/* Header */}
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <div className="flex items-center gap-2">
-            {Icon && <Icon className={cn('h-5 w-5', iconColor)} />}
-            <h4 className="font-bold text-gray-900">{title}</h4>
+            {title === 'AI Generated Content' ? (
+              <Sparkles className={cn('h-5 w-5', iconColor)} />
+            ) : (
+              Icon && <Icon className={cn('h-5 w-5', iconColor)} />
+            )}
+            <h4 className={cn('font-bold text-gray-900', title === 'AI Generated Content' && 'font-signal')}>{title}</h4>
             {isDirty && !isEditing && (
               <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-300 text-xs">
                 Unsaved
@@ -166,44 +200,94 @@ export function EditableContentSection({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             {!isEditing ? (
-              <Button
-                onClick={handleEdit}
-                disabled={disabled}
-                variant="outline"
-                size="sm"
-                className={cn('gap-1.5', buttonHoverColor)}
-              >
-                <Edit2 className="h-3.5 w-3.5" />
-                Edit
-              </Button>
+              <>
+                {/* Copy Button */}
+                <Button
+                  onClick={handleCopy}
+                  disabled={isCopied}
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    'h-7 text-xs px-2',
+                    isCopied && 'text-green-600'
+                  )}
+                >
+                  {isCopied ? (
+                    <>
+                      <Check className="h-3 w-3 mr-1" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3 w-3 mr-1" />
+                      Copy
+                    </>
+                  )}
+                </Button>
+
+                {/* Regenerate Button */}
+                {onRegenerate && (
+                  <Button
+                    onClick={handleRegenerate}
+                    disabled={isRegenerating || disabled}
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-xs px-2"
+                  >
+                    <RotateCw className={cn(
+                      'h-3 w-3 mr-1',
+                      isRegenerating && 'animate-spin'
+                    )} />
+                    Regenerate
+                  </Button>
+                )}
+
+                {/* Saved Status - matches social media pattern */}
+                <span className="h-7 px-2 text-xs flex items-center gap-1 text-green-600">
+                  <Check className="h-3 w-3" />
+                  Saved
+                </span>
+
+                {/* Edit Button - subtle icon-only */}
+                <Button
+                  onClick={handleEdit}
+                  disabled={disabled}
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                  title="Edit content"
+                >
+                  <Edit2 className="h-3 w-3" />
+                </Button>
+              </>
             ) : (
               <>
                 <Button
                   onClick={handleCancel}
                   disabled={isSaving}
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="gap-1.5"
+                  className="h-7 text-xs px-2"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-3 w-3 mr-1" />
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSave}
                   disabled={isSaving || !isDirty || isOverLimit}
                   size="sm"
-                  className={cn('gap-1.5 text-white', buttonColor)}
+                  className={cn('h-7 text-xs px-2 text-white', buttonColor)}
                 >
                   {isSaving ? (
                     <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                       Saving...
                     </>
                   ) : (
                     <>
-                      <Save className="h-3.5 w-3.5" />
+                      <Save className="h-3 w-3 mr-1" />
                       Save
                     </>
                   )}

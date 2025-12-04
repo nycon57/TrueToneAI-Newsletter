@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, Loader2, AlertTriangle } from 'lucide-react';
+import { Sparkles, Loader2, AlertTriangle, Facebook, Instagram, Twitter, Linkedin, Share2, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { motion, AnimatePresence } from 'motion/react';
@@ -21,6 +21,7 @@ interface SocialMediaGenerationPanelProps {
   userTier: 'free' | 'paid';
   remainingGenerations: number;
   initialResults?: Record<SocialPlatform, string>;
+  defaultSocialContent?: Partial<Record<SocialPlatform, string>>; // Default content from article
   onSave?: (results: Record<SocialPlatform, string>) => void;
   onGenerationComplete?: () => void;
   onContentGenerated?: (results: Record<SocialPlatform, string>) => void;
@@ -32,6 +33,7 @@ export function SocialMediaGenerationPanel({
   userTier,
   remainingGenerations,
   initialResults,
+  defaultSocialContent,
   onSave,
   onGenerationComplete,
   onContentGenerated,
@@ -40,8 +42,16 @@ export function SocialMediaGenerationPanel({
   const router = useRouter();
   const [selectedPlatforms, setSelectedPlatforms] = useState<SocialPlatform[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
-  const [savedPlatforms, setSavedPlatforms] = useState<Set<SocialPlatform>>(new Set());
+  // Initialize isSaved to true if initialResults exist (content already saved in DB)
+  const [isSaved, setIsSaved] = useState(() => !!(initialResults && Object.keys(initialResults).length > 0));
+  // Initialize savedPlatforms with platforms from initialResults (already saved in DB)
+  const [savedPlatforms, setSavedPlatforms] = useState<Set<SocialPlatform>>(
+    () => new Set(initialResults ? Object.keys(initialResults) as SocialPlatform[] : [])
+  );
+  const [isAddingMore, setIsAddingMore] = useState(false);
+
+  // All available platforms
+  const ALL_PLATFORMS: SocialPlatform[] = ['facebook', 'instagram', 'twitter', 'linkedin'];
 
   // Use the custom SSE hook for social generation
   const {
@@ -57,6 +67,7 @@ export function SocialMediaGenerationPanel({
     cancel,
     reset
   } = useSocialGeneration({
+    initialResults: initialResults,
     onPlatformStart: (platform) => {
       console.log(`[SocialMediaGenerationPanel] Started generating for ${platform}`);
     },
@@ -74,7 +85,20 @@ export function SocialMediaGenerationPanel({
         onContentGenerated(finalResults as Record<SocialPlatform, string>);
       }
 
+      // Notify parent to update generation count in real-time
+      // Note: Social media generation uses one credit per platform, so we notify once per platform completed
+      // The API already increments the count, so we just need to update the UI
+      if (onGenerationComplete) {
+        // Call once for each platform that was generated
+        const platformCount = Object.keys(finalResults).length;
+        for (let i = 0; i < platformCount; i++) {
+          onGenerationComplete();
+        }
+      }
+
       setIsSaved(false); // Reset saved state for new generation
+      setIsAddingMore(false); // Exit "add more" mode after generation
+      setSelectedPlatforms([]); // Clear selection
     },
     onUsageUpdate: (used, remaining) => {
       console.log(`[SocialMediaGenerationPanel] Usage update: ${used} used, ${remaining} remaining`);
@@ -150,16 +174,14 @@ export function SocialMediaGenerationPanel({
   // Handle save individual platform
   const handleSavePlatform = async (platform: SocialPlatform, content: string) => {
     try {
-      // Create a single-platform object to save
-      const platformContent = { [platform]: content };
-
       const response = await fetch('/api/ai/save-generation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           articleId,
           contentType: 'social_content',
-          generatedContent: JSON.stringify(platformContent)
+          platform: platform, // Required for social_content
+          generatedContent: content
         })
       });
 
@@ -174,7 +196,7 @@ export function SocialMediaGenerationPanel({
       setSavedPlatforms(prev => new Set([...prev, platform]));
 
       if (onSave) {
-        onSave(platformContent as Record<SocialPlatform, string>);
+        onSave({ [platform]: content } as Record<SocialPlatform, string>);
       }
     } catch (error) {
       console.error('Save error:', error);
@@ -192,26 +214,33 @@ export function SocialMediaGenerationPanel({
     setIsSaving(true);
 
     try {
-      const response = await fetch('/api/ai/save-generation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          articleId,
-          contentType: 'social_content',
-          generatedContent: JSON.stringify(results)
-        })
+      // Save each platform individually (API requires platform for social_content)
+      const platforms = Object.entries(results) as [SocialPlatform, string][];
+      const savePromises = platforms.map(async ([platform, content]) => {
+        const response = await fetch('/api/ai/save-generation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            articleId,
+            contentType: 'social_content',
+            platform: platform,
+            generatedContent: content
+          })
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(`${platform}: ${error.error || 'Failed to save'}`);
+        }
+
+        return platform;
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to save generation');
-      }
-
-      await response.json();
+      const savedPlatformsList = await Promise.all(savePromises);
       setIsSaved(true);
 
       // Mark all platforms as saved
-      setSavedPlatforms(new Set(Object.keys(results) as SocialPlatform[]));
+      setSavedPlatforms(new Set(savedPlatformsList));
 
       toast.success('All social media content saved successfully!');
 
@@ -232,10 +261,42 @@ export function SocialMediaGenerationPanel({
     setSelectedPlatforms([]);
     setIsSaved(false);
     setSavedPlatforms(new Set());
+    setIsAddingMore(false);
+  };
+
+  // Handle cancel add more
+  const handleCancelAddMore = () => {
+    setIsAddingMore(false);
+    setSelectedPlatforms([]);
   };
 
   const hasResults = results && Object.keys(results).length > 0;
   const hasErrors = errors && Object.keys(errors).length > 0;
+
+  // Calculate which platforms have been generated and which are still available
+  const generatedPlatforms = Object.keys(results) as SocialPlatform[];
+  const availablePlatforms = ALL_PLATFORMS.filter(p => !generatedPlatforms.includes(p));
+  const hasMorePlatformsAvailable = availablePlatforms.length > 0;
+
+  // Platform configs for rendering default content
+  const PLATFORM_CONFIGS = [
+    { id: 'facebook' as SocialPlatform, name: 'Facebook', icon: Facebook, color: 'from-blue-600 to-blue-700' },
+    { id: 'instagram' as SocialPlatform, name: 'Instagram', icon: Instagram, color: 'from-pink-600 to-pink-700' },
+    { id: 'twitter' as SocialPlatform, name: 'Twitter', icon: Twitter, color: 'from-blue-500 to-blue-600' },
+    { id: 'linkedin' as SocialPlatform, name: 'LinkedIn', icon: Linkedin, color: 'from-indigo-600 to-indigo-700' }
+  ];
+
+  // Calculate default content to show (platforms with default content but NO AI generations)
+  const defaultPlatformsToShow = PLATFORM_CONFIGS.filter(
+    p => defaultSocialContent?.[p.id] && !generatedPlatforms.includes(p.id)
+  );
+  const hasDefaultContentToShow = defaultPlatformsToShow.length > 0;
+
+  // Copy handler for default content
+  const handleCopyDefault = (content: string, platformName: string) => {
+    navigator.clipboard.writeText(content);
+    toast.success(`${platformName} content copied!`);
+  };
 
   // Show upgrade CTA if no generations remaining
   if (remainingGenerations <= 0 && !isGenerating && !hasResults) {
@@ -273,18 +334,86 @@ export function SocialMediaGenerationPanel({
     );
   }
 
+  // Calculate ALL default platforms (for when there are NO AI results)
+  const allDefaultPlatforms = PLATFORM_CONFIGS.filter(p => defaultSocialContent?.[p.id]);
+  const hasAnyDefaultContent = allDefaultPlatforms.length > 0;
+
   return (
     <div className={cn('space-y-6', className)}>
-      {/* Platform Selector - only show if not currently generating/hasn't generated */}
-      {!isGenerating && !hasResults && (
+      {/* Default Content Section - show when NO AI results exist */}
+      {!hasResults && !isGenerating && hasAnyDefaultContent && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="p-6 bg-gradient-to-br from-blue-50 to-blue-50/50 rounded-xl border border-blue-200"
+        >
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <Share2 className="h-5 w-5 text-blue-600" />
+              <h4 className="font-bold text-gray-900">Default Social Media Content</h4>
+            </div>
+          </div>
+          <div className="grid gap-3">
+            {allDefaultPlatforms.map((platform) => {
+              const Icon = platform.icon;
+              const content = defaultSocialContent?.[platform.id];
+              if (!content) return null;
+
+              return (
+                <div key={platform.name} className="p-3 bg-white rounded-lg border border-gray-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className={`p-2 rounded-lg bg-gradient-to-r ${platform.color}`}>
+                        <Icon className="h-4 w-4 text-white" />
+                      </div>
+                      <span className="font-semibold text-sm">{platform.name}</span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleCopyDefault(content, platform.name)}
+                      className="h-8 text-xs"
+                    >
+                      <Copy className="h-3 w-3 mr-1" />
+                      Copy {platform.name}
+                    </Button>
+                  </div>
+                  <p className="text-sm text-gray-700">{content}</p>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Platform Selector - show if not generating and (no results OR adding more platforms) */}
+      {!isGenerating && (!hasResults || isAddingMore) && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
+          {isAddingMore && (
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-gray-900">
+                Add More Platforms
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCancelAddMore}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
+
           <SocialPlatformSelector
             selectedPlatforms={selectedPlatforms}
             onPlatformsChange={setSelectedPlatforms}
+            excludePlatforms={isAddingMore ? generatedPlatforms : []}
             disabled={remainingGenerations <= 0}
           />
 
@@ -440,8 +569,95 @@ export function SocialMediaGenerationPanel({
         })()}
       </AnimatePresence>
 
-      {/* Results display */}
-      {hasResults && (
+      {/* Default Content Section - Show for platforms WITHOUT AI generations */}
+      {hasResults && !isAddingMore && hasDefaultContentToShow && !isGenerating && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="p-6 bg-gradient-to-br from-blue-50 to-blue-50/50 rounded-xl border border-blue-200"
+        >
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <Share2 className="h-5 w-5 text-blue-600" />
+              <h4 className="font-bold text-gray-900">Default Social Media Content</h4>
+            </div>
+          </div>
+          <div className="grid gap-3">
+            {defaultPlatformsToShow.map((platform) => {
+              const Icon = platform.icon;
+              const content = defaultSocialContent?.[platform.id];
+              if (!content) return null;
+
+              return (
+                <div key={platform.name} className="p-3 bg-white rounded-lg border border-gray-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className={`p-2 rounded-lg bg-gradient-to-r ${platform.color}`}>
+                        <Icon className="h-4 w-4 text-white" />
+                      </div>
+                      <span className="font-semibold text-sm">{platform.name}</span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleCopyDefault(content, platform.name)}
+                      className="h-8 text-xs"
+                    >
+                      <Copy className="h-3 w-3 mr-1" />
+                      Copy {platform.name}
+                    </Button>
+                  </div>
+                  <p className="text-sm text-gray-700">{content}</p>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Platform Selector - Show for remaining platforms when results exist */}
+      {hasResults && !isAddingMore && hasMorePlatformsAvailable && !isGenerating && remainingGenerations > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="pt-4 border-t border-gray-200"
+        >
+          <h3 className="text-sm font-semibold text-gray-900 mb-4">
+            Generate for More Platforms
+          </h3>
+
+          <SocialPlatformSelector
+            selectedPlatforms={selectedPlatforms}
+            onPlatformsChange={setSelectedPlatforms}
+            excludePlatforms={generatedPlatforms}
+            disabled={remainingGenerations <= 0}
+          />
+
+          {/* Generate button for additional platforms */}
+          <div className="mt-6">
+            <Button
+              onClick={handleGenerate}
+              disabled={selectedPlatforms.length === 0 || remainingGenerations <= 0 || selectedPlatforms.length > remainingGenerations}
+              className="w-full bg-gradient-to-r from-orchid to-indigo hover:from-indigo hover:to-shadow text-white shadow-md hover:shadow-lg transition-all"
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              Generate for {selectedPlatforms.length === 0 ? 'Selected' : selectedPlatforms.length} Platform{selectedPlatforms.length !== 1 ? 's' : ''}
+            </Button>
+
+            {/* Warning if not enough generations */}
+            {selectedPlatforms.length > remainingGenerations && (
+              <p className="text-xs text-red-600 mt-2 text-center">
+                You need {selectedPlatforms.length} generations but only have {remainingGenerations} remaining
+              </p>
+            )}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Results display - AI Generated Content at bottom */}
+      {hasResults && !isAddingMore && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

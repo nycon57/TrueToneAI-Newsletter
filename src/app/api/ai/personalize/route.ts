@@ -4,8 +4,19 @@ import { streamText } from 'ai';
 import { getApiUser } from '@/lib/api/auth';
 import { createClient } from '@/lib/supabase/server';
 import { buildPersonalizationPrompt } from '@/lib/ai/personalize';
+import { checkRateLimit, getClientIdentifier, getRateLimitHeaders, RATE_LIMIT_CONFIGS } from '@/lib/utils/rateLimit';
 
 export async function POST(req: NextRequest) {
+  // Apply rate limiting
+  const clientId = getClientIdentifier(req, 'ai-personalize');
+  if (!checkRateLimit(clientId, RATE_LIMIT_CONFIGS.AI_PERSONALIZE)) {
+    const headers = getRateLimitHeaders(clientId, RATE_LIMIT_CONFIGS.AI_PERSONALIZE);
+    return Response.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429, headers }
+    );
+  }
+
   try {
     const user = await getApiUser();
 

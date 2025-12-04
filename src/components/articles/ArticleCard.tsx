@@ -43,6 +43,7 @@ interface Article {
   key_insights: string[];
   video_script: string;
   email_template: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   social_content: any;
 
   // Personalization metadata
@@ -50,6 +51,7 @@ interface Article {
   personalization_id?: string;
   last_generated_at?: string;
   generation_count?: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   truetone_settings?: any;
   tier: string;
 }
@@ -159,6 +161,7 @@ export function ArticleCard({
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderContent = (outputType: string, content: any) => {
     if (!content) {
       return <p className="text-gray-500 italic">No content available</p>;

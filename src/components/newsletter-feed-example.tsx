@@ -204,7 +204,7 @@ export function NewsletterFeedExample() {
         <div className="text-center py-12 space-y-4">
           <div className="text-muted-foreground text-lg">No articles found</div>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            Try adjusting your search terms or filters to find what you're looking for.
+            Try adjusting your search terms or filters to find what you&apos;re looking for.
           </p>
         </div>
       )}

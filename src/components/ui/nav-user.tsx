@@ -1,6 +1,6 @@
 "use client"
 
-import { Crown, CreditCard, LogOut, Settings } from "lucide-react"
+import { Crown, CreditCard, LogOut, Settings, Shield } from "lucide-react"
 import Link from "next/link"
 
 import {
@@ -25,12 +25,14 @@ interface NavUserProps {
     email: string
     avatar?: string
     subscription_tier?: string
+    role?: string
   }
   onLogout: () => void
 }
 
 export function NavUser({ user, onLogout }: NavUserProps) {
   const isPaid = user.subscription_tier !== 'free'
+  const isAdmin = user.role === 'admin'
 
   // Get initials for avatar fallback (first + last name)
   const getInitials = (name: string) => {
@@ -138,6 +140,14 @@ export function NavUser({ user, onLogout }: NavUserProps) {
               Billing
             </Link>
           </DropdownMenuItem>
+          {isAdmin && (
+            <DropdownMenuItem asChild>
+              <Link href="/admin" className="flex items-center">
+                <Shield className="mr-2 h-4 w-4" />
+                Admin
+              </Link>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem

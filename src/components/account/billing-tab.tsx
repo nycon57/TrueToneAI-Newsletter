@@ -143,14 +143,17 @@ export function BillingTab({ user }: BillingTabProps) {
             <div className="flex items-center gap-3">
               <div
                 className={cn(
-                  'w-12 h-12 rounded-full flex items-center justify-center',
+                  'relative w-12 h-12 rounded-full flex items-center justify-center',
                   isProTier
-                    ? 'bg-gradient-to-br from-orchid to-indigo'
+                    ? 'bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 shadow-lg shadow-amber-500/30'
                     : 'bg-gradient-to-br from-emerald-400 to-emerald-600'
                 )}
               >
+                {isProTier && (
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-white/30 via-transparent to-transparent" />
+                )}
                 {isProTier ? (
-                  <Crown className="w-6 h-6 text-white" />
+                  <Crown className="w-6 h-6 text-amber-900 drop-shadow-sm relative z-10" />
                 ) : (
                   <Sparkles className="w-6 h-6 text-white" />
                 )}
@@ -202,11 +205,19 @@ export function BillingTab({ user }: BillingTabProps) {
                   progressColor = 'from-red-500 to-red-600';
                 } else if (isWarning) {
                   progressColor = 'from-yellow-400 to-orange-500';
+                } else if (isProTier) {
+                  // Pro users get brand orchid/indigo gradient
+                  progressColor = 'from-orchid via-indigo to-shadow';
                 }
 
                 return (
                   <div
-                    className="relative w-full h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden"
+                    className={cn(
+                      "relative w-full h-2 rounded-full overflow-hidden",
+                      isProTier
+                        ? "bg-orchid/20 dark:bg-orchid/10"
+                        : "bg-emerald-200 dark:bg-emerald-900/30"
+                    )}
                     role="progressbar"
                     aria-label={`${used} of ${limit} AI generations used`}
                     aria-valuenow={used}
@@ -316,7 +327,7 @@ export function BillingTab({ user }: BillingTabProps) {
                       All Generations Used
                     </p>
                     <p className="text-sm text-red-800 dark:text-red-300 mt-1">
-                      You've used all 3 of your lifetime free AI generations. Upgrade to Pro to get 25 generations per month and unlock unlimited potential.
+                      you&apos;ve used all 3 of your lifetime free AI generations. Upgrade to Pro to get 25 generations per month and unlock unlimited potential.
                     </p>
                   </div>
                 </div>
@@ -344,7 +355,7 @@ export function BillingTab({ user }: BillingTabProps) {
                       Only 1 Generation Remaining
                     </p>
                     <p className="text-sm text-yellow-800 dark:text-yellow-300 mt-1">
-                      You're almost out of free generations. Upgrade to Pro for 25 generations per month and never run out again.
+                      you&apos;re almost out of free generations. Upgrade to Pro for 25 generations per month and never run out again.
                     </p>
                   </div>
                 </div>

@@ -6,8 +6,19 @@ import { createClient } from '@/lib/supabase/server';
 import { checkAndIncrementAIUsage, setAnonymousSessionCookie } from '@/lib/ai/usage-limits';
 import { getOrCreateAnonymousSession } from '@/lib/ai/anonymous-session';
 import { getUserSubscriptionStatus, checkAndResetGenerationQuota } from '@/lib/stripe/subscription-guards';
+import { checkRateLimit, getClientIdentifier, getRateLimitHeaders, RATE_LIMIT_CONFIGS } from '@/lib/utils/rateLimit';
 
 export async function POST(req: NextRequest) {
+  // Apply rate limiting
+  const clientId = getClientIdentifier(req, 'ai-personalize-stream');
+  if (!checkRateLimit(clientId, RATE_LIMIT_CONFIGS.AI_PERSONALIZE)) {
+    const headers = getRateLimitHeaders(clientId, RATE_LIMIT_CONFIGS.AI_PERSONALIZE);
+    return Response.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429, headers }
+    );
+  }
+
   try {
     // Try to get authenticated user
     let user = null;
@@ -210,10 +221,14 @@ REQUIREMENTS:
 5. Focus on what matters to mortgage professionals and their clients
 
 OUTPUT FORMAT:
-Return ONLY a JSON array of 4 strings, nothing else:
-["Insight 1 here", "Insight 2 here", "Insight 3 here", "Insight 4 here"]
+Write exactly 4 insights as a simple bulleted list. Each insight on its own line starting with a bullet point.
+Example format:
+• First insight here
+• Second insight here
+• Third insight here
+• Fourth insight here
 
-Do not include any explanations, meta-commentary, or additional text outside the JSON array.`;
+CRITICAL: Return ONLY the 4 bullet points. No JSON, no arrays, no brackets, no quotes, no numbering, no headers, no explanations. Just 4 lines of plain text, each starting with •`;
 
     case 'video_script':
       return `You are personalizing mortgage industry content for a loan officer.
@@ -321,15 +336,21 @@ VOICE CONSISTENCY:
 - All posts should feel authentic to this person
 
 OUTPUT FORMAT:
-Return ONLY a JSON object with this exact structure, no additional text:
-{
-  "facebook": "Facebook post here",
-  "instagram": "Instagram caption here",
-  "twitter": "Twitter/X post here",
-  "linkedin": "LinkedIn post here"
-}
+Write the posts in this exact format with clear section headers:
 
-Do not include explanations or meta-commentary outside the JSON object.`;
+FACEBOOK:
+[Your Facebook post here]
+
+INSTAGRAM:
+[Your Instagram caption here]
+
+TWITTER:
+[Your Twitter/X post here]
+
+LINKEDIN:
+[Your LinkedIn post here]
+
+CRITICAL: Use ONLY the format above with section headers. No JSON, no curly braces, no quotes around the content, no code formatting. Just plain text with the platform names as headers followed by the actual post content.`;
 
     default:
       return `${truetoneContext}\n\n${articleContext}`;

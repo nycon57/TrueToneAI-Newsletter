@@ -180,7 +180,8 @@ export default function HomePage() {
                       name: `${kindeUser?.given_name || userData?.firstName || 'User'} ${kindeUser?.family_name || userData?.lastName || ''}`.trim(),
                       email: kindeUser?.email || userData?.email || '',
                       avatar: userData?.avatar || kindeUser?.picture || '',
-                      subscription_tier: userData?.subscription_tier || 'free'
+                      subscription_tier: userData?.subscription_tier || 'free',
+                      role: userData?.role || 'user'
                     }}
                     onLogout={logout}
                   />

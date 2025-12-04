@@ -101,6 +101,7 @@ export type ToolInputProps = ComponentProps<"div"> & {
 };
 
 export const ToolInput = ({ className, input, ...props }: ToolInputProps) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const safeStringify = (value: any): string => {
     try {
       // Handle circular references and non-serializable values
@@ -153,6 +154,7 @@ export const ToolOutput = ({
     return null;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const safeStringify = (value: any): string => {
     try {
       // Handle circular references and non-serializable values

@@ -168,8 +168,10 @@ const components: Options['components'] = {
   },
 };
 
-export const AIResponse = memo(
-  ({ className, options, children, ...props }: AIResponseProps) => (
+export const AIResponse = memo(function AIResponse(
+  { className, options, children, ...props }: AIResponseProps
+) {
+  return (
     <div
       className={cn(
         'size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0',
@@ -185,6 +187,5 @@ export const AIResponse = memo(
         {children}
       </ReactMarkdown>
     </div>
-  ),
-  (prevProps, nextProps) => prevProps.children === nextProps.children
-);
+  );
+}, (prevProps, nextProps) => prevProps.children === nextProps.children);

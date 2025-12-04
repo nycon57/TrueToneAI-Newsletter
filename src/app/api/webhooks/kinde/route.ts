@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 import crypto from 'crypto';
 
 interface KindeUser {
@@ -92,15 +92,21 @@ export async function POST(request: NextRequest) {
 
 async function handleUserCreated(user: KindeUser) {
   try {
+    const supabase = await createClient();
+
     // Create user in your database
-    await prisma.user.create({
-      data: {
-        id: user.id,
-        email: user.email,
-        name: `${user.given_name} ${user.family_name}`.trim(),
-        // Add any other fields you want to track
-      },
+    const { error } = await supabase.from('users').insert({
+      kinde_id: user.id,
+      email: user.email,
+      name: `${user.given_name} ${user.family_name}`.trim(),
+      firstName: user.given_name || 'Not Set',
+      lastName: user.family_name || 'Not Set',
+      updatedAt: new Date().toISOString(),
     });
+
+    if (error) {
+      throw error;
+    }
 
     console.log(`User created: ${user.email}`);
 
@@ -116,13 +122,22 @@ async function handleUserCreated(user: KindeUser) {
 
 async function handleUserUpdated(user: KindeUser) {
   try {
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
+    const supabase = await createClient();
+
+    const { error } = await supabase
+      .from('users')
+      .update({
         email: user.email,
         name: `${user.given_name} ${user.family_name}`.trim(),
-      },
-    });
+        firstName: user.given_name || 'Not Set',
+        lastName: user.family_name || 'Not Set',
+        updatedAt: new Date().toISOString(),
+      })
+      .eq('kinde_id', user.id);
+
+    if (error) {
+      throw error;
+    }
 
     console.log(`User updated: ${user.email}`);
   } catch (error) {
@@ -130,18 +145,26 @@ async function handleUserUpdated(user: KindeUser) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function handleSubscriptionCreated(subscription: any) {
   try {
+    const supabase = await createClient();
+
     // Update user with subscription info
-    await prisma.user.update({
-      where: { id: subscription.user_id },
-      data: {
+    const { error } = await supabase
+      .from('users')
+      .update({
         // Add subscription fields to your User model
         // subscriptionId: subscription.id,
         // subscriptionStatus: subscription.status,
         // planId: subscription.plan_id,
-      },
-    });
+        updatedAt: new Date().toISOString(),
+      })
+      .eq('kinde_id', subscription.user_id);
+
+    if (error) {
+      throw error;
+    }
 
     console.log(`Subscription created for user: ${subscription.user_id}`);
 
@@ -155,16 +178,24 @@ async function handleSubscriptionCreated(subscription: any) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function handleSubscriptionUpdated(subscription: any) {
   try {
-    await prisma.user.update({
-      where: { id: subscription.user_id },
-      data: {
+    const supabase = await createClient();
+
+    const { error } = await supabase
+      .from('users')
+      .update({
         // Update subscription fields
         // subscriptionStatus: subscription.status,
         // planId: subscription.plan_id,
-      },
-    });
+        updatedAt: new Date().toISOString(),
+      })
+      .eq('kinde_id', subscription.user_id);
+
+    if (error) {
+      throw error;
+    }
 
     console.log(`Subscription updated for user: ${subscription.user_id}`);
   } catch (error) {
@@ -172,15 +203,23 @@ async function handleSubscriptionUpdated(subscription: any) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function handleSubscriptionCancelled(subscription: any) {
   try {
-    await prisma.user.update({
-      where: { id: subscription.user_id },
-      data: {
+    const supabase = await createClient();
+
+    const { error } = await supabase
+      .from('users')
+      .update({
         // Handle cancellation
         // subscriptionStatus: 'cancelled',
-      },
-    });
+        updatedAt: new Date().toISOString(),
+      })
+      .eq('kinde_id', subscription.user_id);
+
+    if (error) {
+      throw error;
+    }
 
     console.log(`Subscription cancelled for user: ${subscription.user_id}`);
 

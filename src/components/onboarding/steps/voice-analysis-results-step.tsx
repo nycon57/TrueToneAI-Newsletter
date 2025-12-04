@@ -22,7 +22,7 @@ export function VoiceAnalysisResultsStep() {
             <CardHeader className="text-center pb-6">
               <CardTitle className="text-2xl font-heading font-bold mb-2">Voice Analysis</CardTitle>
               <CardDescription>
-                You skipped the voice interview, so we'll use default settings for now.
+                You skipped the voice interview, so we&apos;ll use default settings for now.
               </CardDescription>
             </CardHeader>
 
@@ -32,7 +32,7 @@ export function VoiceAnalysisResultsStep() {
                 You can always come back later to complete the voice interview and create your personalized TrueTone profile.
               </p>
               <p className="text-xs text-muted-foreground">
-                For now, we'll use standard communication settings that you can customize in your preferences.
+                For now, we&apos;ll use standard communication settings that you can customize in your preferences.
               </p>
             </div>
 
@@ -67,7 +67,7 @@ export function VoiceAnalysisResultsStep() {
           <div className="mb-6">
             <h2 className="text-2xl font-heading font-bold mb-2">Your TrueTone Profile</h2>
             <p className="text-muted-foreground">
-              Based on your voice interview, here's your personalized communication profile.
+              Based on your voice interview, here&apos;s your personalized communication profile.
             </p>
           </div>
 

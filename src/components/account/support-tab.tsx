@@ -74,14 +74,14 @@ const FAQ_ITEMS = [
     id: '3',
     question: 'Can I change my email address?',
     answer:
-      "Yes, you can update your email in the Profile tab. You'll receive a verification email to confirm the change. Note that your email is used for login, so make sure to use the new email next time you sign in.",
+      "Yes, you can update your email in the Profile tab. you&apos;ll receive a verification email to confirm the change. Note that your email is used for login, so make sure to use the new email next time you sign in.",
     tags: ['profile', 'email', 'account'],
   },
   {
     id: '4',
     question: 'How do I customize newsletter content preferences?',
     answer:
-      "In the Profile tab, scroll down to Content Preferences and select the topics you're interested in. You can choose multiple categories, and we'll tailor your newsletter content to match your selections.",
+      "In the Profile tab, scroll down to Content Preferences and select the topics you&apos;re interested in. You can choose multiple categories, and we&apos;ll tailor your newsletter content to match your selections.",
     tags: ['preferences', 'newsletter', 'content'],
   },
   {
@@ -299,7 +299,7 @@ export function SupportTab({ user }: SupportTabProps) {
             <div className="text-center py-12">
               <Search className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-50" />
               <p className="text-muted-foreground">
-                No results found for "{faqSearch}"
+                No results found for &quot;{faqSearch}&quot;
               </p>
               <p className="text-sm text-muted-foreground mt-1">
                 Try different keywords or contact support below
@@ -314,7 +314,7 @@ export function SupportTab({ user }: SupportTabProps) {
         <CardHeader>
           <CardTitle className="text-2xl font-heading">Contact Support</CardTitle>
           <CardDescription>
-            Have a question or need help? We're here for you
+            Have a question or need help? we&apos;re here for you
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
@@ -498,7 +498,7 @@ export function SupportTab({ user }: SupportTabProps) {
                 <div className="p-4 rounded-lg bg-orchid/5 border border-orchid/20">
                   <p className="text-sm text-orchid">
                     <strong>Response Time:</strong> We typically respond within 24 hours during
-                    business days. For urgent issues, please include "URGENT" in your message.
+                    business days. For urgent issues, please include &quot;URGENT&quot; in your message.
                   </p>
                 </div>
 

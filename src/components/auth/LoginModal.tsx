@@ -50,7 +50,7 @@ export function LoginModal({ children }: LoginModalProps) {
 
           <div className="text-center space-y-3">
             <p className="text-sm text-muted-foreground">
-              Don't have an account?
+              don&apos;t have an account?
             </p>
             <RegisterLink
               postLoginRedirectURL="/onboarding"

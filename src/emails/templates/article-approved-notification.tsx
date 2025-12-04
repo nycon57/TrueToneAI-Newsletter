@@ -52,7 +52,7 @@ export function ArticleApprovedNotification({
         <Text style={greetingStyle}>Hi {creatorName},</Text>
 
         <Text style={bodyTextStyle}>
-          Great news! Your article has been reviewed and approved. It's now live
+          Great news! Your article has been reviewed and approved. it&apos;s now live
           and visible to users.
         </Text>
 
@@ -103,7 +103,7 @@ export function ArticleApprovedNotification({
 
         {/* Next Steps */}
         <div style={nextStepsBoxStyle}>
-          <Text style={nextStepsHeadingStyle}>📌 What's Next?</Text>
+          <Text style={nextStepsHeadingStyle}>📌 what&apos;s Next?</Text>
           <ul style={nextStepsListStyle}>
             <li style={nextStepsItemStyle}>
               Your article is now visible to all users

@@ -9,7 +9,6 @@ export const inter = Inter({
   display: 'swap',
   preload: true,
   weight: ['400', '500', '600', '700'], // Only load needed weights
-  adjustFontFallback: true, // Reduce CLS
 });
 
 // Brand font - Signal (local font with fallback to system fonts)
@@ -30,14 +29,14 @@ export const signal = localFont({
   variable: "--font-signal",
   display: 'swap',
   preload: false, // Don't preload local fonts to reduce initial bundle
-  adjustFontFallback: true, // Reduce CLS
+  adjustFontFallback: 'Arial', // Use Arial metrics to reduce CLS
   fallback: [
     'Inter',
     '-apple-system',
     'BlinkMacSystemFont',
-    '"Segoe UI"',
+    'Segoe UI',
     'Roboto',
-    '"Helvetica Neue"',
+    'Helvetica Neue',
     'Arial',
     'sans-serif'
   ]

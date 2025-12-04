@@ -3,20 +3,19 @@ import type { NextConfig } from "next";
 // Injected content via Sentry wizard below
 import { withSentryConfig } from "@sentry/nextjs";
 
-// Bundle analyzer - run with ANALYZE=true npm run build
+// Bundle analyzer - run with ANALYZE=true npm run build --webpack
+// Note: Bundle analyzer requires webpack mode in Next.js 16
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 
 const nextConfig: NextConfig = {
-  // TODO(TICKET-XXX): Re-enable build checks after addressing existing lint/type errors
-  // These are temporarily disabled during migration - remove before production deployment
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // Build checks - ignore pre-existing type errors during builds
+  // Note: eslint config removed in Next.js 16 - use eslint CLI directly
   typescript: {
     ignoreBuildErrors: true,
   },
+
   // Skip build-time prerendering - generate pages on-demand at runtime
   // This is necessary because the app uses dynamic features (useSearchParams) extensively
   skipTrailingSlashRedirect: true,
@@ -31,21 +30,17 @@ const nextConfig: NextConfig = {
   // Server external packages (moved from experimental in Next.js 15)
   serverExternalPackages: ['@prisma/client', '@prisma/adapter-pg'],
 
-  // Experimental performance features
+  // Experimental performance features (Next.js 16)
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons', 'date-fns', 'motion'],
-    // Optimize server actions
-    serverActions: {
-      bodySizeLimit: '2mb',
-    },
   },
 
   // Image optimization
   images: {
     formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 60,
+    minimumCacheTTL: 60, // Keep at 60 seconds (Next.js 16 defaults to 14400)
     deviceSizes: [640, 750, 828, 1080, 1200],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256], // Keep 16 (removed in Next.js 16 defaults)
   },
 
   // Headers for caching and security
@@ -98,16 +93,21 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Wrap config with bundle analyzer then Sentry
+// For Turbopack (default in Next.js 16), Sentry uses different instrumentation
+// The withSentryConfig wrapper is still needed but works differently with Turbopack
 export default withSentryConfig(
   withBundleAnalyzer(nextConfig),
   {
     // For all available options, see:
-    // https://github.com/getsentry/sentry-webpack-plugin#options
+    // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/build/
 
     // Suppresses source map uploading logs during build
     silent: true,
     org: "truetone-ai",
     project: "ttai-newsletter",
+
+    // Turbopack-specific options (Next.js 16)
+    // Source maps are uploaded after build completes
+    runAfterProductionCompile: true,
   }
 );

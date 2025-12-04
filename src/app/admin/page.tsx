@@ -1,33 +1,33 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { prisma } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 import { FileText, CheckCircle, Clock, Archive, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
 async function getArticleStats() {
-  const [draftCount, publishedCount, totalCount, recentArticles] = await Promise.all([
-    prisma.article.count({ where: { status: "DRAFT" } }),
-    prisma.article.count({ where: { status: "PUBLISHED" } }),
-    prisma.article.count(),
-    prisma.article.findMany({
-      where: { status: "DRAFT" },
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      include: {
-        createdBy: { select: { name: true, email: true } },
-      },
-    }),
+  const supabase = await createClient();
+
+  const [draftResult, publishedResult, totalResult, recentResult] = await Promise.all([
+    supabase.from('articles').select('*', { count: 'exact', head: true }).eq('status', 'draft'),
+    supabase.from('articles').select('*', { count: 'exact', head: true }).eq('status', 'published'),
+    supabase.from('articles').select('*', { count: 'exact', head: true }),
+    supabase
+      .from('articles')
+      .select('*, createdBy:users!created_by_admin_id(name, email)')
+      .eq('status', 'draft')
+      .order('created_at', { ascending: false })
+      .limit(5),
   ]);
 
   return {
-    draftCount,
-    publishedCount,
-    archivedCount: totalCount - draftCount - publishedCount,
-    totalCount,
-    recentArticles,
+    draftCount: draftResult.count ?? 0,
+    publishedCount: publishedResult.count ?? 0,
+    archivedCount: (totalResult.count ?? 0) - (draftResult.count ?? 0) - (publishedResult.count ?? 0),
+    totalCount: totalResult.count ?? 0,
+    recentArticles: recentResult.data ?? [],
   };
 }
 
@@ -142,7 +142,7 @@ export default async function AdminDashboard() {
                       </span>
                       <span>•</span>
                       <span>
-                        {new Date(article.createdAt).toLocaleDateString()}
+                        {article.created_at ? new Date(article.created_at).toLocaleDateString() : 'N/A'}
                       </span>
                     </div>
                   </div>

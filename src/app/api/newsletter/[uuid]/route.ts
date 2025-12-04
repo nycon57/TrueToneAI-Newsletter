@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 import { randomUUID } from 'crypto';
 
 export async function GET(
@@ -25,16 +25,16 @@ export async function GET(
       );
     }
 
-    // Fetch user data
-    const user = await prisma.user.findUnique({
-      where: { id: userUuid },
-      select: { 
-        firstName: true,
-        name: true 
-      }
-    });
+    const supabase = await createClient();
 
-    if (!user) {
+    // Fetch user data
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('firstName, name')
+      .eq('id', userUuid)
+      .single();
+
+    if (userError || !user) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
@@ -42,20 +42,14 @@ export async function GET(
     }
 
     // Fetch post data by UUID
-    const post = await prisma.post.findFirst({
-      where: { 
-        id: uuid,
-        publishedStatus: 'PUBLISHED'
-      },
-      select: { 
-        id: true,
-        title: true,
-        content: true,
-        publishedAt: true
-      }
-    });
+    const { data: post, error: postError } = await supabase
+      .from('newsletter_posts')
+      .select('id, title, content, publishedAt')
+      .eq('id', uuid)
+      .eq('publishedStatus', 'PUBLISHED')
+      .single();
 
-    if (!post) {
+    if (postError || !post) {
       return NextResponse.json(
         { error: 'Newsletter not found or not published' },
         { status: 404 }

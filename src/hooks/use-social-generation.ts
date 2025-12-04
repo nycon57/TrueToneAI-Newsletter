@@ -5,7 +5,7 @@
  * Handles streaming, error recovery, and state management
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { SocialPlatform } from '@/types/social-media';
 import type {
   PlatformSpecificGenerationRequest,
@@ -14,6 +14,7 @@ import type {
 import { toast } from 'sonner';
 
 export interface UseSocialGenerationOptions {
+  initialResults?: Partial<Record<SocialPlatform, string>>;
   onPlatformStart?: (platform: SocialPlatform) => void;
   onPlatformComplete?: (platform: SocialPlatform, content: string) => void;
   onPlatformError?: (platform: SocialPlatform, error: string) => void;
@@ -34,19 +35,39 @@ export interface UseSocialGenerationState {
 }
 
 export function useSocialGeneration(options: UseSocialGenerationOptions = {}) {
-  const [state, setState] = useState<UseSocialGenerationState>({
+  // Initialize results from initialResults if provided
+  const [state, setState] = useState<UseSocialGenerationState>(() => ({
     isGenerating: false,
     streamingPlatforms: new Set(),
-    completedPlatforms: new Set(),
-    results: {},
+    completedPlatforms: new Set(
+      options.initialResults ? Object.keys(options.initialResults) as SocialPlatform[] : []
+    ),
+    results: options.initialResults || {},
     streamingContent: {},
     errors: {},
     generationsUsed: 0,
     generationsRemaining: null
-  });
+  }));
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const eventSourceRef = useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null);
+
+  // Sync state when initialResults prop changes (for when component re-mounts with new props)
+  useEffect(() => {
+    if (options.initialResults && Object.keys(options.initialResults).length > 0) {
+      setState(prev => {
+        // Only update if we don't already have results and aren't generating
+        if (Object.keys(prev.results).length === 0 && !prev.isGenerating) {
+          return {
+            ...prev,
+            results: options.initialResults || {},
+            completedPlatforms: new Set(Object.keys(options.initialResults || {}) as SocialPlatform[])
+          };
+        }
+        return prev;
+      });
+    }
+  }, [options.initialResults]);
 
   /**
    * Parse SSE data chunk
@@ -189,16 +210,14 @@ export function useSocialGeneration(options: UseSocialGenerationOptions = {}) {
    * Generate content for selected platforms
    */
   const generate = useCallback(async (request: PlatformSpecificGenerationRequest) => {
-    // Reset state - but preserve results for platforms not being regenerated
+    // Reset state - always preserve results for platforms NOT being generated
+    // This allows both "add more platforms" and "regenerate" to work correctly
     setState(prev => {
-      // If regenerating, keep results for other platforms
-      const preservedResults = request.regenerate
-        ? Object.fromEntries(
-            Object.entries(prev.results).filter(([platform]) =>
-              !request.platforms.includes(platform as SocialPlatform)
-            )
-          )
-        : {};
+      const preservedResults = Object.fromEntries(
+        Object.entries(prev.results).filter(([platform]) =>
+          !request.platforms.includes(platform as SocialPlatform)
+        )
+      );
 
       return {
         isGenerating: true,

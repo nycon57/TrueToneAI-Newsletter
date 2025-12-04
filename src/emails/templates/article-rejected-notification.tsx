@@ -54,7 +54,7 @@ export function ArticleRejectedNotification({
         <Text style={greetingStyle}>Hi {creatorName},</Text>
 
         <Text style={bodyTextStyle}>
-          Thank you for your article submission. After review, we've determined
+          Thank you for your article submission. After review, we&apos;ve determined
           that some revisions are needed before it can be published.
         </Text>
 

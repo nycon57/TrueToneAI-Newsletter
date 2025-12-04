@@ -37,7 +37,7 @@ export function VoiceAnalysisResults({ results, onComplete }: VoiceAnalysisResul
         <CheckCircle className="h-16 w-16 mx-auto text-green-600 mb-4" />
         <h2 className="text-2xl font-semibold mb-2">Your TrueTone Profile is Ready!</h2>
         <p className="text-gray-600">
-          Based on your interview, we've created a personalized communication profile.
+          Based on your interview, we&apos;ve created a personalized communication profile.
         </p>
       </div>
 

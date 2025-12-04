@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { checkRateLimit, getClientIdentifier, getRateLimitHeaders, RATE_LIMIT_CONFIGS } from '@/lib/utils/rateLimit';
 
 // Validate environment variables
 if (!process.env.OPENAI_API_KEY) {
@@ -12,6 +13,16 @@ const openai = new OpenAI({
 });
 
 export async function POST(request: NextRequest) {
+  // Apply rate limiting
+  const clientId = getClientIdentifier(request, 'ai-chat');
+  if (!checkRateLimit(clientId, RATE_LIMIT_CONFIGS.AI_CHAT)) {
+    const headers = getRateLimitHeaders(clientId, RATE_LIMIT_CONFIGS.AI_CHAT);
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429, headers }
+    );
+  }
+
   try {
     const body = await request.json();
     const { messages, selectedArticle, selectedContentType, articleContent } = body;

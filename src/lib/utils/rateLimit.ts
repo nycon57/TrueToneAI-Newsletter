@@ -23,6 +23,12 @@ export const RATE_LIMIT_CONFIGS = {
   SESSION_GET: { limit: 50, windowMs: 60000 }, // 50 requests per minute
   EVENTS: { limit: 500, windowMs: 60000 }, // 500 requests per minute
   EVENTS_GET: { limit: 100, windowMs: 60000 }, // 100 requests per minute
+  // AI endpoint rate limits - more restrictive to prevent abuse
+  AI_PERSONALIZE: { limit: 20, windowMs: 60000 }, // 20 requests per minute
+  AI_SOCIAL_GENERATE: { limit: 15, windowMs: 60000 }, // 15 requests per minute
+  AI_CHAT: { limit: 30, windowMs: 60000 }, // 30 requests per minute
+  AI_VOICE_ANALYZE: { limit: 5, windowMs: 60000 }, // 5 requests per minute (expensive operation)
+  AI_SAVE_GENERATION: { limit: 30, windowMs: 60000 }, // 30 requests per minute
 } as const
 
 // Memory-based rate limiting with LRU eviction (in production, use Redis)

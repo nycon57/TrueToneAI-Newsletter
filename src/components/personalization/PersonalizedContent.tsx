@@ -15,6 +15,7 @@ interface PersonalizedContentProps {
   article: {
     id?: string;
     title: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     content: any;
     contentType: string;
   };
@@ -166,7 +167,7 @@ export function PersonalizedContent({
               <div className="text-center py-6 text-gray-500">
                 <Sparkles className="h-12 w-12 mx-auto mb-3 text-gray-400" />
                 <p className="text-sm">
-                  Click "Personalize" to transform this content with your unique TrueTone voice.
+                  Click &quot;Personalize&quot; to transform this content with your unique TrueTone voice.
                 </p>
               </div>
             ) : null}

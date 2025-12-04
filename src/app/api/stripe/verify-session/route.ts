@@ -65,6 +65,7 @@ export async function GET(request: NextRequest) {
       status: 'incomplete',
       message: 'Payment not completed',
     });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Error verifying session:', error);
     return NextResponse.json(

@@ -103,7 +103,7 @@ export function CategorySelection() {
             Choose Your Content Preferences
           </CardTitle>
           <CardDescription className="text-base">
-            Select categories you're interested in, then optionally refine with specific tags
+            Select categories you&apos;re interested in, then optionally refine with specific tags
           </CardDescription>
         </CardHeader>
 
@@ -277,7 +277,7 @@ export function CategorySelection() {
             <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mt-6">
               <p className="text-primary text-sm leading-relaxed">
                 <strong className="font-semibold">Tip:</strong> Select at least one category to receive personalized content.
-                Tags help us further refine what you see, but they're completely optional!
+                Tags help us further refine what you see, but they&apos;re completely optional!
               </p>
             </div>
 

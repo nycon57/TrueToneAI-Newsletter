@@ -51,6 +51,7 @@ export async function GET(req: NextRequest) {
     // Filter articles by user category preferences
     const articlesInNewsletter = todaysPost.content?.articles || [];
     const articleCategories = articlesInNewsletter
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((article: any) => article.category)
       .filter(Boolean);
 
@@ -65,6 +66,7 @@ export async function GET(req: NextRequest) {
 
           if (userPreferences && userPreferences.length > 0) {
             // User has preferences - only send articles matching their categories
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const filteredArticles = articlesInNewsletter.filter((article: any) => {
               // If article has no category, include it for all users
               if (!article.category) return true;
@@ -165,6 +167,7 @@ export async function GET(req: NextRequest) {
 }
 
 // Simple HTML email template
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function generateNewsletterHTML(data: any): string {
   const { user, newsletter, unsubscribeUrl } = data;
 
@@ -226,13 +229,16 @@ function generateNewsletterHTML(data: any): string {
   `.trim();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function generateArticlesHTML(content: any): string {
   if (!content || !content.articles) {
     return '<p>No articles available today.</p>';
   }
 
   return content.articles
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .filter((article: any) => article.content_type === 'article')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .map((article: any) => `
       <div class="article">
         <h3>${article.title}</h3>

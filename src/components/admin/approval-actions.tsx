@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { CheckCircle, XCircle, Loader2, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface ApprovalActionsProps {
@@ -29,6 +29,7 @@ export function ApprovalActions({ articleId, currentStatus }: ApprovalActionsPro
   const router = useRouter();
   const [isApproving, setIsApproving] = useState(false);
   const [isRejecting, setIsRejecting] = useState(false);
+  const [isUnpublishing, setIsUnpublishing] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [reviewNotes, setReviewNotes] = useState("");
 
@@ -96,7 +97,100 @@ export function ApprovalActions({ articleId, currentStatus }: ApprovalActionsPro
     }
   };
 
-  if (currentStatus !== "DRAFT") {
+  const handleUnpublish = async () => {
+    setIsUnpublishing(true);
+    try {
+      const response = await fetch(`/api/admin/articles/${articleId}/approve`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "unpublish",
+          reviewNotes: reviewNotes || undefined,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to unpublish article");
+      }
+
+      toast.success("Article unpublished successfully");
+      router.refresh();
+    } catch (error) {
+      console.error("Error unpublishing article:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to unpublish article");
+    } finally {
+      setIsUnpublishing(false);
+    }
+  };
+
+  // Normalize status to lowercase for comparison
+  const status = currentStatus?.toLowerCase();
+
+  if (status === "published") {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Publication Status</CardTitle>
+          <CardDescription>This article is currently published</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Review Notes */}
+          <div className="space-y-2">
+            <Label htmlFor="unpublishNotes">Notes (Optional)</Label>
+            <Textarea
+              id="unpublishNotes"
+              placeholder="Add any notes about this change..."
+              value={reviewNotes}
+              onChange={(e) => setReviewNotes(e.target.value)}
+              rows={2}
+            />
+          </div>
+
+          {/* Unpublish Button */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                className="w-full"
+                variant="outline"
+                disabled={isUnpublishing}
+              >
+                {isUnpublishing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Unpublishing...
+                  </>
+                ) : (
+                  <>
+                    <Undo2 className="mr-2 h-4 w-4" />
+                    Unpublish Article
+                  </>
+                )}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Unpublish Article?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will remove the article from public view and return it to draft status.
+                  You can republish it later if needed.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleUnpublish}>
+                  Unpublish
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (status === "archived") {
     return (
       <Card>
         <CardHeader>
@@ -104,7 +198,7 @@ export function ApprovalActions({ articleId, currentStatus }: ApprovalActionsPro
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            This article has already been reviewed.
+            This article has been archived.
           </p>
         </CardContent>
       </Card>

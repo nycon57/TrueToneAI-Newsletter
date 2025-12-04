@@ -56,7 +56,7 @@ export function ArticleFilterBarExample() {
         <div className="mt-4 text-sm text-muted-foreground">
           <p>Active filters:</p>
           <ul className="list-disc list-inside mt-2 space-y-1">
-            {filters.search && <li>Search: "{filters.search}"</li>}
+            {filters.search && <li>Search: &quot;{filters.search}&quot;</li>}
             <li>Sort: {filters.sort}</li>
             {filters.categories.length > 0 && (
               <li>Categories: {filters.categories.length} selected</li>

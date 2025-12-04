@@ -227,6 +227,7 @@ export async function POST(req: NextRequest) {
           : 3; // Free tier lifetime limit
 
         // Prepare update data
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const updateData: any = {
           subscription_status: subscription.status,
           subscription_tier: tier,

@@ -49,7 +49,7 @@ export function PreferencesStep() {
           <CardHeader className="text-center pb-6">
             <CardTitle className="text-2xl font-heading font-bold mb-2">Content Preferences</CardTitle>
             <CardDescription>
-              Choose the topics you'd like to receive insights about. You can change these anytime.
+              Choose the topics you&apos;d like to receive insights about. You can change these anytime.
             </CardDescription>
           </CardHeader>
 

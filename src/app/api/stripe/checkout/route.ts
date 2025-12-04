@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
     // Create checkout session without pre-creating customer
     // Stripe will create the customer during successful checkout
     // The webhook will then save the customer ID to our database
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sessionParams: any = {
       payment_method_types: ['card'],
       mode: 'subscription',

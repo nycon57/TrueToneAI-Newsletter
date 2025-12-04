@@ -6,6 +6,7 @@ import {
   sendArticleApprovedNotification,
   sendArticleRejectedNotification,
 } from '@/emails/service/send';
+import { logArticleActivity } from '@/lib/admin/activity-logger';
 
 export async function POST(
   req: NextRequest,
@@ -14,19 +15,19 @@ export async function POST(
   try {
     const user = await getApiUser();
 
-    // Check super admin role
-    if (!user || user.role !== 'super_admin') {
+    // Check admin role (admin or super_admin)
+    if (!user || (user.role !== 'admin' && user.role !== 'super_admin')) {
       return NextResponse.json({
-        error: 'Unauthorized. Super admin access required.'
+        error: 'Unauthorized. Admin access required.'
       }, { status: 403 });
     }
 
     const { id } = await params;
     const { action, rejectionReason, reviewNotes } = await req.json();
 
-    if (!['approve', 'reject'].includes(action)) {
+    if (!['approve', 'reject', 'unpublish'].includes(action)) {
       return NextResponse.json({
-        error: 'Invalid action. Must be "approve" or "reject"'
+        error: 'Invalid action. Must be "approve", "reject", or "unpublish"'
       }, { status: 400 });
     }
 
@@ -40,6 +41,7 @@ export async function POST(
     const supabase = await createClient();
 
     // First, get the article with creator details for email notification
+    const expectedStatus = action === 'unpublish' ? 'published' : 'draft';
     const { data: article, error: fetchError } = await supabase
       .from('articles')
       .select(`
@@ -47,7 +49,7 @@ export async function POST(
         createdBy:created_by_admin_id(name, email)
       `)
       .eq('id', id)
-      .eq('status', 'draft')
+      .eq('status', expectedStatus)
       .single();
 
     if (fetchError || !article) {
@@ -58,21 +60,33 @@ export async function POST(
 
     // Prepare update data
     const now = new Date().toISOString();
-    const updateData = action === 'approve'
-      ? {
-          status: 'published' as const,
-          published_at: now,
-          reviewed_at: now,
-          last_edited_by_admin_id: user.id,
-          review_notes: reviewNotes || null,
-        }
-      : {
-          status: 'draft' as const, // Keep as draft for revision
-          reviewed_at: now,
-          rejection_reason: rejectionReason,
-          review_notes: reviewNotes || null,
-          last_edited_by_admin_id: user.id,
-        };
+    let updateData;
+
+    if (action === 'approve') {
+      updateData = {
+        status: 'published' as const,
+        published_at: now,
+        reviewed_at: now,
+        last_edited_by_admin_id: user.id,
+        review_notes: reviewNotes || null,
+      };
+    } else if (action === 'unpublish') {
+      updateData = {
+        status: 'draft' as const,
+        published_at: null,
+        reviewed_at: now,
+        last_edited_by_admin_id: user.id,
+        review_notes: reviewNotes || null,
+      };
+    } else {
+      updateData = {
+        status: 'draft' as const, // Keep as draft for revision
+        reviewed_at: now,
+        rejection_reason: rejectionReason,
+        review_notes: reviewNotes || null,
+        last_edited_by_admin_id: user.id,
+      };
+    }
 
     // Update the article
     const { data: updatedArticle, error: updateError } = await supabase
@@ -86,39 +100,56 @@ export async function POST(
       return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
-    // Send email notification
-    try {
-      const creatorEmail = article.createdBy?.email;
-      const creatorName = article.createdBy?.name || 'User';
+    // Send email notification (skip for unpublish)
+    if (action !== 'unpublish') {
+      try {
+        const creatorEmail = article.createdBy?.email;
+        const creatorName = article.createdBy?.name || 'User';
 
-      if (creatorEmail) {
-        if (action === 'approve') {
-          await sendArticleApprovedNotification({
-            to: creatorEmail,
-            creatorName,
-            articleTitle: article.title,
-            articleSummary: article.summary || undefined,
-            reviewNotes: reviewNotes || undefined,
-            reviewedBy: user.name || user.email,
-            articleUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/articles/${article.id}`,
-          });
-        } else {
-          await sendArticleRejectedNotification({
-            to: creatorEmail,
-            creatorName,
-            articleTitle: article.title,
-            articleSummary: article.summary || undefined,
-            rejectionReason,
-            reviewNotes: reviewNotes || undefined,
-            reviewedBy: user.name || user.email,
-            editArticleUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin/articles/${article.id}`,
-          });
+        if (creatorEmail) {
+          if (action === 'approve') {
+            await sendArticleApprovedNotification({
+              to: creatorEmail,
+              creatorName,
+              articleTitle: article.title,
+              articleSummary: article.summary || undefined,
+              reviewNotes: reviewNotes || undefined,
+              reviewedBy: user.name || user.email,
+              articleUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/articles/${article.id}`,
+            });
+          } else {
+            await sendArticleRejectedNotification({
+              to: creatorEmail,
+              creatorName,
+              articleTitle: article.title,
+              articleSummary: article.summary || undefined,
+              rejectionReason,
+              reviewNotes: reviewNotes || undefined,
+              reviewedBy: user.name || user.email,
+              editArticleUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin/articles/${article.id}`,
+            });
+          }
+          console.log(`[Article Review] Email notification sent to ${creatorEmail} for ${action}`);
         }
-        console.log(`[Article Review] Email notification sent to ${creatorEmail} for ${action}`);
+      } catch (emailError) {
+        console.error('[Article Review] Failed to send email notification:', emailError);
+        // Don't fail the approval/rejection if email fails
       }
-    } catch (emailError) {
-      console.error('[Article Review] Failed to send email notification:', emailError);
-      // Don't fail the approval/rejection if email fails
+    }
+
+    // Log admin activity
+    try {
+      const activityType = action === 'approve' ? 'approved' : action === 'unpublish' ? 'unpublished' : 'rejected';
+      await logArticleActivity(
+        activityType,
+        id,
+        article.title,
+        user.id,
+        action === 'reject' ? { rejection_reason: rejectionReason } : undefined
+      );
+    } catch (activityError) {
+      console.error('[Article Review] Failed to log activity:', activityError);
+      // Don't fail if activity logging fails
     }
 
     // After approval, check if we should trigger newsletter

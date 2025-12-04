@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getApiUser } from '@/lib/api/auth';
 import { createClient } from '@/lib/supabase/server';
+import { checkRateLimit, getClientIdentifier, getRateLimitHeaders, RATE_LIMIT_CONFIGS } from '@/lib/utils/rateLimit';
 
 /**
  * POST /api/ai/save-generation
@@ -15,6 +16,16 @@ import { createClient } from '@/lib/supabase/server';
  * - platform?: 'facebook' | 'instagram' | 'twitter' | 'linkedin' - For social content
  */
 export async function POST(req: NextRequest) {
+  // Apply rate limiting
+  const clientId = getClientIdentifier(req, 'ai-save-generation');
+  if (!checkRateLimit(clientId, RATE_LIMIT_CONFIGS.AI_SAVE_GENERATION)) {
+    const headers = getRateLimitHeaders(clientId, RATE_LIMIT_CONFIGS.AI_SAVE_GENERATION);
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429, headers }
+    );
+  }
+
   try {
     // Authenticate user
     const user = await getApiUser();

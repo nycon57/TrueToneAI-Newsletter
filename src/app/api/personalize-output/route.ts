@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get existing personalization or create new one
-    let { data: existingPersonalization } = await supabase
+    const { data: existingPersonalization } = await supabase
       .from('personalized_outputs')
       .select('*')
       .eq('user_id', user.id)

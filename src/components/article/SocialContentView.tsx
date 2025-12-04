@@ -6,9 +6,11 @@ import { SocialMediaGenerationPanel } from '@/components/ai/SocialMediaGeneratio
 
 interface SocialContentViewProps {
   articleId: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialResults?: any;
   userTier?: 'free' | 'paid' | 'premium';
   remainingGenerations?: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onContentGenerated?: (results: any) => void;
 }
 

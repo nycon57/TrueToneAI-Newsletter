@@ -1,7 +1,14 @@
 'use client';
 
 import { useState, useTransition, useCallback, useEffect, useMemo } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  fadeInUp,
+  staggeredContainer,
+  staggeredItem,
+  springs,
+  stagger,
+} from '@/lib/motion';
 import { Sparkles, UserPlus, FileText } from 'lucide-react';
 import Image from 'next/image';
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
@@ -44,9 +51,12 @@ const LockedGenerationsCard = dynamic(() => import('@/components/upgrade/LockedG
 });
 
 interface HomePageClientProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialArticles: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialUser: any;
   isAuthenticated: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   kindeUser: any;
   filters: {
     industry: string | null;
@@ -77,13 +87,14 @@ export function HomePageClient({
     setMounted(true);
   }, []);
 
-  // Use server data as initial state
-  const [user] = useState(initialUser);
+  // Use server data as initial state - with setter for real-time updates
+  const [user, setUser] = useState(initialUser);
 
   // Article Modal state
   const { isOpen, article, closeArticle} = useArticleModal();
 
   // Pagination state
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [allArticles, setAllArticles] = useState<any[]>(initialArticles?.articles || []);
   const [cursor, setCursor] = useState<string | null>(initialArticles?.next_cursor || null);
   const [hasMore, setHasMore] = useState<boolean>(initialArticles?.has_more || false);
@@ -166,6 +177,17 @@ export function HomePageClient({
     resetDate: user.generation_reset_date || undefined
   } : undefined;
 
+  // Callback to update generation count in real-time when a generation completes
+  const handleGenerationComplete = useCallback(() => {
+    setUser((prevUser: typeof initialUser) => {
+      if (!prevUser) return prevUser;
+      return {
+        ...prevUser,
+        monthly_generations_used: (prevUser.monthly_generations_used || 0) + 1
+      };
+    });
+  }, []);
+
   // Use the enhanced useArticles hook for data fetching
   const {
     data: articlesData,
@@ -203,6 +225,7 @@ export function HomePageClient({
         // Pagination: append new articles, avoiding duplicates
         setAllArticles(prev => {
           const existingIds = new Set(prev.map(a => a.id));
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const newArticles = articlesData.articles.filter((a: any) => !existingIds.has(a.id));
           return [...prev, ...newArticles];
         });
@@ -260,7 +283,7 @@ export function HomePageClient({
   return (
     <div className="min-h-screen bg-gradient-to-br from-lavender/20 via-white to-lavender/20">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-lavender/30" suppressHydrationWarning>
+      <div className="sticky top-0 z-50 bg-white border-b border-lavender/30" suppressHydrationWarning>
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="relative h-10">
@@ -292,7 +315,8 @@ export function HomePageClient({
                         name: `${kindeUser?.given_name || user?.firstName || 'User'} ${kindeUser?.family_name || user?.lastName || ''}`.trim(),
                         email: kindeUser?.email || user?.email || '',
                         avatar: user?.avatar || kindeUser?.picture || '',
-                        subscription_tier: user?.subscription_tier?.toUpperCase() || 'FREE'
+                        subscription_tier: user?.subscription_tier?.toUpperCase() || 'FREE',
+                        role: user?.role || 'user'
                       }}
                       onLogout={handleLogout}
                     />
@@ -328,23 +352,38 @@ export function HomePageClient({
       <div className="relative overflow-hidden py-16">
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            variants={staggeredContainer}
+            initial="hidden"
+            animate="visible"
+            className="space-y-6"
           >
             {isAuthenticated && (
-              <div className="inline-flex items-center gap-2 bg-lavender/30 text-orchid px-4 py-2 rounded-full text-sm font-medium mb-6">
-                <Sparkles className="h-4 w-4" />
+              <motion.div
+                variants={staggeredItem}
+                className="inline-flex items-center gap-2 bg-lavender/30 text-orchid px-4 py-2 rounded-full text-sm font-medium"
+              >
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 0.5, delay: 0.8 }}
+                >
+                  <Sparkles className="h-4 w-4" />
+                </motion.div>
                 <span>Welcome back, {kindeUser?.given_name || user?.firstName || user?.name || 'there'}!</span>
-              </div>
+              </motion.div>
             )}
-            <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
+            <motion.h1
+              variants={staggeredItem}
+              className="text-5xl font-bold text-gray-900 leading-tight"
+            >
               {isAuthenticated
                 ? (isPaid ? 'Your Spark Content' : 'Spark Newsletter')
                 : 'Spark Newsletter for Sales Pros'
               }
-            </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            </motion.h1>
+            <motion.p
+              variants={staggeredItem}
+              className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed"
+            >
               {!isAuthenticated
                 ? 'Curated market insights for sales professionals. Subscribe to Spark and turn industry news into content you can share with your audience.'
                 : (isPaid
@@ -352,7 +391,7 @@ export function HomePageClient({
                     : 'Your weekly Spark newsletter with curated market insights. Upgrade to unlock AI personalization and create content in your unique voice.'
                   )
               }
-            </p>
+            </motion.p>
           </motion.div>
         </div>
       </div>
@@ -389,20 +428,26 @@ export function HomePageClient({
               </CardContent>
             </Card>
           ) : (
-            <>
+            <AnimatePresence mode="popLayout">
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {articles.map((article: any, index: number) => (
-                // Reduced animation for better performance
                 <motion.div
                   key={article.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.2) }}
+                  layout
+                  initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.2 } }}
+                  transition={{
+                    ...springs.gentle,
+                    delay: Math.min(index * stagger.fast, 0.25),
+                  }}
                 >
                   <ArticleCard
                     article={article}
                     isAuthenticated={isAuthenticated}
                     isPaid={isPaid}
                     userGenerationStats={userGenerationStats}
+                    onGenerationComplete={handleGenerationComplete}
                   />
                 </motion.div>
               ))}
@@ -410,9 +455,11 @@ export function HomePageClient({
               {/* Show locked generations card for free users with saved content */}
               {isFreeUser && isAuthenticated && lockedGenerationsCount > 0 && (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
+                  key="locked-generations"
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={springs.gentle}
                 >
                   <LockedGenerationsCard lockedCount={lockedGenerationsCount} />
                 </motion.div>
@@ -421,14 +468,16 @@ export function HomePageClient({
               {/* Show upgrade prompt after 3rd article for free users */}
               {isFreeUser && articles.length >= 3 && (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
+                  key="upgrade-prompt"
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={springs.gentle}
                 >
                   <UpgradePrompt />
                 </motion.div>
               )}
-            </>
+            </AnimatePresence>
           )}
 
           {/* Infinite Scroll - Only for paid users */}

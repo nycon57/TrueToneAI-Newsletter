@@ -17,7 +17,7 @@ const INTERVIEW_QUESTIONS = [
   "Describe your ideal client and how you help them achieve their goals.",
   "What industry terms or phrases do you use regularly in your communication?",
   "How detailed do you like to be when explaining mortgage processes to clients?",
-  "What's your approach to building relationships with new clients?"
+  "what&apos;s your approach to building relationships with new clients?"
 ];
 
 export function VoiceOnboardingInterview({ onComplete }: VoiceOnboardingInterviewProps) {
@@ -27,7 +27,7 @@ export function VoiceOnboardingInterview({ onComplete }: VoiceOnboardingIntervie
   const [responses, setResponses] = useState<string[]>([]);
   const [isSimulating, setIsSimulating] = useState(false);
 
-  // For demo purposes, we'll simulate the interview
+  // For demo purposes, we&apos;ll simulate the interview
   // In production, this would integrate with Vapi
   const startInterview = () => {
     setIsConnected(true);
@@ -60,9 +60,9 @@ export function VoiceOnboardingInterview({ onComplete }: VoiceOnboardingIntervie
 
     // Generate a sample transcript for demo purposes
     const sampleTranscript = `
-    I'm a mortgage loan officer with over 8 years of experience helping families achieve their homeownership dreams. What makes me unique is my approach to education - I believe in taking the time to really explain the mortgage process so my clients feel confident and informed every step of the way.
+    I&apos;m a mortgage loan officer with over 8 years of experience helping families achieve their homeownership dreams. What makes me unique is my approach to education - I believe in taking the time to really explain the mortgage process so my clients feel confident and informed every step of the way.
 
-    I'd say my communication style is professional but approachable. I like to keep things conversational because buying a home can be overwhelming, and I want my clients to feel comfortable asking questions. I'm not overly formal, but I maintain that professional expertise they need to trust me with such a big decision.
+    I'd say my communication style is professional but approachable. I like to keep things conversational because buying a home can be overwhelming, and I want my clients to feel comfortable asking questions. I&apos;m not overly formal, but I maintain that professional expertise they need to trust me with such a big decision.
 
     Just last month, I helped a young couple who thought they couldn't qualify for a home loan. They had some credit challenges, but I worked with them for three months, explaining different loan programs and helping them improve their credit score. We finally got them into their first home with an FHA loan, and they were absolutely thrilled. Moments like that remind me why I love what I do.
 
@@ -101,7 +101,7 @@ export function VoiceOnboardingInterview({ onComplete }: VoiceOnboardingIntervie
             <Phone className="h-16 w-16 mx-auto text-blue-600 mb-4" />
             <h3 className="text-xl font-semibold mb-4">Ready to start?</h3>
             <p className="text-gray-600 mb-6">
-              The interview will take about 5-7 minutes. Make sure you're in a quiet space
+              The interview will take about 5-7 minutes. Make sure you&apos;re in a quiet space
               where you can speak freely.
             </p>
             <Button onClick={startInterview} size="lg" className="px-8">

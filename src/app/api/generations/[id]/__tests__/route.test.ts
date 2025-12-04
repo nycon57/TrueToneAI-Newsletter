@@ -438,6 +438,7 @@ describe('PATCH /api/generations/[id]', () => {
               })
             }))
           })),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           update: jest.fn((data: any) => {
             // Verify trimmed content was passed to update
             expect(data.content).toBe(trimmedContent);

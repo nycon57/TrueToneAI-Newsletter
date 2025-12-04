@@ -25,10 +25,10 @@ export const OnboardingCompleteEmail = ({
           <Section style={section}>
             <Text style={heading}>Welcome to TrueTone Insights, {userName}!</Text>
             <Text style={text}>
-              You've completed onboarding and are ready to start using TrueTone Insights.
+              you&apos;ve completed onboarding and are ready to start using TrueTone Insights.
             </Text>
             <Text style={text}>
-              We're excited to have you on board!
+              we&apos;re excited to have you on board!
             </Text>
           </Section>
         </Container>

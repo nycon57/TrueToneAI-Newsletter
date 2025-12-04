@@ -115,7 +115,7 @@ export function WelcomeStep() {
             <div className="bg-gradient-to-br from-primary/5 via-orchid/5 to-skyward/5 border border-primary/20 rounded-lg p-4 mb-6">
               <div className="flex items-center justify-center gap-2 mb-3">
                 <CheckCircle2 className="h-4 w-4 text-primary" />
-                <h4 className="font-heading font-semibold text-gray-900 text-base">What You'll Get:</h4>
+                <h4 className="font-heading font-semibold text-gray-900 text-base">What you&apos;ll Get:</h4>
               </div>
               <div className="grid sm:grid-cols-2 gap-2 text-xs text-gray-700 text-left max-w-2xl mx-auto">
                 <div className="flex items-start gap-2">

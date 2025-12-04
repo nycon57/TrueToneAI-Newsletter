@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Prepare platform-specific data
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const platformData: any = {};
     platforms.forEach((platform: string) => {
       const platformKey = platform.toUpperCase();

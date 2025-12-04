@@ -19,6 +19,7 @@ import {
 import { toast } from 'sonner';
 
 interface ArticleFeedProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialArticles?: any[];
   userTier?: 'free' | 'paid' | 'premium';
   userId?: string;
@@ -171,7 +172,7 @@ export function ArticleFeed({
         <Alert className="border-amber-200 bg-amber-50">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            <strong>Monthly limit reached:</strong> You've used all {monthlyGenerationLimit} personalizations this month.
+            <strong>Monthly limit reached:</strong> you&apos;ve used all {monthlyGenerationLimit} personalizations this month.
             Upgrade or wait for next month to continue personalizing content.
           </AlertDescription>
         </Alert>

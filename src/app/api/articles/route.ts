@@ -28,7 +28,7 @@ function parseCursor(cursorString: string): Cursor | null {
 /**
  * Create cursor string from article
  */
-function createCursor(article: any, sort: string): string {
+function createCursor(article: { id: string; title: string; published_at: string }, sort: string): string {
   if (sort.startsWith('alpha-')) {
     // For alphabetical sorting, use title as timestamp equivalent
     return `${article.title}_${article.id}`;
@@ -40,10 +40,13 @@ function createCursor(article: any, sort: string): string {
 /**
  * Apply cursor-based pagination to Supabase query
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function applyCursorPagination(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   query: any,
   cursor: Cursor | null,
   sort: string
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): any {
   if (!cursor) return query;
 
@@ -87,6 +90,7 @@ function applyCursorPagination(
  * Get total count of articles matching the filters
  */
 async function getTotalCount(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: any,
   filters: {
     industry?: string | null;
@@ -121,7 +125,7 @@ async function getTotalCount(
 
   // Handle generation filters for paid users
   if (filters.hasGenerationFilters && filters.contentTypes && filters.contentTypes.length > 0 && filters.userId) {
-    let generationsSelect = `
+    const generationsSelect = `
       id,
       generations!inner (
         id,
@@ -318,7 +322,7 @@ export async function GET(req: NextRequest) {
     // If generation filters are active, use INNER JOIN to only show articles with matching generations
     // Special case: if only 'default' is selected, we want articles WITHOUT generations
     if (hasGenerationFilters && contentTypes.length > 0) {
-      let generationsSelect = `
+      const generationsSelect = `
         *,
         generations!inner (
           id,
@@ -446,7 +450,7 @@ export async function GET(req: NextRequest) {
 
     // Fetch all generations for these articles in a single query
     const articleIds = articlesToReturn?.map(a => a.id) || [];
-    let generationsMap = new Map();
+    const generationsMap = new Map();
 
     if (articleIds.length > 0) {
       const { data: generations } = await supabase
@@ -499,7 +503,7 @@ export async function GET(req: NextRequest) {
         hasVideoScript: !!videoScriptGen,
         hasEmailTemplate: !!emailTemplateGen,
         hasSocialMedia: socialGens.length > 0,
-        socialPlatforms: socialGens.map(g => g.platform).filter(Boolean)
+        socialPlatforms: socialGens.map(g => g.platform?.toLowerCase()).filter(Boolean)
       };
 
       // Build social media generation IDs map
@@ -511,7 +515,7 @@ export async function GET(req: NextRequest) {
       });
 
       // Remove any joined data from the article object
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
       const { personalized_outputs, generations, ...articleData } = article as any;
 
       return {
@@ -528,7 +532,12 @@ export async function GET(req: NextRequest) {
         keyInsights: keyInsightsGen?.content_array || articleData.default_key_insights || [],
         videoScript: videoScriptGen?.content || articleData.default_video_script || '',
         emailTemplate: emailTemplateGen?.content || articleData.default_email_template || '',
-        socialContent: Object.keys(socialContent).length > 0 ? socialContent : (articleData.default_social_content || {}),
+        // Merge default social content with AI-generated content (AI takes precedence)
+        socialContent: { ...(articleData.default_social_content || {}), ...socialContent },
+        // Always include default content separately for display purposes
+        defaultKeyInsights: articleData.default_key_insights || [],
+        defaultVideoScript: articleData.default_video_script || '',
+        defaultEmailTemplate: articleData.default_email_template || '',
         is_personalized: hasGenerations,
         tier: user.subscription_tier,
         generation_stats: generationStats,

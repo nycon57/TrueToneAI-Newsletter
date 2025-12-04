@@ -3,6 +3,14 @@
 import { useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Lightbulb, CheckCircle2 } from 'lucide-react';
+import {
+  modalOverlay,
+  modalContent,
+  staggeredContainer,
+  staggeredItem,
+  springs,
+  stagger,
+} from '@/lib/motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { cn } from '@/lib/utils';
@@ -60,25 +68,27 @@ export function SimpleArticleModal({ article, isOpen, onClose }: SimpleArticleMo
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.25, ease: [0.22, 1.0, 0.36, 1.0] }}
           className="fixed inset-0 z-50 flex items-center justify-center"
           onClick={handleBackdropClick}
         >
           {/* Backdrop with blur */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+            animate={{ opacity: 1, backdropFilter: 'blur(8px)' }}
+            exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0 bg-black/60"
+            style={{ backdropFilter: 'blur(8px)' }}
             aria-hidden="true"
           />
 
           {/* Modal Container */}
           <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            initial={{ scale: 0.96, opacity: 0, y: 24 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            exit={{ scale: 0.96, opacity: 0, y: 24 }}
+            transition={springs.modal}
             className={cn(
               'relative z-10 flex flex-col',
               'w-full h-full',
@@ -109,12 +119,15 @@ export function SimpleArticleModal({ article, isOpen, onClose }: SimpleArticleMo
 
             {/* Content Area - Scrollable */}
             <div className="flex-1 overflow-y-auto scroll-smooth">
-              <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+              <motion.article
+                variants={staggeredContainer}
+                initial="hidden"
+                animate="visible"
+                className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12"
+              >
                 {/* Header */}
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
+                  variants={staggeredItem}
                   className="mb-8"
                 >
                   <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">
@@ -130,16 +143,19 @@ export function SimpleArticleModal({ article, isOpen, onClose }: SimpleArticleMo
                 {/* Key Insights Callout */}
                 {article.keyInsights && article.keyInsights.length > 0 && (
                   <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
+                    variants={staggeredItem}
                     className="mb-10"
                   >
                     <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 sm:p-8 border border-amber-200/50 shadow-sm">
                       <div className="flex items-center gap-3 mb-5">
-                        <div className="p-2.5 bg-amber-100 rounded-xl">
+                        <motion.div
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ ...springs.bouncy, delay: 0.4 }}
+                          className="p-2.5 bg-amber-100 rounded-xl"
+                        >
                           <Lightbulb className="w-6 h-6 text-amber-700" />
-                        </div>
+                        </motion.div>
                         <h3 className="text-xl font-bold text-gray-900">Quick Takeaways</h3>
                       </div>
 
@@ -147,14 +163,25 @@ export function SimpleArticleModal({ article, isOpen, onClose }: SimpleArticleMo
                         {article.keyInsights.map((insight, idx) => (
                           <motion.div
                             key={idx}
-                            initial={{ opacity: 0, x: -10 }}
+                            initial={{ opacity: 0, x: -12 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.3 + idx * 0.1 }}
+                            transition={{
+                              ...springs.gentle,
+                              delay: 0.5 + idx * stagger.slow,
+                            }}
                             className="flex items-start gap-3"
                           >
-                            <div className="flex-shrink-0 mt-0.5">
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{
+                                ...springs.bouncy,
+                                delay: 0.55 + idx * stagger.slow,
+                              }}
+                              className="flex-shrink-0 mt-0.5"
+                            >
                               <CheckCircle2 className="w-5 h-5 text-amber-600" />
-                            </div>
+                            </motion.div>
                             <p className="text-gray-800 leading-relaxed text-base sm:text-lg font-medium">
                               {insight}
                             </p>
@@ -167,9 +194,7 @@ export function SimpleArticleModal({ article, isOpen, onClose }: SimpleArticleMo
 
                 {/* Main Article Content */}
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
+                  variants={staggeredItem}
                   className="article-content"
                 >
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{articleContent}</ReactMarkdown>
@@ -177,7 +202,7 @@ export function SimpleArticleModal({ article, isOpen, onClose }: SimpleArticleMo
 
                 {/* Bottom Spacing */}
                 <div className="h-20" />
-              </article>
+              </motion.article>
             </div>
           </motion.div>
         </motion.div>

@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   FileText,
-  CheckCircle,
-  Archive,
   Settings,
   Bell,
+  BarChart3,
+  Users,
 } from "lucide-react";
 
 // TODO: Add userRole prop for role-based navigation filtering when implementing permission-based menu items
@@ -25,23 +25,23 @@ const navigation = [
     exact: true,
   },
   {
-    name: "Review Queue",
+    name: "Articles",
     href: "/admin/articles",
     icon: FileText,
     badge: "pending",
   },
   {
-    name: "Published",
-    href: "/admin/articles/published",
-    icon: CheckCircle,
+    name: "Analytics",
+    href: "/admin/analytics",
+    icon: BarChart3,
   },
   {
-    name: "Archived",
-    href: "/admin/articles/archived",
-    icon: Archive,
+    name: "Users",
+    href: "/admin/users",
+    icon: Users,
   },
   {
-    name: "Notifications",
+    name: "Activity",
     href: "/admin/notifications",
     icon: Bell,
   },
