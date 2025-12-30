@@ -1,22 +1,10 @@
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { createClient } from '@/lib/supabase/server';
 import { kindeManagementService } from '@/lib/services/kinde-management.service';
+import { CrossProductAccessError } from '@/lib/errors/cross-product-access.error';
 
-/**
- * Custom error class for cross-product access issues
- * This is thrown when a user from another product (e.g., TrueTone) tries to access Newsletter
- * without proper Newsletter access
- */
-export class CrossProductAccessError extends Error {
-  constructor(
-    message: string,
-    public readonly sourceProduct: string,
-    public readonly email?: string
-  ) {
-    super(message);
-    this.name = 'CrossProductAccessError';
-  }
-}
+// Re-export for backwards compatibility
+export { CrossProductAccessError };
 
 export async function getApiUser() {
   const { getUser } = getKindeServerSession();

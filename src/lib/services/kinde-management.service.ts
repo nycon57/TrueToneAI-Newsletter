@@ -25,6 +25,16 @@ interface KindeUser {
   created_on?: string;
 }
 
+class KindeApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number
+  ) {
+    super(message);
+    this.name = 'KindeApiError';
+  }
+}
+
 class KindeManagementService {
   private accessToken: string | null = null;
   private tokenExpiresAt: number = 0;
@@ -110,7 +120,7 @@ class KindeManagementService {
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`[Kinde] API request failed: ${endpoint}`, errorText);
-      throw new Error(`Kinde API request failed: ${response.status}`);
+      throw new KindeApiError(`Kinde API request failed: ${response.status}`, response.status);
     }
 
     return response.json();
@@ -122,14 +132,21 @@ class KindeManagementService {
 
   /**
    * Get a user by their Kinde ID
+   * @returns The user if found, null if not found (404), throws for other errors
    */
   async getUser(userId: string): Promise<KindeUser | null> {
     try {
       const result = await this.makeApiRequest<KindeUser>(`/user?id=${userId}`);
       return result;
     } catch (error) {
+      // Only return null for 404 (user not found)
+      if (error instanceof KindeApiError && error.status === 404) {
+        console.log(`[Kinde] User not found: ${userId}`);
+        return null;
+      }
+      // Rethrow all other errors so callers can handle API failures
       console.error('[Kinde] Error getting user:', error);
-      return null;
+      throw error;
     }
   }
 
