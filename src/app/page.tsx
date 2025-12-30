@@ -1,7 +1,8 @@
 import { Suspense } from 'react';
+import { redirect } from 'next/navigation';
 import { prefetchArticles } from '@/lib/data/articles-server';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
-import { getCachedApiUserSafe } from '@/lib/api/auth-cached';
+import { getCachedApiUserSafe, CrossProductAccessError } from '@/lib/api/auth-cached';
 import { HomePageClient } from './home-page-client';
 import { ArticlesFeedSkeleton } from '@/components/home/articles-feed-skeleton';
 
@@ -28,7 +29,24 @@ export default async function HomePage({
   const kindeUser = isAuth ? await getUser() : null;
 
   // Fetch user data from database (includes avatar)
-  const user = isAuth ? await getCachedApiUserSafe() : null;
+  // Handle cross-product access (TrueTone user trying to access Newsletter)
+  let user = null;
+  if (isAuth) {
+    try {
+      user = await getCachedApiUserSafe();
+    } catch (error) {
+      if (error instanceof CrossProductAccessError) {
+        const upgradeUrl = new URL('/upgrade-to-newsletter', process.env.NEXT_PUBLIC_URL || 'http://localhost:3000');
+        upgradeUrl.searchParams.set('source', error.sourceProduct);
+        if (error.email) {
+          upgradeUrl.searchParams.set('email', error.email);
+        }
+        redirect(upgradeUrl.pathname + upgradeUrl.search);
+      }
+      // For other errors, continue without user
+      console.error('[HomePage] Error fetching user:', error);
+    }
+  }
 
   // Fetch articles on the server
   const articlesData = await prefetchArticles({

@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
-import { getCachedApiUser } from '@/lib/api/auth-cached';
+import { getCachedApiUser, CrossProductAccessError } from '@/lib/api/auth-cached';
 import AccountClient from './account-client';
 import { Loader2 } from 'lucide-react';
 
@@ -16,13 +16,26 @@ function LoadingFallback() {
 }
 
 async function AccountContent() {
-  const user = await getCachedApiUser();
+  try {
+    const user = await getCachedApiUser();
 
-  if (!user) {
-    redirect('/api/auth/login?post_login_redirect_url=/account');
+    if (!user) {
+      redirect('/api/auth/login?post_login_redirect_url=/account');
+    }
+
+    return <AccountClient user={user} />;
+  } catch (error) {
+    // Handle cross-product access (TrueTone user trying to access Newsletter)
+    if (error instanceof CrossProductAccessError) {
+      const upgradeUrl = new URL('/upgrade-to-newsletter', process.env.NEXT_PUBLIC_URL || 'http://localhost:3000');
+      upgradeUrl.searchParams.set('source', error.sourceProduct);
+      if (error.email) {
+        upgradeUrl.searchParams.set('email', error.email);
+      }
+      redirect(upgradeUrl.pathname + upgradeUrl.search);
+    }
+    throw error;
   }
-
-  return <AccountClient user={user} />;
 }
 
 export default function AccountPage() {

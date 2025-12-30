@@ -1,6 +1,23 @@
 import { cache } from 'react';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { createClient } from '@/lib/supabase/server';
+import { kindeManagementService } from '@/lib/services/kinde-management.service';
+
+/**
+ * Custom error class for cross-product access issues
+ * This is thrown when a user from another product (e.g., TrueTone) tries to access Newsletter
+ * without proper Newsletter access
+ */
+export class CrossProductAccessError extends Error {
+  constructor(
+    message: string,
+    public readonly sourceProduct: string,
+    public readonly email?: string
+  ) {
+    super(message);
+    this.name = 'CrossProductAccessError';
+  }
+}
 
 /**
  * Cached version of getApiUser that caches the user lookup per request.
@@ -27,6 +44,43 @@ export const getCachedApiUser = cache(async () => {
     .single();
 
   if (fetchError && fetchError.code === 'PGRST116') {
+    // ============================================================================
+    // MULTI-PRODUCT ACCESS CONTROL
+    // Before creating a new user, check if this is a cross-product user
+    // ============================================================================
+    let hasNewsletterAccess = false;
+    try {
+      hasNewsletterAccess = await kindeManagementService.checkProductAccess(
+        kindeUser.id,
+        'newsletter'
+      );
+      console.log(`[AuthCache] Newsletter access check for ${kindeUser.id}: ${hasNewsletterAccess}`);
+    } catch (error) {
+      console.warn('[AuthCache] Could not check Newsletter access, continuing:', error);
+    }
+
+    // If user exists in Kinde but not in our database, and doesn't have Newsletter access,
+    // they might be a TrueTone user trying to access Newsletter
+    if (!hasNewsletterAccess) {
+      try {
+        const kindeUserDetails = await kindeManagementService.getUser(kindeUser.id);
+        if (kindeUserDetails && kindeUserDetails.created_on) {
+          // User exists in Kinde but not in Newsletter database - cross-product user
+          console.log('[AuthCache] Cross-product user detected (TrueTone → Newsletter)');
+          throw new CrossProductAccessError(
+            'User does not have Newsletter access',
+            'truetone',
+            kindeUser.email ?? undefined
+          );
+        }
+      } catch (error) {
+        if (error instanceof CrossProductAccessError) {
+          throw error;
+        }
+        console.warn('[AuthCache] Could not verify Kinde user details, proceeding with creation:', error);
+      }
+    }
+
     // User doesn't exist, create them on first login
     const now = new Date().toISOString();
     const { data: newUser, error: insertError } = await supabase
@@ -69,6 +123,14 @@ export const getCachedApiUser = cache(async () => {
       throw new Error('User creation failed: returned null');
     }
 
+    // Grant Newsletter access to the new user since they're signing up through Newsletter
+    try {
+      await kindeManagementService.grantProductAccess(kindeUser.id, 'newsletter');
+      console.log('[AuthCache] Granted Newsletter access to new user:', kindeUser.id);
+    } catch (error) {
+      console.error('[AuthCache] Failed to grant Newsletter access (non-blocking):', error);
+    }
+
     return newUser;
   }
 
@@ -78,11 +140,16 @@ export const getCachedApiUser = cache(async () => {
 /**
  * Non-throwing version of getCachedApiUser
  * Returns null if user is not authenticated instead of throwing
+ * Note: CrossProductAccessError is re-thrown for proper handling
  */
 export const getCachedApiUserSafe = cache(async () => {
   try {
     return await getCachedApiUser();
   } catch (error) {
+    // Re-throw CrossProductAccessError for proper handling
+    if (error instanceof CrossProductAccessError) {
+      throw error;
+    }
     // Log the error with context for debugging
     console.error('[AuthCache] Error fetching cached user:', {
       error: error instanceof Error ? error.message : String(error),

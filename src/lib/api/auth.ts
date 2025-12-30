@@ -1,5 +1,22 @@
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { createClient } from '@/lib/supabase/server';
+import { kindeManagementService } from '@/lib/services/kinde-management.service';
+
+/**
+ * Custom error class for cross-product access issues
+ * This is thrown when a user from another product (e.g., TrueTone) tries to access Newsletter
+ * without proper Newsletter access
+ */
+export class CrossProductAccessError extends Error {
+  constructor(
+    message: string,
+    public readonly sourceProduct: string,
+    public readonly email?: string
+  ) {
+    super(message);
+    this.name = 'CrossProductAccessError';
+  }
+}
 
 export async function getApiUser() {
   const { getUser } = getKindeServerSession();
@@ -22,6 +39,43 @@ export async function getApiUser() {
   }
 
   if (!user || fetchError) {
+    // ============================================================================
+    // MULTI-PRODUCT ACCESS CONTROL
+    // Before creating a new user, check if this is a cross-product user
+    // ============================================================================
+    let hasNewsletterAccess = false;
+    try {
+      hasNewsletterAccess = await kindeManagementService.checkProductAccess(
+        kindeUser.id,
+        'newsletter'
+      );
+      console.log(`[Auth] Newsletter access check for ${kindeUser.id}: ${hasNewsletterAccess}`);
+    } catch (error) {
+      console.warn('[Auth] Could not check Newsletter access, continuing:', error);
+    }
+
+    // If user exists in Kinde but not in our database, and doesn't have Newsletter access,
+    // they might be a TrueTone user trying to access Newsletter
+    if (!hasNewsletterAccess) {
+      try {
+        const kindeUserDetails = await kindeManagementService.getUser(kindeUser.id);
+        if (kindeUserDetails && kindeUserDetails.created_on) {
+          // User exists in Kinde but not in Newsletter database - cross-product user
+          console.log('[Auth] Cross-product user detected (TrueTone → Newsletter)');
+          throw new CrossProductAccessError(
+            'User does not have Newsletter access',
+            'truetone',
+            kindeUser.email ?? undefined
+          );
+        }
+      } catch (error) {
+        if (error instanceof CrossProductAccessError) {
+          throw error;
+        }
+        console.warn('[Auth] Could not verify Kinde user details, proceeding with creation:', error);
+      }
+    }
+
     // Create user on first login
     console.log('[Auth] Creating new user for kinde_id:', kindeUser.id);
     const now = new Date().toISOString();
@@ -47,6 +101,14 @@ export async function getApiUser() {
 
     if (!newUser) {
       throw new Error('Failed to create user: No data returned');
+    }
+
+    // Grant Newsletter access to the new user since they're signing up through Newsletter
+    try {
+      await kindeManagementService.grantProductAccess(kindeUser.id, 'newsletter');
+      console.log('[Auth] Granted Newsletter access to new user:', kindeUser.id);
+    } catch (error) {
+      console.error('[Auth] Failed to grant Newsletter access (non-blocking):', error);
     }
 
     return newUser;

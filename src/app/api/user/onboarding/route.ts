@@ -3,6 +3,7 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { sendWelcome } from '@/emails';
+import { kindeManagementService } from '@/lib/services/kinde-management.service';
 
 // Validation schema for onboarding data
 const OnboardingSchema = z.object({
@@ -112,6 +113,15 @@ export async function POST(request: NextRequest) {
           }, { status: 500 });
         }
 
+        // Grant Newsletter access in Kinde for cross-product access control
+        try {
+          await kindeManagementService.grantProductAccess(kindeUser.id, 'newsletter');
+          console.log('[Onboarding] Granted Newsletter access to new user:', kindeUser.id);
+        } catch (kindeError) {
+          console.error('[Onboarding] Failed to grant Newsletter access (non-blocking):', kindeError);
+          // Don't fail onboarding if Kinde access grant fails
+        }
+
         // Send welcome email to new user
         if (newUser && kindeUser.email) {
           try {
@@ -189,6 +199,16 @@ export async function POST(request: NextRequest) {
         error: 'Failed to save onboarding data',
         details: error
       }, { status: 500 });
+    }
+
+    // Grant Newsletter access in Kinde for cross-product access control
+    // This ensures existing users who complete onboarding also have the Kinde property set
+    try {
+      await kindeManagementService.grantProductAccess(kindeUser.id, 'newsletter');
+      console.log('[Onboarding] Granted Newsletter access to existing user:', kindeUser.id);
+    } catch (kindeError) {
+      console.error('[Onboarding] Failed to grant Newsletter access (non-blocking):', kindeError);
+      // Don't fail onboarding if Kinde access grant fails
     }
 
     // Send welcome email to existing user who completed onboarding
