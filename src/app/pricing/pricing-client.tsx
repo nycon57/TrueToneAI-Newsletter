@@ -188,7 +188,7 @@ export function PricingClient({ isAuthenticated, user }: PricingClientProps) {
 
               <div className="mt-6">
                 <div className="flex items-baseline justify-center gap-2">
-                  <span className="text-5xl font-bold text-gray-900 font-heading">$29</span>
+                  <span className="text-5xl font-bold text-gray-900 font-heading">$19.95</span>
                   <span className="text-gray-600">/month</span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
@@ -339,7 +339,7 @@ export function PricingClient({ isAuthenticated, user }: PricingClientProps) {
               },
               {
                 q: 'How does billing work?',
-                a: "You'll be charged $29 monthly on the same day you subscribe. Manage your billing, payment methods, and invoices through your secure billing portal."
+                a: "You'll be charged $19.95 monthly on the same day you subscribe. Manage your billing, payment methods, and invoices through your secure billing portal."
               },
               {
                 q: 'Is my payment information secure?',

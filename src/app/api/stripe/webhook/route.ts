@@ -8,6 +8,8 @@ import {
   sendPaymentFailed,
   sendSubscriptionCancelled,
 } from '@/emails/service/send';
+import { kindeManagementService } from '@/lib/services/kinde-management.service';
+import { obfuscateId } from '@/lib/utils';
 
 /**
  * Stripe Webhook Handler
@@ -121,17 +123,110 @@ export async function POST(req: NextRequest) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
         console.log('[Webhook] Checkout session completed:', session.id);
+        console.log('[Webhook] Session metadata:', session.metadata);
 
         // Get user ID from metadata or customer
         let userId = session.metadata?.userId;
+        const kindeId = session.metadata?.kinde_id;
 
         if (!userId && session.customer) {
           userId = await getUserIdFromCustomer(session.customer as string, supabase);
         }
 
+        // If still no userId but we have kinde_id, try to find by kinde_id
+        if (!userId && kindeId) {
+          const { data: userByKinde } = await supabase
+            .from('users')
+            .select('id')
+            .eq('kinde_id', kindeId)
+            .maybeSingle();
+
+          if (userByKinde) {
+            userId = userByKinde.id;
+            console.log('[Webhook] Found user by kinde_id:', userId);
+          }
+        }
+
+        // If STILL no user, create one from the checkout session data
+        // Use upsert pattern to handle race conditions from concurrent webhooks
+        if (!userId && kindeId && session.customer_details?.email) {
+          console.log('[Webhook] Creating/upserting user from checkout session for kinde_id:', obfuscateId(kindeId));
+
+          const now = new Date().toISOString();
+          const customerName = session.customer_details.name || '';
+          const nameParts = customerName.split(' ').filter(Boolean);
+          const firstName = nameParts[0] || session.customer_details.email.split('@')[0];
+          // Set lastName to null when not provided (single-word name) to avoid empty string DB constraint violations
+          const lastNamePart = nameParts.slice(1).join(' ');
+          const lastName = lastNamePart || null;
+
+          // Use upsert with onConflict to handle race conditions
+          // If a concurrent webhook already created the user, this will return the existing row
+          const { data: upsertedUser, error: upsertError } = await supabase
+            .from('users')
+            .upsert(
+              {
+                kinde_id: kindeId,
+                email: session.customer_details.email,
+                firstName: firstName,
+                lastName: lastName,
+                name: customerName || session.customer_details.email.split('@')[0],
+                stripe_customer_id: session.customer as string,
+                subscription_tier: 'free', // Will be upgraded below
+                createdAt: now,
+                updatedAt: now,
+              },
+              {
+                onConflict: 'kinde_id',
+                ignoreDuplicates: false, // Return the row even on conflict
+              }
+            )
+            .select('id')
+            .single();
+
+          if (upsertError) {
+            // If upsert failed (shouldn't happen with onConflict), try to fetch existing user
+            console.warn('[Webhook] Upsert failed, attempting to fetch existing user:', upsertError);
+            const { data: existingUser, error: fetchError } = await supabase
+              .from('users')
+              .select('id')
+              .eq('kinde_id', kindeId)
+              .single();
+
+            if (fetchError) {
+              console.error('[Webhook] Failed to create or fetch user:', fetchError);
+            } else if (existingUser) {
+              userId = existingUser.id;
+              console.log('[Webhook] Found existing user after upsert conflict:', userId);
+            }
+          } else if (upsertedUser) {
+            userId = upsertedUser.id;
+            console.log('[Webhook] User upserted successfully:', userId);
+
+            // Grant Newsletter access in Kinde for the user (non-blocking)
+            // Do this in the background to not delay webhook response
+            kindeManagementService.grantProductAccess(kindeId, 'newsletter')
+              .then(() => console.log('[Webhook] Granted Newsletter access to user:', obfuscateId(kindeId)))
+              .catch((kindeError) => {
+                console.error('[Webhook] Failed to grant Newsletter access (non-blocking):', kindeError);
+                // Don't fail webhook if Kinde access grant fails
+              });
+          }
+        }
+
         if (!userId) {
-          console.error('[Webhook] No user ID found for session:', session.id);
+          console.error('[Webhook] No user ID found and could not create user for session:', session.id);
           break;
+        }
+
+        // Also ensure Kinde access is granted for existing users
+        if (kindeId) {
+          try {
+            await kindeManagementService.grantProductAccess(kindeId, 'newsletter');
+            console.log('[Webhook] Ensured Newsletter access for user:', obfuscateId(kindeId));
+          } catch (kindeError) {
+            console.error('[Webhook] Failed to ensure Newsletter access (non-blocking):', kindeError);
+          }
         }
 
         // Only process subscription mode checkouts

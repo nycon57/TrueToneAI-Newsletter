@@ -2,9 +2,11 @@
 
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sparkles, ArrowRight, Mail, Newspaper, Zap, Users, ExternalLink } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowRight, Mail, Newspaper, ExternalLink, Copy, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { motion } from 'motion/react';
 
 export function UpgradeToNewsletterContent() {
   const searchParams = useSearchParams();
@@ -12,14 +14,33 @@ export function UpgradeToNewsletterContent() {
   const email = searchParams.get('email') || '';
 
   const features = [
-    { icon: Newspaper, label: 'AI Newsletter Generator', description: 'Create engaging newsletters in minutes' },
-    { icon: Zap, label: 'Industry News', description: 'Curated mortgage industry updates' },
-    { icon: Users, label: 'Client Engagement', description: 'Keep your clients informed and connected' },
-    { icon: Mail, label: 'Email Templates', description: 'Professional templates ready to customize' },
+    {
+      icon: Newspaper,
+      label: 'AI-Powered Content',
+      description: 'Industry news curated and personalized for your voice',
+      color: 'lilac'
+    },
+    {
+      icon: Copy,
+      label: 'One-Click Copy',
+      description: 'Instantly share scripts across email, video & social',
+      color: 'lilac'
+    },
+    {
+      icon: Mail,
+      label: 'Impact Per Platform',
+      description: 'AI crafts content optimized for email, video, and social',
+      color: 'lilac'
+    },
+    {
+      icon: TrendingUp,
+      label: 'Stay Ahead',
+      description: 'Weekly mortgage insights to keep your clients engaged',
+      color: 'lilac'
+    },
   ];
 
   const handleGetStarted = () => {
-    // Redirect to onboarding to set up their Newsletter account
     const onboardingUrl = new URL('/onboarding', window.location.origin);
     if (email) {
       onboardingUrl.searchParams.set('email', email);
@@ -29,107 +50,196 @@ export function UpgradeToNewsletterContent() {
   };
 
   const handleGoBack = () => {
-    // Redirect to TrueTone app
-    window.location.href = 'https://app.truetone.ai';
+    // Logout and redirect to home page
+    window.location.href = '/api/auth/logout';
+  };
+
+  const getColorClasses = (color: string) => {
+    const colors: Record<string, { bg: string; text: string; border: string }> = {
+      orchid: { bg: 'bg-orchid/20', text: 'text-orchid', border: 'border-orchid/30' },
+      lilac: { bg: 'bg-lilac/20', text: 'text-lilac', border: 'border-lilac/30' },
+      skyward: { bg: 'bg-skyward/20', text: 'text-skyward', border: 'border-skyward/30' },
+      lavender: { bg: 'bg-lavender/20', text: 'text-lavender', border: 'border-lavender/30' },
+    };
+    return colors[color] || colors.orchid;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 flex flex-col items-center justify-center relative overflow-hidden py-12">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-purple-500/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-indigo-500/10 rounded-full blur-3xl" />
+    <div className="min-h-screen bg-shadow flex flex-col items-center justify-center relative overflow-hidden py-12 px-4">
+      {/* Atmospheric background effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Primary gradient orbs */}
+        <motion.div
+          className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-indigo/30 rounded-full blur-[150px]"
+          animate={{
+            x: [0, 50, 0],
+            y: [0, 30, 0],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-orchid/20 rounded-full blur-[130px]"
+          animate={{
+            x: [0, -40, 0],
+            y: [0, -30, 0],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        />
+        {/* Accent glow */}
+        <motion.div
+          className="absolute top-1/2 right-0 w-[300px] h-[300px] bg-skyward/10 rounded-full blur-[100px]"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.1, 0.15, 0.1],
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 flex flex-col items-center w-full max-w-2xl px-4">
+      <div className="relative z-10 flex flex-col items-center w-full max-w-xl">
         {/* Logo */}
-        <div className="mb-8 flex items-center gap-2">
-          <Sparkles className="h-8 w-8 text-purple-400" />
-          <span className="text-2xl font-bold text-white">Spark Newsletter</span>
-        </div>
+        <motion.div
+          className="mb-10"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Image
+            src="/logo/landscape/TrueToneAI-Landscape-Logo-White.png"
+            alt="TrueTone AI"
+            width={220}
+            height={55}
+            className="h-12 w-auto"
+            priority
+          />
+        </motion.div>
 
-        {/* Card */}
-        <Card className="w-full bg-white/10 backdrop-blur-xl border-white/10 shadow-2xl">
-          <CardHeader className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500/30 to-indigo-500/30 rounded-full flex items-center justify-center">
-              <Newspaper className="h-8 w-8 text-purple-400" />
-            </div>
-            <CardTitle className="text-2xl font-bold text-white">
-              Welcome to Spark Newsletter
-            </CardTitle>
-            <CardDescription className="text-gray-300">
-              {source === 'truetone' ? (
-                <>
-                  We noticed you're a <span className="text-purple-400 font-medium">TrueTone AI</span> user.
-                  Get started with Spark to create engaging newsletters for your clients.
-                </>
-              ) : (
-                <>
-                  Get started with Spark Newsletter to create engaging newsletters for your clients.
-                </>
-              )}
-            </CardDescription>
-            {email && (
-              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full text-sm text-white/70">
-                <Mail className="h-3.5 w-3.5" />
-                {email}
+        {/* Main Card */}
+        <motion.div
+          className="w-full"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
+          <Card className="w-full bg-indigo/40 backdrop-blur-xl border border-orchid/20 shadow-2xl shadow-orchid/10 overflow-hidden">
+            {/* Top accent bar */}
+            <div className="h-1 bg-gradient-to-r from-orchid via-lilac to-skyward" />
+
+            <CardContent className="px-6 py-2 sm:px-8 sm:py-2">
+              {/* Header Section */}
+              <div className="text-center mb-8">
+                <h1 className="text-2xl sm:text-3xl font-heading font-bold text-white mb-3">
+                  {source === 'truetone' ? 'Upgrade to Spark' : 'Amplify Your Voice'}
+                </h1>
+
+                <p className="text-lavender/80 text-base max-w-md mx-auto leading-relaxed">
+                  {source === 'truetone' ? (
+                    <>
+                      As a TrueTone customer, you can now access{' '}
+                      <span className="text-skyward font-medium">Spark</span> — our newsletter platform that turns
+                      industry news into ready-to-share content in your authentic voice.
+                    </>
+                  ) : (
+                    <>
+                      Transform industry news into personalized content your clients will love with{' '}
+                      <span className="text-skyward font-medium">Spark</span>.
+                    </>
+                  )}
+                </p>
+
+                {email && (
+                  <motion.div
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-shadow/50 rounded-full border border-orchid/20"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <Mail className="h-4 w-4 text-lilac" />
+                    <span className="text-sm text-lavender/90">{email}</span>
+                  </motion.div>
+                )}
               </div>
-            )}
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Features Grid */}
-            <div className="grid grid-cols-2 gap-3">
-              {features.map((feature) => (
-                <div
-                  key={feature.label}
-                  className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-purple-500/30 transition-colors"
-                >
-                  <feature.icon className="h-5 w-5 text-purple-400 mb-2" />
-                  <h3 className="font-medium text-white text-sm">{feature.label}</h3>
-                  <p className="text-xs text-gray-400 mt-1">{feature.description}</p>
-                </div>
-              ))}
-            </div>
 
-            {/* Buttons */}
-            <div className="space-y-3">
-              <Button
-                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg h-12 text-base font-medium"
-                onClick={handleGetStarted}
+              {/* Features Grid */}
+              <div className="grid grid-cols-2 gap-3 mb-8">
+                {features.map((feature, index) => {
+                  const colors = getColorClasses(feature.color);
+                  return (
+                    <motion.div
+                      key={feature.label}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 + index * 0.1 }}
+                      className={`group p-4 rounded-xl bg-shadow/40 border ${colors.border} hover:bg-shadow/60 hover:border-opacity-50 transition-all duration-300`}
+                    >
+                      <div className={`w-9 h-9 rounded-lg ${colors.bg} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
+                        <feature.icon className={`h-4.5 w-4.5 ${colors.text}`} />
+                      </div>
+                      <h3 className="font-heading font-semibold text-white text-sm mb-1">{feature.label}</h3>
+                      <p className="text-xs text-lavender/60 leading-relaxed">{feature.description}</p>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {/* CTA Buttons */}
+              <motion.div
+                className="space-y-3"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
               >
-                Get Started with Spark
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-
-              {source === 'truetone' && (
                 <Button
-                  variant="outline"
-                  className="w-full border-white/20 text-white hover:bg-white/10 hover:border-white/30 h-12"
-                  onClick={handleGoBack}
+                  className="w-full bg-gradient-to-r from-orchid to-indigo hover:from-orchid/90 hover:to-indigo/90 text-white shadow-lg shadow-orchid/20 h-12 text-base font-heading font-semibold transition-all duration-300 hover:shadow-xl hover:shadow-orchid/30 hover:scale-[1.02]"
+                  onClick={handleGetStarted}
                 >
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Return to TrueTone AI
+                  Get Started Free
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              )}
-            </div>
 
-            {/* Help Link */}
-            <div className="text-center">
-              <p className="text-sm text-gray-400">
-                Have questions?{' '}
-                <Link href="mailto:sparksupport@truetone.ai" className="text-purple-400 hover:text-purple-300 underline">
-                  Contact support
-                </Link>
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+                {source === 'truetone' && (
+                  <Button
+                    variant="outline"
+                    className="w-full border-lavender/20 bg-transparent text-lavender hover:bg-lavender/10 hover:border-lavender/30 hover:text-white h-11 font-medium transition-all duration-300"
+                    onClick={handleGoBack}
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Sign out
+                  </Button>
+                )}
+              </motion.div>
 
-        {/* Footer note */}
-        <p className="mt-6 text-center text-sm text-white/60">
-          Start creating newsletters in minutes. Free to try.
-        </p>
+              {/* Help Link */}
+              <motion.div
+                className="text-center mt-6 pt-6 border-t border-orchid/10"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.9 }}
+              >
+                <p className="text-sm text-lavender/50">
+                  Questions?{' '}
+                  <Link
+                    href="mailto:support@truetone.ai"
+                    className="text-lilac hover:text-lavender underline underline-offset-2 transition-colors"
+                  >
+                    Contact support
+                  </Link>
+                </p>
+              </motion.div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Footer */}
+        <motion.p
+          className="mt-8 text-center text-sm text-lavender/40"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+        >
+          Start creating in minutes. No credit card required.
+        </motion.p>
       </div>
     </div>
   );

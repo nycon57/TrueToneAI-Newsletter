@@ -65,7 +65,7 @@ export function UpgradePrompt() {
         </Link>
 
         <p className="text-sm text-gray-500 mt-4">
-          Starting at $29/month • Cancel anytime
+          Starting at $19.95/month • Cancel anytime
         </p>
       </CardContent>
     </Card>

@@ -47,7 +47,7 @@ const PRICING_TIERS = [
   },
   {
     name: 'Pro',
-    price: '$29',
+    price: '$19.95',
     period: 'per month',
     description: 'Perfect for active loan officers',
     features: [

@@ -1,24 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe, STRIPE_CONFIG } from '@/lib/stripe/config';
-import { getApiUser } from '@/lib/api/auth';
+import { getKindeUserOnly, getApiUserWithoutAccessCheck } from '@/lib/api/auth';
+import { obfuscateId } from '@/lib/utils';
 
 /**
  * Stripe Checkout Session Creation
  * Creates a checkout session for users to subscribe to paid tier
+ *
+ * Uses lightweight auth that doesn't require newsletter access or DB user,
+ * since this is used during onboarding before user has access.
  */
 
 export async function POST(req: NextRequest) {
   try {
     console.log('[Checkout] Starting checkout process...');
-    const user = await getApiUser();
-    console.log('[Checkout] User authenticated:', {
-      id: user.id,
-      email: user.email,
-      stripe_customer_id: user.stripe_customer_id,
-      subscription_tier: user.subscription_tier
+
+    // Get Kinde user (doesn't require DB user or newsletter access)
+    const kindeUser = await getKindeUserOnly();
+    console.log('[Checkout] Kinde user authenticated:', {
+      kinde_id: obfuscateId(kindeUser.kinde_id),
+      email: kindeUser.email,
     });
-    const { returnUrl } = await req.json();
+
+    // Try to get DB user if they exist (for existing customers)
+    const dbUser = await getApiUserWithoutAccessCheck();
+    console.log('[Checkout] DB user:', dbUser ? {
+      id: dbUser.id,
+      stripe_customer_id: dbUser.stripe_customer_id,
+      subscription_tier: dbUser.subscription_tier
+    } : 'Not found (onboarding user)');
+
+    const { returnUrl, cancelUrl } = await req.json();
     console.log('[Checkout] Return URL:', returnUrl);
+    console.log('[Checkout] Cancel URL:', cancelUrl);
 
     if (!process.env.STRIPE_PRICE_ID_PAID_TIER) {
       console.error('[Checkout] STRIPE_PRICE_ID_PAID_TIER not configured');
@@ -28,9 +42,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create checkout session without pre-creating customer
-    // Stripe will create the customer during successful checkout
-    // The webhook will then save the customer ID to our database
+    // Create checkout session
+    // For onboarding users without DB record, use kinde_id as identifier
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sessionParams: any = {
       payment_method_types: ['card'],
@@ -42,17 +55,17 @@ export async function POST(req: NextRequest) {
         },
       ],
       success_url: returnUrl || `${STRIPE_CONFIG.success_url}?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: returnUrl || STRIPE_CONFIG.cancel_url,
+      cancel_url: cancelUrl || STRIPE_CONFIG.cancel_url,
       metadata: {
-        userId: user.id,
-        kinde_id: user.kinde_id || '',
+        userId: dbUser?.id || '',
+        kinde_id: kindeUser.kinde_id,
       },
       allow_promotion_codes: true,
       billing_address_collection: 'required',
       subscription_data: {
         metadata: {
-          userId: user.id,
-          kinde_id: user.kinde_id || '',
+          userId: dbUser?.id || '',
+          kinde_id: kindeUser.kinde_id,
         },
         // 7-day free trial
         trial_period_days: 7,
@@ -61,17 +74,17 @@ export async function POST(req: NextRequest) {
 
     // If user already has a Stripe customer ID, use it
     // Otherwise, provide email and let Stripe create the customer
-    if (user.stripe_customer_id) {
-      console.log('[Checkout] Using existing Stripe customer:', user.stripe_customer_id);
-      sessionParams.customer = user.stripe_customer_id;
+    if (dbUser?.stripe_customer_id) {
+      console.log('[Checkout] Using existing Stripe customer:', dbUser.stripe_customer_id);
+      sessionParams.customer = dbUser.stripe_customer_id;
     } else {
-      console.log('[Checkout] Will create new Stripe customer during checkout for:', user.email);
-      sessionParams.customer_email = user.email;
+      console.log('[Checkout] Will create new Stripe customer during checkout for:', kindeUser.email);
+      sessionParams.customer_email = kindeUser.email;
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams);
 
-    console.log('[Checkout] Created checkout session:', session.id, 'for user:', user.id);
+    console.log('[Checkout] Created checkout session:', session.id, 'for kinde_id:', obfuscateId(kindeUser.kinde_id));
 
     return NextResponse.json({
       sessionId: session.id,

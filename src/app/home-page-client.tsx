@@ -34,9 +34,7 @@ import type { PersonalizationType } from '@/components/filters/PersonalizationsM
 import dynamic from 'next/dynamic';
 import { InfiniteScroll } from '@/components/pagination/InfiniteScroll';
 
-const ArticleCard = dynamic(() => import('@/components/article/ArticleCard').then(mod => ({ default: mod.ArticleCard })), {
-  ssr: true,
-});
+import { ArticleCard } from '@/components/article/ArticleCard';
 
 const SimpleArticleModal = dynamic(() => import('@/components/article/SimpleArticleModal').then(mod => ({ default: mod.SimpleArticleModal })), {
   ssr: true,

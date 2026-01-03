@@ -9,27 +9,73 @@ import { toast } from 'sonner';
 import React from 'react';
 
 export function SubscriptionStep() {
-  const { previousStep, completeOnboarding, isSubmitting, updateData } = useOnboarding();
+  const { data, previousStep, completeOnboarding, isSubmitting, updateData } = useOnboarding();
   const { organization } = useKindeBrowserClient();
   const [isProcessing, setIsProcessing] = React.useState(false);
 
   const handleSelectPlan = async (planId?: string) => {
     try {
+      setIsProcessing(true);
+      console.log('[Subscription] handleSelectPlan called with planId:', planId);
+
       // Validate environment variable
       const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PAID_TIER;
+      console.log('[Subscription] NEXT_PUBLIC_STRIPE_PRICE_ID_PAID_TIER:', priceId ? 'set' : 'MISSING');
       if (!priceId) {
         console.error('❌ Missing NEXT_PUBLIC_STRIPE_PRICE_ID_PAID_TIER environment variable');
         toast.error('Payment configuration error. Please contact support.');
+        setIsProcessing(false);
         return;
       }
 
-      // Set billing data for paid plans (await if updateData is async)
+      // Set billing data for paid plans
       if (planId) {
         await updateData('selectedPlan', planId);
         await updateData('billingType', planId === 'newsletter_enterprise' ? 'enterprise' : 'paid_plan');
       }
 
-      // Call Stripe Checkout API to create a checkout session
+      // IMPORTANT: Create user in database BEFORE Stripe checkout
+      // This ensures the webhook can find and update the user after payment
+      console.log('[Subscription] Calling /api/user/onboarding with data:', {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        hasTranscript: !!data.transcript,
+      });
+      const onboardingResponse = await fetch('/api/user/onboarding', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          profileData: {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            title: data.jobTitle,
+            company: data.company || '',
+          },
+          transcript: data.transcript,
+          analysisResults: data.voiceAnalysis,
+          truetoneSettings: data.truetoneSettings,
+          categoryPreferences: data.categoryPreferences,
+          tagPreferences: data.tagPreferences,
+          billingData: {
+            selectedPlan: planId || 'newsletter_pro',
+            billingType: planId === 'newsletter_enterprise' ? 'enterprise' : 'paid_plan',
+          },
+        }),
+      });
+
+      if (!onboardingResponse.ok) {
+        const error = await onboardingResponse.json();
+        console.error('❌ Failed to create user before checkout:', error);
+        toast.error('Failed to save your profile. Please try again.');
+        setIsProcessing(false);
+        return;
+      }
+
+      console.log('✅ User created/updated before Stripe checkout');
+
+      // Now call Stripe Checkout API to create a checkout session
       const baseUrl = window.location.origin;
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
@@ -38,6 +84,7 @@ export function SubscriptionStep() {
         },
         body: JSON.stringify({
           returnUrl: `${baseUrl}/onboarding/success`,
+          cancelUrl: `${baseUrl}/onboarding?step=5`,
           priceId,
           metadata: {
             planId: planId || 'newsletter_pro',
@@ -50,6 +97,7 @@ export function SubscriptionStep() {
         const error = await response.json();
         console.error('❌ Stripe Checkout error:', error);
         toast.error('Failed to create checkout session. Please try again.');
+        setIsProcessing(false);
         return;
       }
 
@@ -58,6 +106,7 @@ export function SubscriptionStep() {
       if (error) {
         console.error('❌ Stripe Checkout error:', error);
         toast.error('Failed to create checkout session. Please try again.');
+        setIsProcessing(false);
         return;
       }
 
@@ -68,6 +117,7 @@ export function SubscriptionStep() {
     } catch (error) {
       console.error('❌ Error creating checkout session:', error);
       toast.error('An error occurred. Please try again.');
+      setIsProcessing(false);
     }
   };
 
@@ -162,7 +212,7 @@ export function SubscriptionStep() {
               <div className="mb-4 mt-4">
                 <h3 className="text-2xl font-heading font-bold text-gray-900 mb-1">Spark Pro</h3>
                 <div className="flex items-baseline gap-1 mb-2">
-                  <span className="text-4xl font-heading font-bold bg-gradient-to-r from-orchid to-indigo bg-clip-text text-transparent">$29</span>
+                  <span className="text-4xl font-heading font-bold bg-gradient-to-r from-orchid to-indigo bg-clip-text text-transparent">$19.95</span>
                   <span className="text-gray-600">/month</span>
                 </div>
                 <p className="text-sm font-semibold text-orchid">🎁 7-day free trial included</p>

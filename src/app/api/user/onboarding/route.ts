@@ -34,9 +34,11 @@ const OnboardingSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  console.log('[Onboarding API] POST request received');
   try {
     const { getUser } = getKindeServerSession();
     const kindeUser = await getUser();
+    console.log('[Onboarding API] Kinde user:', kindeUser?.id || 'Not authenticated');
 
     if (!kindeUser?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -54,6 +56,7 @@ export async function POST(request: NextRequest) {
     const validationResult = OnboardingSchema.safeParse(body);
 
     if (!validationResult.success) {
+      console.error('[Onboarding API] Validation failed:', validationResult.error.errors);
       return NextResponse.json(
         {
           error: 'Invalid request data',
@@ -64,6 +67,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { profileData, transcript, analysisResults, truetoneSettings, categoryPreferences, tagPreferences, billingData } = validationResult.data;
+    console.log('[Onboarding API] Validated data for:', profileData.firstName, profileData.lastName);
 
     const supabase = await createClient();
 

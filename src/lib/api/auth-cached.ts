@@ -3,9 +3,26 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { createClient } from '@/lib/supabase/server';
 import { kindeManagementService } from '@/lib/services/kinde-management.service';
 import { CrossProductAccessError } from '@/lib/errors/cross-product-access.error';
+import { obfuscateId } from '@/lib/utils';
 
 // Re-export for backwards compatibility
 export { CrossProductAccessError };
+
+/**
+ * Custom error for transient API failures during access checks.
+ * This allows callers to distinguish between "no access" (definitive) and
+ * "couldn't check access" (transient failure).
+ */
+export class AccessCheckFailedError extends Error {
+  constructor(
+    message: string,
+    public readonly kindeId: string,
+    public readonly cause?: unknown
+  ) {
+    super(message);
+    this.name = 'AccessCheckFailedError';
+  }
+}
 
 /**
  * Cached version of getApiUser that caches the user lookup per request.
@@ -22,6 +39,48 @@ export const getCachedApiUser = cache(async () => {
     return null;
   }
 
+  // ============================================================================
+  // MULTI-PRODUCT ACCESS CONTROL
+  // Check has_newsletter_access FIRST - before database lookup
+  // This ensures users without access are gated even if not in database yet
+  // IMPORTANT: API failures are treated differently from "no access" responses
+  // to avoid incorrectly blocking users during transient outages
+  // ============================================================================
+  let hasNewsletterAccess: boolean;
+  try {
+    hasNewsletterAccess = await kindeManagementService.checkProductAccess(
+      kindeUser.id,
+      'newsletter'
+    );
+    console.log(`[AuthCache] Newsletter access check for ${obfuscateId(kindeUser.id)}: ${hasNewsletterAccess}`);
+  } catch (error) {
+    // Log with full context for debugging
+    console.error('[AuthCache] Newsletter access check failed - API error:', {
+      kindeId: obfuscateId(kindeUser.id),
+      email: kindeUser.email,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+
+    // IMPORTANT: Do NOT default to false on API failure - this would incorrectly
+    // block legitimate users during Kinde API outages. Instead, throw a specific
+    // error so callers can handle transient failures appropriately (retry, fallback, etc.)
+    throw new AccessCheckFailedError(
+      'Failed to verify newsletter access due to API error',
+      kindeUser.id,
+      error
+    );
+  }
+
+  if (!hasNewsletterAccess) {
+    console.log('[AuthCache] User does not have Newsletter access, denying');
+    throw new CrossProductAccessError(
+      'User does not have Newsletter access',
+      'newsletter',
+      kindeUser.email ?? undefined
+    );
+  }
+
   const supabase = await createClient();
 
   // Check if user exists
@@ -31,95 +90,16 @@ export const getCachedApiUser = cache(async () => {
     .eq('kinde_id', kindeUser.id)
     .single();
 
+  // User not found in database - they need to complete onboarding first
   if (fetchError && fetchError.code === 'PGRST116') {
-    // ============================================================================
-    // MULTI-PRODUCT ACCESS CONTROL
-    // Before creating a new user, check if this is a cross-product user
-    // ============================================================================
-    let hasNewsletterAccess = false;
-    try {
-      hasNewsletterAccess = await kindeManagementService.checkProductAccess(
-        kindeUser.id,
-        'newsletter'
-      );
-      console.log(`[AuthCache] Newsletter access check for ${kindeUser.id}: ${hasNewsletterAccess}`);
-    } catch (error) {
-      console.warn('[AuthCache] Could not check Newsletter access, continuing:', error);
-    }
+    console.log('[AuthCache] User not found in database, returning null');
+    return null;
+  }
 
-    // If user exists in Kinde but not in our database, and doesn't have Newsletter access,
-    // they might be a TrueTone user trying to access Newsletter
-    if (!hasNewsletterAccess) {
-      try {
-        const kindeUserDetails = await kindeManagementService.getUser(kindeUser.id);
-        if (kindeUserDetails && kindeUserDetails.created_on) {
-          // User exists in Kinde but not in Newsletter database - cross-product user
-          console.log('[AuthCache] Cross-product user detected (TrueTone → Newsletter)');
-          throw new CrossProductAccessError(
-            'User does not have Newsletter access',
-            'truetone',
-            kindeUser.email ?? undefined
-          );
-        }
-      } catch (error) {
-        if (error instanceof CrossProductAccessError) {
-          throw error;
-        }
-        console.warn('[AuthCache] Could not verify Kinde user details, proceeding with creation:', error);
-      }
-    }
-
-    // User doesn't exist, create them on first login
-    const now = new Date().toISOString();
-    const { data: newUser, error: insertError } = await supabase
-      .from('users')
-      .insert({
-        kinde_id: kindeUser.id,
-        email: kindeUser.email,
-        firstName: kindeUser.given_name || 'Not Set',
-        lastName: kindeUser.family_name || 'Not Set',
-        name: `${kindeUser.given_name || ''} ${kindeUser.family_name || ''}`.trim() || 'Not Set',
-        subscription_tier: 'free',
-        monthly_generation_limit: 3, // Lifetime limit for free tier
-        monthly_generations_used: 0,
-        generation_reset_date: null, // NULL for free tier (lifetime limit, no reset)
-        createdAt: now,
-        updatedAt: now,
-      })
-      .select('*')
-      .single();
-
-    if (insertError) {
-      console.error('[AuthCache] Failed to create new user:', {
-        kindeId: kindeUser.id,
-        email: kindeUser.email,
-        error: insertError.message,
-        code: insertError.code,
-        details: insertError.details,
-        hint: insertError.hint
-      });
-
-      throw new Error(`Failed to create user: ${insertError.message}`);
-    }
-
-    if (!newUser) {
-      console.error('[AuthCache] User creation returned null despite no error:', {
-        kindeId: kindeUser.id,
-        email: kindeUser.email
-      });
-
-      throw new Error('User creation failed: returned null');
-    }
-
-    // Grant Newsletter access to the new user since they're signing up through Newsletter
-    try {
-      await kindeManagementService.grantProductAccess(kindeUser.id, 'newsletter');
-      console.log('[AuthCache] Granted Newsletter access to new user:', kindeUser.id);
-    } catch (error) {
-      console.error('[AuthCache] Failed to grant Newsletter access (non-blocking):', error);
-    }
-
-    return newUser;
+  // Handle other database errors
+  if (fetchError) {
+    console.error('[AuthCache] Database error fetching user:', fetchError);
+    return null;
   }
 
   return user;
@@ -128,14 +108,19 @@ export const getCachedApiUser = cache(async () => {
 /**
  * Non-throwing version of getCachedApiUser
  * Returns null if user is not authenticated instead of throwing
- * Note: CrossProductAccessError is re-thrown for proper handling
+ * Note: CrossProductAccessError and AccessCheckFailedError are re-thrown for proper handling
  */
 export const getCachedApiUserSafe = cache(async () => {
   try {
     return await getCachedApiUser();
   } catch (error) {
-    // Re-throw CrossProductAccessError for proper handling
+    // Re-throw CrossProductAccessError for proper handling (definitive "no access")
     if (error instanceof CrossProductAccessError) {
+      throw error;
+    }
+    // Re-throw AccessCheckFailedError for proper handling (transient API failure)
+    // This allows callers to implement retry logic or fail-open strategies
+    if (error instanceof AccessCheckFailedError) {
       throw error;
     }
     // Log the error with context for debugging

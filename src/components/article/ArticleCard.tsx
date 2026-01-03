@@ -8,7 +8,8 @@ import {
   staggeredItem,
   expandableContent,
 } from '@/lib/motion';
-import { CheckIcon, Lightbulb, Video, Mail, Share2, Sparkles, Tag, BookOpen } from 'lucide-react';
+import { CheckIcon, Lightbulb, Video, Mail, Share2, Sparkles, Tag, BookOpen, Calendar } from 'lucide-react';
+import { format } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,21 @@ import { getCategoryById } from '@/lib/constants/categories';
 import { cn } from '@/lib/utils';
 import { useArticleModal } from '@/lib/context';
 import { toast } from 'sonner';
+
+/**
+ * Safely format a published date string.
+ * Returns formatted date or fallback if invalid.
+ */
+function formatPublishedDate(dateString: string | undefined | null): string | null {
+  if (!dateString) return null;
+
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    return null; // Invalid date, return null to hide the element
+  }
+
+  return format(date, 'MMMM d, yyyy');
+}
 
 interface Article {
   id: string;
@@ -486,9 +502,20 @@ export function ArticleCard({ article, isAuthenticated, isPaid, userGenerationSt
         <h3 className="text-2xl font-bold text-gray-900 mb-3 leading-tight">
           {article.title}
         </h3>
-        <p className="text-gray-600 leading-relaxed mb-2">
+        <p className="text-gray-600 leading-relaxed mb-3">
           {article.summary}
         </p>
+
+        {/* Published date */}
+        {(() => {
+          const formattedDate = formatPublishedDate(article.published_at);
+          return formattedDate ? (
+            <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-4">
+              <Calendar className="h-4 w-4" />
+              <span>{formattedDate}</span>
+            </div>
+          ) : null;
+        })()}
 
         {/* Small Read Full Article link */}
         <button
