@@ -204,6 +204,66 @@ export async function getApiUser() {
   return user;
 }
 
+// Voice Analysis Type Definitions
+export interface VoicePersonalityTraits {
+  openness?: number;
+  conscientiousness?: number;
+  extraversion?: number;
+  agreeableness?: number;
+  neuroticism?: number;
+  dominant_traits?: string[];
+  secondary_traits?: string[];
+}
+
+export interface VoiceCommunicationStyle {
+  primary_style?: string;
+  formality_level?: 'casual' | 'professional' | 'formal';
+  directness?: 'direct' | 'indirect' | 'balanced';
+  storytelling_tendency?: 'high' | 'medium' | 'low';
+  question_usage?: 'frequent' | 'moderate' | 'rare';
+  call_to_action_style?: string;
+}
+
+export interface VoiceSpeechPatterns {
+  filler_words?: string[];
+  transition_phrases?: string[];
+  emphasis_patterns?: string[];
+  sentence_length?: 'short' | 'medium' | 'long' | 'varied';
+  punctuation_style?: string;
+  paragraph_structure?: string;
+}
+
+export interface VoiceProfessionalIndicators {
+  industry_terms?: string[];
+  expertise_level?: 'beginner' | 'intermediate' | 'expert';
+  credibility_markers?: string[];
+  authority_style?: string;
+  client_focus?: 'high' | 'medium' | 'low';
+}
+
+export interface VoiceContentPreferences {
+  preferred_formats?: string[];
+  content_length_preference?: 'concise' | 'detailed' | 'comprehensive';
+  emoji_usage?: 'none' | 'minimal' | 'moderate' | 'frequent';
+  hashtag_style?: string;
+  cta_placement?: 'beginning' | 'middle' | 'end' | 'multiple';
+}
+
+export interface VoiceUniqueMarkers {
+  signature_phrases?: string[];
+  recurring_themes?: string[];
+  unique_expressions?: string[];
+  personal_brand_elements?: string[];
+}
+
+export interface VoiceAnalysisMetadata {
+  analyzed_at?: string;
+  analysis_version?: string;
+  source?: 'voice' | 'text' | 'combined';
+  confidence_score?: number;
+  sample_size?: number;
+}
+
 export interface ApiUser {
   id: string;
   kinde_id: string;
@@ -233,13 +293,13 @@ export interface ApiUser {
   // Voice analysis
   voice_transcript?: string;
   user_persona?: string;
-  personality_traits?: any;
-  communication_style?: any;
-  speech_patterns?: any;
-  professional_indicators?: any;
-  content_generation_preferences?: any;
-  unique_voice_markers?: any;
-  analysis_metadata?: any;
+  personality_traits?: VoicePersonalityTraits;
+  communication_style?: VoiceCommunicationStyle;
+  speech_patterns?: VoiceSpeechPatterns;
+  professional_indicators?: VoiceProfessionalIndicators;
+  content_generation_preferences?: VoiceContentPreferences;
+  unique_voice_markers?: VoiceUniqueMarkers;
+  analysis_metadata?: VoiceAnalysisMetadata;
   // User preferences
   category_preferences?: string[];
   saved_article_ids?: string[];

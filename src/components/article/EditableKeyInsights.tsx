@@ -328,7 +328,7 @@ export function EditableKeyInsights({
 
                 return (
                   <motion.div
-                    key={index}
+                    key={`edit-insight-${index}-${insight.slice(0, 10)}`}
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
@@ -433,7 +433,7 @@ export function EditableKeyInsights({
             >
               {insights.length > 0 ? (
                 insights.map((insight, idx) => (
-                  <div key={idx} className="flex items-start gap-2">
+                  <div key={`display-insight-${idx}-${insight.slice(0, 15)}`} className="flex items-start gap-2">
                     <Check className="h-4 w-4 text-purple-600 mt-1 flex-shrink-0" />
                     <span className="text-sm text-gray-700">{insight}</span>
                   </div>

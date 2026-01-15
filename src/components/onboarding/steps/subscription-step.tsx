@@ -16,13 +16,19 @@ export function SubscriptionStep() {
   const handleSelectPlan = async (planId?: string) => {
     try {
       setIsProcessing(true);
-      console.log('[Subscription] handleSelectPlan called with planId:', planId);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Subscription] handleSelectPlan called with planId:', planId);
+      }
 
       // Validate environment variable
       const priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PAID_TIER;
-      console.log('[Subscription] NEXT_PUBLIC_STRIPE_PRICE_ID_PAID_TIER:', priceId ? 'set' : 'MISSING');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Subscription] NEXT_PUBLIC_STRIPE_PRICE_ID_PAID_TIER:', priceId ? 'set' : 'MISSING');
+      }
       if (!priceId) {
-        console.error('❌ Missing NEXT_PUBLIC_STRIPE_PRICE_ID_PAID_TIER environment variable');
+        if (process.env.NODE_ENV === 'development') {
+          console.error('❌ Missing NEXT_PUBLIC_STRIPE_PRICE_ID_PAID_TIER environment variable');
+        }
         toast.error('Payment configuration error. Please contact support.');
         setIsProcessing(false);
         return;

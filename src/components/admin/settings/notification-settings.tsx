@@ -73,8 +73,8 @@ export function NotificationSettings({ settings, onSave, isSaving }: Notificatio
     setHasChanges(true);
   };
 
-  const handleRemoveEmail = (index: number) => {
-    setAdminEmails(adminEmails.filter((_, i) => i !== index));
+  const handleRemoveEmail = (emailToRemove: string) => {
+    setAdminEmails(adminEmails.filter((e) => e !== emailToRemove));
     setHasChanges(true);
   };
 
@@ -150,15 +150,15 @@ export function NotificationSettings({ settings, onSave, isSaving }: Notificatio
 
           {adminEmails.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {adminEmails.map((email, index) => (
+              {adminEmails.map((email) => (
                 <Badge
-                  key={index}
+                  key={email}
                   variant="secondary"
                   className="flex items-center gap-1 py-1.5 px-3"
                 >
                   {email}
                   <button
-                    onClick={() => handleRemoveEmail(index)}
+                    onClick={() => handleRemoveEmail(email)}
                     className="ml-1 hover:text-destructive transition-colors"
                     aria-label={`Remove ${email}`}
                   >

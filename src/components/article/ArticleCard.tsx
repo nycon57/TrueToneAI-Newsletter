@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   springs,
@@ -98,7 +98,7 @@ interface ArticleCardProps {
   onGenerationComplete?: () => void;
 }
 
-export function ArticleCard({ article, isAuthenticated, isPaid, userGenerationStats, onGenerationComplete }: ArticleCardProps) {
+export const ArticleCard = memo(function ArticleCard({ article, isAuthenticated, isPaid, userGenerationStats, onGenerationComplete }: ArticleCardProps) {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const { openArticle } = useArticleModal();
@@ -201,7 +201,7 @@ export function ArticleCard({ article, isAuthenticated, isPaid, userGenerationSt
           </div>
           <div className="space-y-2">
             {defaultInsights.map((insight, idx) => (
-              <div key={idx} className="flex items-start gap-2">
+              <div key={`insight-${idx}-${insight.slice(0, 20)}`} className="flex items-start gap-2">
                 <CheckIcon className="h-4 w-4 text-purple-600 mt-1 flex-shrink-0" />
                 <span className="text-sm text-gray-700">{insight}</span>
               </div>
@@ -681,4 +681,7 @@ export function ArticleCard({ article, isAuthenticated, isPaid, userGenerationSt
     </Card>
     </motion.div>
   );
-}
+});
+
+// Display name for React DevTools
+ArticleCard.displayName = 'ArticleCard';

@@ -155,16 +155,25 @@ export function HomePageClient({
 
   // Fetch locked generations count for free users
   useEffect(() => {
-    if (isAuthenticated && isFreeUser) {
-      fetch('/api/user/locked-generations')
-        .then(res => res.json())
-        .then(data => {
-          if (data.count) {
-            setLockedGenerationsCount(data.count);
-          }
-        })
-        .catch(err => console.error('Error fetching locked generations:', err));
-    }
+    if (!isAuthenticated || !isFreeUser) return;
+
+    const controller = new AbortController();
+
+    fetch('/api/user/locked-generations', { signal: controller.signal })
+      .then(res => res.json())
+      .then(data => {
+        if (data.count) {
+          setLockedGenerationsCount(data.count);
+        }
+      })
+      .catch(err => {
+        // Ignore abort errors - they're expected on cleanup
+        if (err.name !== 'AbortError') {
+          console.error('Error fetching locked generations:', err);
+        }
+      });
+
+    return () => controller.abort();
   }, [isAuthenticated, isFreeUser]);
 
   // Calculate generation stats from user data
@@ -218,14 +227,15 @@ export function HomePageClient({
   // Update articles when filter results come in
   useEffect(() => {
     if (articlesData?.articles) {
-      // Check if we're paginating (have existing articles) or filtering (starting fresh)
-      if (allArticles.length > 0 && cursor !== null) {
+      // Check if we're paginating (cursor exists) or filtering (starting fresh)
+      if (cursor !== null) {
         // Pagination: append new articles, avoiding duplicates
         setAllArticles(prev => {
           const existingIds = new Set(prev.map(a => a.id));
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const newArticles = articlesData.articles.filter((a: any) => !existingIds.has(a.id));
-          return [...prev, ...newArticles];
+          // Only append if we actually have new articles
+          return newArticles.length > 0 ? [...prev, ...newArticles] : prev;
         });
       } else {
         // Initial load or filter change: replace articles
@@ -233,7 +243,7 @@ export function HomePageClient({
       }
       setHasMore(articlesData.has_more || false);
     }
-  }, [articlesData, cursor, allArticles.length]);
+  }, [articlesData, cursor]); // Removed allArticles.length to prevent potential loops
 
   // Always display accumulated articles (starting with initial articles)
   const articles = allArticles;
@@ -268,7 +278,7 @@ export function HomePageClient({
   }, [setSearchParam, setSortParam, setCategoriesParam, setTagsParam, setPersonalizationsParam]);
 
   // Handle filter changes with transitions for smooth updates (for old filters)
-  const handleFilterChange = (newFilters: Record<string, string>) => {
+  const handleFilterChange = useCallback((newFilters: Record<string, string>) => {
     startTransition(() => {
       const params = new URLSearchParams();
       Object.entries({ ...filters, ...newFilters }).forEach(([key, value]) => {
@@ -276,7 +286,7 @@ export function HomePageClient({
       });
       router.push(`/?${params.toString()}`);
     });
-  };
+  }, [filters, router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-lavender/20 via-white to-lavender/20">
@@ -431,13 +441,12 @@ export function HomePageClient({
               {articles.map((article: any, index: number) => (
                 <motion.div
                   key={article.id}
-                  layout
-                  initial={{ opacity: 0, y: 20, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.2 } }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{
-                    ...springs.gentle,
-                    delay: Math.min(index * stagger.fast, 0.25),
+                    duration: 0.2,
+                    delay: Math.min(index * 0.05, 0.15),
                   }}
                 >
                   <ArticleCard
