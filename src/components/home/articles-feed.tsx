@@ -32,7 +32,7 @@ async function ArticlesData({ searchParams }: ArticlesFeedProps) {
   }
 
   // Fetch from API (with ISR caching)
-  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const response = await fetch(`${baseUrl}/api/articles?${params.toString()}`, {
     next: { revalidate: 60 }, // ISR: revalidate every 60 seconds
   });

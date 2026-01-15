@@ -212,7 +212,7 @@ function generateNewsletterHTML(data: any): string {
                 <li>Generate email templates, social posts, and video scripts</li>
                 <li>Publish directly to your social media accounts</li>
             </ul>
-            <p><a href="${process.env.NEXT_PUBLIC_URL}/dashboard" style="color: #4f46e5; text-decoration: none; font-weight: bold;">Open Dashboard →</a></p>
+            <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" style="color: #4f46e5; text-decoration: none; font-weight: bold;">Open Dashboard →</a></p>
         </div>
     </div>
 
@@ -220,7 +220,7 @@ function generateNewsletterHTML(data: any): string {
         <p>This email was sent to ${user.email}</p>
         <div class="unsubscribe">
             <a href="${unsubscribeUrl}">Unsubscribe</a> |
-            <a href="${process.env.NEXT_PUBLIC_URL}/settings">Manage Preferences</a>
+            <a href="${process.env.NEXT_PUBLIC_APP_URL}/settings">Manage Preferences</a>
         </div>
         <p style="margin-top: 10px;">© TrueTone AI - Personalized mortgage marketing content</p>
     </div>

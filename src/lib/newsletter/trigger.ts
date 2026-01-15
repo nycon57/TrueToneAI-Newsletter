@@ -154,7 +154,7 @@ export async function triggerNewsletterSend(newsletterId: string): Promise<{
 }> {
   try {
     const cronSecret = process.env.CRON_SECRET;
-    const appUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
     if (!cronSecret) {
       console.error('CRON_SECRET not configured');

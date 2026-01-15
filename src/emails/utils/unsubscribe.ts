@@ -76,12 +76,12 @@ export function verifyUnsubscribeToken(token: string): { userId: string; timesta
  * Generate a complete unsubscribe URL with token
  *
  * @param userId - The unique identifier for the user
- * @param baseUrl - The base URL of the application (defaults to NEXT_PUBLIC_URL)
+ * @param baseUrl - The base URL of the application (defaults to NEXT_PUBLIC_APP_URL)
  * @returns Complete unsubscribe URL
  */
 export function generateUnsubscribeUrl(userId: string, baseUrl?: string): string {
   const token = generateUnsubscribeToken(userId);
-  const base = baseUrl || process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+  const base = baseUrl || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   return `${base}/api/email/unsubscribe?token=${token}`;
 }
 
@@ -90,11 +90,11 @@ export function generateUnsubscribeUrl(userId: string, baseUrl?: string): string
  * Allows users to update preferences instead of complete unsubscribe
  *
  * @param userId - The unique identifier for the user
- * @param baseUrl - The base URL of the application (defaults to NEXT_PUBLIC_URL)
+ * @param baseUrl - The base URL of the application (defaults to NEXT_PUBLIC_APP_URL)
  * @returns Complete preferences URL
  */
 export function generatePreferencesUrl(userId: string, baseUrl?: string): string {
   const token = generateUnsubscribeToken(userId);
-  const base = baseUrl || process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+  const base = baseUrl || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   return `${base}/preferences?token=${token}`;
 }

@@ -13,6 +13,17 @@ export { SocialContentView } from './SocialContentView';
 export { EditableContentSection } from './EditableContentSection';
 export { EditableKeyInsights } from './EditableKeyInsights';
 
+// ArticleCard and sub-components
+export { ArticleCard } from './ArticleCard';
+export { ArticleCardHeader } from './ArticleCardHeader';
+export { ContentToolsGrid } from './ContentToolsGrid';
+export { KeyInsightsSection } from './KeyInsightsSection';
+export { VideoScriptSection } from './VideoScriptSection';
+export { EmailTemplateSection } from './EmailTemplateSection';
+export { SocialContentSection } from './SocialContentSection';
+export type { Article as ArticleType, GenerationStats, ContentSectionProps } from './types';
+export type { ContentSection } from './ContentToolsGrid';
+
 // Legacy modal components (kept for compatibility)
 export { ArticleModal } from './ArticleModal';
 export { ArticleModalHeader } from './ArticleModalHeader';

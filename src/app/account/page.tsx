@@ -27,7 +27,7 @@ async function AccountContent() {
   } catch (error) {
     // Handle cross-product access (TrueTone user trying to access Newsletter)
     if (error instanceof CrossProductAccessError) {
-      const upgradeUrl = new URL('/upgrade-to-newsletter', process.env.NEXT_PUBLIC_URL || 'http://localhost:3000');
+      const upgradeUrl = new URL('/upgrade-to-newsletter', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');
       upgradeUrl.searchParams.set('source', error.sourceProduct);
       if (error.email) {
         upgradeUrl.searchParams.set('email', error.email);

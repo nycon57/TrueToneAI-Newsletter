@@ -20,9 +20,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_URL;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
     if (!baseUrl) {
-      throw new Error('NEXT_PUBLIC_URL environment variable is required');
+      throw new Error('NEXT_PUBLIC_APP_URL environment variable is required');
     }
 
     // Normalize URL to avoid duplicate slashes

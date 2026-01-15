@@ -17,8 +17,8 @@ export const stripe = new Stripe(stripeKey, {
 // Basic subscription configuration (no plans/limits as requested)
 export const STRIPE_CONFIG = {
   currency: 'usd',
-  success_url: `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/dashboard`,
-  cancel_url: `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/pricing`,
+  success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard`,
+  cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/pricing`,
 };
 
 export interface StripeCustomer {
