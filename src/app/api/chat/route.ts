@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { checkRateLimit, getClientIdentifier, getRateLimitHeaders, RATE_LIMIT_CONFIGS } from '@/lib/utils/rateLimit';
+import { checkBotId } from 'botid/server';
 
 // Validate environment variables
 if (!process.env.OPENAI_API_KEY) {
@@ -13,6 +14,12 @@ const openai = new OpenAI({
 });
 
 export async function POST(request: NextRequest) {
+  // Bot protection check
+  const botVerification = await checkBotId();
+  if (botVerification.isBot) {
+    return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+  }
+
   // Apply rate limiting
   const clientId = getClientIdentifier(request, 'ai-chat');
   if (!checkRateLimit(clientId, RATE_LIMIT_CONFIGS.AI_CHAT)) {

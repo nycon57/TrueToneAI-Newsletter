@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
+import { checkBotId } from 'botid/server';
 
 export async function PUT(req: NextRequest) {
+  // Bot protection check
+  const botVerification = await checkBotId();
+  if (botVerification.isBot) {
+    return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+  }
+
   try {
     const { getUser } = getKindeServerSession();
     const kindeUser = await getUser();

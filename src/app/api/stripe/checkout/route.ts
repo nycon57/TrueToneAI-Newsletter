@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { stripe, STRIPE_CONFIG } from '@/lib/stripe/config';
 import { getKindeUserOnly, getApiUserWithoutAccessCheck } from '@/lib/api/auth';
 import { obfuscateId } from '@/lib/utils';
+import { checkBotId } from 'botid/server';
 
 /**
  * Stripe Checkout Session Creation
@@ -12,6 +13,12 @@ import { obfuscateId } from '@/lib/utils';
  */
 
 export async function POST(req: NextRequest) {
+  // Bot protection check
+  const botVerification = await checkBotId();
+  if (botVerification.isBot) {
+    return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+  }
+
   try {
     console.log('[Checkout] Starting checkout process...');
 

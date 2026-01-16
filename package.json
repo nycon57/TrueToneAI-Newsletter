@@ -74,6 +74,7 @@
     "@vapi-ai/web": "^2.3.10",
     "@xyflow/react": "^12.9.0",
     "ai": "^5.0.77",
+    "botid": "^1.5.10",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

@@ -7,8 +7,15 @@ import { checkAndIncrementAIUsage, setAnonymousSessionCookie } from '@/lib/ai/us
 import { getOrCreateAnonymousSession } from '@/lib/ai/anonymous-session';
 import { getUserSubscriptionStatus, checkAndResetGenerationQuota } from '@/lib/stripe/subscription-guards';
 import { checkRateLimit, getClientIdentifier, getRateLimitHeaders, RATE_LIMIT_CONFIGS } from '@/lib/utils/rateLimit';
+import { checkBotId } from 'botid/server';
 
 export async function POST(req: NextRequest) {
+  // Bot protection check
+  const botVerification = await checkBotId();
+  if (botVerification.isBot) {
+    return Response.json({ error: 'Access denied' }, { status: 403 });
+  }
+
   // Apply rate limiting
   const clientId = getClientIdentifier(req, 'ai-personalize-stream');
   if (!checkRateLimit(clientId, RATE_LIMIT_CONFIGS.AI_PERSONALIZE)) {

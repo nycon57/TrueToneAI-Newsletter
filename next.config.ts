@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 // Injected content via Sentry wizard below
 import { withSentryConfig } from "@sentry/nextjs";
 
+// Bot protection
+import { withBotId } from 'botid/next/config';
+
 // Bundle analyzer - run with ANALYZE=true npm run build --webpack
 // Note: Bundle analyzer requires webpack mode in Next.js 16
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
@@ -95,19 +98,21 @@ const nextConfig: NextConfig = {
 
 // For Turbopack (default in Next.js 16), Sentry uses different instrumentation
 // The withSentryConfig wrapper is still needed but works differently with Turbopack
-export default withSentryConfig(
-  withBundleAnalyzer(nextConfig),
-  {
-    // For all available options, see:
-    // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/build/
+export default withBotId(
+  withSentryConfig(
+    withBundleAnalyzer(nextConfig),
+    {
+      // For all available options, see:
+      // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/build/
 
-    // Suppresses source map uploading logs during build
-    silent: true,
-    org: "truetone-ai",
-    project: "ttai-newsletter",
+      // Suppresses source map uploading logs during build
+      silent: true,
+      org: "truetone-ai",
+      project: "ttai-newsletter",
 
-    // Turbopack-specific options (Next.js 16)
-    // Source maps are uploaded after build completes
-    runAfterProductionCompile: true,
-  }
+      // Turbopack-specific options (Next.js 16)
+      // Source maps are uploaded after build completes
+      runAfterProductionCompile: true,
+    }
+  )
 );

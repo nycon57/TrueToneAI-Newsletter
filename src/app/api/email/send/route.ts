@@ -9,6 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
+import { checkBotId } from 'botid/server';
 import {
   sendWelcome,
   sendOnboardingComplete,
@@ -57,6 +58,12 @@ function isRateLimited(userId: string): boolean {
  * @body data - Template-specific data object
  */
 export async function POST(req: NextRequest) {
+  // Bot protection check
+  const botVerification = await checkBotId();
+  if (botVerification.isBot) {
+    return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+  }
+
   try {
     // Authenticate user
     const { getUser } = getKindeServerSession();

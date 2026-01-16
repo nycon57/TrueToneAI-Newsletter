@@ -3,6 +3,7 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { createClient } from '@/lib/supabase/server';
 import { sendSupportConfirmation, sendSupportNotification } from '@/emails';
 import { randomBytes } from 'crypto';
+import { checkBotId } from 'botid/server';
 
 /**
  * Generate a unique reference number for support tickets
@@ -14,6 +15,12 @@ function generateReferenceNumber(): string {
 }
 
 export async function POST(req: NextRequest) {
+  // Bot protection check
+  const botVerification = await checkBotId();
+  if (botVerification.isBot) {
+    return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+  }
+
   try {
     const { getUser } = getKindeServerSession();
     const kindeUser = await getUser();

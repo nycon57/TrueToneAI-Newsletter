@@ -2,8 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { performBundlesocialPost, performBundlesocialUpload } from '@/lib/social/bundlesocial-actions';
 import { getApiUser } from '@/lib/api/auth';
 import { createClient } from '@/lib/supabase/server';
+import { checkBotId } from 'botid/server';
 
 export async function POST(req: NextRequest) {
+  // Bot protection check
+  const botVerification = await checkBotId();
+  if (botVerification.isBot) {
+    return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+  }
+
   try {
     const user = await getApiUser();
     const { content, platforms, mediaUrl, scheduled_for } = await req.json();

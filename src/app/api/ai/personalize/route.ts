@@ -5,8 +5,15 @@ import { getApiUser } from '@/lib/api/auth';
 import { createClient } from '@/lib/supabase/server';
 import { buildPersonalizationPrompt } from '@/lib/ai/personalize';
 import { checkRateLimit, getClientIdentifier, getRateLimitHeaders, RATE_LIMIT_CONFIGS } from '@/lib/utils/rateLimit';
+import { checkBotId } from 'botid/server';
 
 export async function POST(req: NextRequest) {
+  // Bot protection check
+  const botVerification = await checkBotId();
+  if (botVerification.isBot) {
+    return Response.json({ error: 'Access denied' }, { status: 403 });
+  }
+
   // Apply rate limiting
   const clientId = getClientIdentifier(req, 'ai-personalize');
   if (!checkRateLimit(clientId, RATE_LIMIT_CONFIGS.AI_PERSONALIZE)) {

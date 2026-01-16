@@ -20,6 +20,7 @@ import { getOrCreateAnonymousSession } from '@/lib/ai/anonymous-session';
 import { getUserSubscriptionStatus, checkAndResetGenerationQuota } from '@/lib/stripe/subscription-guards';
 import { buildPlatformPrompt, validatePlatformContent, getPlatformDisplayName } from '@/lib/ai/platform-prompts';
 import { checkRateLimit, getClientIdentifier, getRateLimitHeaders, RATE_LIMIT_CONFIGS } from '@/lib/utils/rateLimit';
+import { checkBotId } from 'botid/server';
 import type { SocialPlatform } from '@/types/social-media';
 import type {
   PlatformSpecificGenerationRequest,
@@ -41,6 +42,15 @@ import type {
  * Response: Server-Sent Events (SSE) stream with platform generation progress
  */
 export async function POST(req: NextRequest) {
+  // Bot protection check
+  const botVerification = await checkBotId();
+  if (botVerification.isBot) {
+    return new Response(
+      JSON.stringify({ error: 'Access denied' }),
+      { status: 403, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
   // Apply rate limiting before any processing
   const clientId = getClientIdentifier(req, 'ai-social-generate');
   if (!checkRateLimit(clientId, RATE_LIMIT_CONFIGS.AI_SOCIAL_GENERATE)) {
